@@ -10,8 +10,6 @@ Welcome to LEC's documentation test!
    :maxdepth: 2
    :caption: Contents:
 
-   readme
-
 
 
 Indices and tables
