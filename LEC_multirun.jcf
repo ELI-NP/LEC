@@ -1,0 +1,11 @@
+#!/bin/csh 
+
+set i = 55
+
+while($i<56)
+    echo "Running simulation "$i
+    echo Data$i | mpirun -np 64 ./bin/SLACB.go
+    @ i++
+end 
+
+
