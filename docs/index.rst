@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to LEC's documentation test!
-===============================
+====================================
 
 .. toctree::
    :maxdepth: 2
