@@ -1,5 +1,10 @@
 # LEC
 Particle code for laser-electron collision
+==========================================
+[![Language](https://img.shields.io/badge/language-Fortran90-blue.svg)](https://fortran-lang.org)
+[![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
+
+
 ## Overview
 - This package contain particle code for simulating laser-electron collision
 - Free software: BSD license
