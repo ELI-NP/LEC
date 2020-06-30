@@ -46,5 +46,5 @@ where `Data` is a folder contains the `input.dat` file. To set the number of thr
 The code are used for the following publications:
 - J. F. Ong, T. Moritaka, and H. Takabe, Radiation Reaction in the interaction of Ultraintense laser with matter and gamma ray source, Physics of Plasmas 23, 053117 (2016).
 - J. F. Ong, T. Moritaka, and H. Takabe, The suppression of radiation reaction and laser field depletion in laser-electron beam interaction, Physics of Plasmas 25, 033113 (2018).
-- J. F. Ong, T. Moritaka, and H. Takabe, Optimizing the energies conversion in laser- electron beam collision, Physics of Plasmas 26, 033102 (2019).
+- J. F. Ong, T. Moritaka, and H. Takabe, Optimizing the energies conversion in laser-electron beam collision, Physics of Plasmas 26, 033102 (2019).
 - T. Moritaka et-al., J. Phys. Conf. Ser. 454 012016 (2013).
