@@ -16,7 +16,7 @@ Particle code for laser-electron collision
 ## QuickStart
 #### Requirements:
 - fortran compiler (e.g. gfortran)
-- Massage Passin Interface, MPI (e.g. OpenMPI)
+- Massage Passing Interface, MPI (e.g. OpenMPI)
 #### Install via Makefile:
 ```Makefile```
 #### Install via csh:
