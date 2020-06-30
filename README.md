@@ -38,7 +38,7 @@ Makefile
 ```
 echo Data | mpirun -np 32 ./bin/LEC
 ```
-where `Data` is a folder contains the `input.dat` file. To set the number of threads `export OMP_NUM_THREADS=n`, where `n` is the number of thread. To run multiple simulation at one run, prepare `DataN` with each input and execute `./LEC_multirun.jcf`. Please modify this file for `N`. 
+where `Data` is a folder contains the `input.dat` file. To set the number of threads `export OMP_NUM_THREADS=n`, where `n` is the number of thread. To run multiple simulations at one run, prepare `DataN` with each input and execute `./LEC_multirun.jcf`. Please modify this file for `N`. 
 The code are used for the following publications:
 - J. F. Ong, T. Moritaka, and H. Takabe, Radiation Reaction in the interaction of Ultraintense laser with matter and gamma ray source, Physics of Plasmas 23, 053117 (2016).
 - J. F. Ong, T. Moritaka, and H. Takabe, The suppression of radiation reaction and laser field depletion in laser-electron beam interaction, Physics of Plasmas 25, 033113 (2018).
