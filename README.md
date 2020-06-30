@@ -1,4 +1,3 @@
-# LEC
 Particle code for laser-electron collision
 ==========================================
 [![Language](https://img.shields.io/badge/language-Fortran90-blue.svg)](https://fortran-lang.org)
