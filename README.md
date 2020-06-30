@@ -27,11 +27,17 @@ Particle code for laser-electron collision
 - Massage Passing Interface, MPI (e.g. OpenMPI)
 - OpenMP 
 #### Install via Makefile:
-```Makefile```
+```
+Makefile
+```
 #### Install via csh script:
-```./LEC.cmp```
+```
+./LEC.cmp
+```
 #### Running simulation:
-```echo Data | mpirun -np 32 ./bin/LEC```
+```
+echo Data | mpirun -np 32 ./bin/LEC
+```
 where `Data` is a folder contains the `input.dat` file. To set the number of threads `export OMP_THREAD_NUM=n`, where `n` is the number of thread. To run multiple simulation at one run, prepare `DataN` with each input, execute `./LEC_multirun.jcf`. The code are used for the following publications:
 - J. F. Ong, T. Moritaka, and H. Takabe, Radiation Reaction in the interaction of Ultraintense laser with matter and gamma ray source, Physics of Plasmas 23, 053117 (2016).
 - J. F. Ong, T. Moritaka, and H. Takabe, The suppression of radiation reaction and laser field depletion in laser-electron beam interaction, Physics of Plasmas 25, 033113 (2018).
