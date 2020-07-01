@@ -3,8 +3,8 @@
       integer,parameter      :: LE0 =1000   ,LE1=1000
       real(kind=8),parameter :: Zcom=   79.d0   ! Z component for nucl
       real(kind=8),parameter :: Zcm3=   4.3d0   ! zcm3 = zcom**(1/3)
-c      real(kind=8),parameter :: Zcom=   13.d0  ! Z component for nucl
-c      real(kind=8),parameter :: Zcm3=   2.35d0 ! zcm3 = zcom**(1/3)
+c     real(kind=8),parameter :: Zcom=   13.d0  ! Z component for nucl
+c     real(kind=8),parameter :: Zcm3=   2.35d0 ! zcm3 = zcom**(1/3)
       integer,parameter      :: LPx =200   
       real(kind=8),parameter :: BPx =200.d0
       real(kind=8),parameter :: Emax=10000.d0
@@ -19,7 +19,7 @@ c
       integer      :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl
      &               ,itotal,ksoutP,iconR,SKL,LL,polar,shape
      &               ,photon,species,shot,itotal0,L,OutRad,OutPairs
-     &		   ,QED,sampled,sampled2,sampled3,sampled4,load		   
+     &		     ,QED,sampled,sampled2,sampled3,sampled4,load		   
       logical      :: emmits,exists,load_particle
       real(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       real(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
@@ -40,12 +40,12 @@ c
       real(kind=8) :: PQM       ! charge/mass ; rmass=-1.d0 for electron
       real(kind=8),dimension(:,:), allocatable   :: RE,RH
       real(kind=8),dimension(:,:), allocatable   :: phn,cphn
-	real(kind=8) :: ERD,EKE,EKK,ERK
+      real(kind=8) :: ERD,EKE,EKK,ERK
       real(kind=8),dimension(0:3000+1,200):: diffC,diffQ,diffD,diffR
       real(kind=8),dimension(200) :: totalR,totalC,totalP,totalRC
      &                              ,totalS,totalT
       real(kind=8) :: rand,rand1
-	integer,save :: tmove,tmove0,tmove1
+      integer,save :: tmove,tmove0,tmove1
      &		   ,trdct,trdct0,trdct1
      &		   ,tmall,tmall0, t_max
      &		   ,tinit,tinit0,t_rate
@@ -56,14 +56,14 @@ c
       integer :: myrank,ierr,nprocs,threads
       end module mpi_common
 c
-	module out_common
-	integer :: jobno
-	character(LEN=100):: fo_name2,cwd
-      CHARACTER(LEN=10)  :: filename = 'input.dat'
+      module out_common
+      integer :: jobno
+      CHARACTER(LEN=100):: fo_name2,cwd
+      CHARACTER(LEN=10) :: filename = 'input.dat'
       CHARACTER(LEN=100):: data_dir,data_file,input_file
-	CHARACTER(LEN=*), PARAMETER :: data_dir_file = 
+      CHARACTER(LEN=*), PARAMETER :: data_dir_file = 
      &					'USE_DATA_DIRECTORY'
-	end module out_common
+      end module out_common
 
       module R_common
       integer      :: Lall,LP,IPTSS,IPTFF,jj
@@ -85,7 +85,7 @@ c
       use sim_common
       use mpi_common
       use R_common
-	use out_common
+      use out_common
       use omp_lib
       implicit none
       include "mpif.h"
@@ -112,16 +112,16 @@ c
          OPEN(unit=41, status='OLD', file=TRIM(data_dir_file)
      &	, iostat=ierr)
          IF (ierr == 0) THEN
-      	READ(41,'(A)') data_dir
-      	CLOSE(41)
-      	PRINT*, 'Using data directory "' 
-     &	        // TRIM(data_dir) // '"'
+      	    READ(41,'(A)') data_dir
+            CLOSE(41)
+      	    PRINT*, 'Using data directory "' 
+     &	          // TRIM(data_dir) // '"'
          ELSE
-     	      PRINT*, 'Specify output directory'
-      	READ(*,'(A)') data_dir
+     	    PRINT*, 'Specify output directory'
+      	    READ(*,'(A)') data_dir
          END IF
       END IF
-	CALL MPI_BCAST(data_dir,100, MPI_CHARACTER, 0,MPI_COMM_WORLD,ierr)
+      CALL MPI_BCAST(data_dir,100, MPI_CHARACTER, 0,MPI_COMM_WORLD,ierr)
 
       input_file = TRIM(ADJUSTL(data_dir))//'/'
      &	    // TRIM(ADJUSTL(filename))
@@ -136,14 +136,14 @@ c
         PRINT *, 'Create the file and rerun the code.'
       END IF
 c
-	if(myrank==0) then 
+      if(myrank==0) then 
          WRITE(*,*) 'Output directory:',data_file
-	end if
+      end if
 
       open ( 8,status="old",file=TRIM(input_file),form='formatted')	!read input data file
       read ( 8,PARAM1) 
 c
-	jobno = jobno + myrank
+      jobno = jobno + myrank
       write(fo_name2,444) TRIM(ADJUSTL(data_file))//'output',jobno
       open ( 9,file=fo_name2,form='formatted')
 c
@@ -156,12 +156,12 @@ c
 c
       write(9,*) "Check openMP"
 !$omp parallel
-	threads = omp_get_num_threads()
+      threads = omp_get_num_threads()
 !$omp end parallel
-	write(9,*) "total number of threads=",threads
+      write(9,*) "total number of threads=",threads
 c 
       call setprm  						!parameter setup
-	call welcome
+      call welcome
 c
       call system_clock(tinit0)
       call setbeam
@@ -179,8 +179,8 @@ c
       write(fo_name2,444) TRIM(data_file)//'orbt6q',jobno
       open (15,file=fo_name2,form='formatted',status='REPLACE')
       write(fo_name2,444) TRIM(data_file)//'orbt7q',jobno
-	open (17,file=fo_name2,form='formatted',status='REPLACE')
-	call system_clock(tinit )
+      open (17,file=fo_name2,form='formatted',status='REPLACE')
+      call system_clock(tinit )
       tinit = tinit-tinit0
 c
 c     orbit calculation 
@@ -194,7 +194,7 @@ c
 c      call random_seed()
 1000	CONTINUE              					! time loop
 	   KSTEP = KSTEP + 1
-         T=T+dt
+           T=T+dt
 	call system_clock(tmove0)        
          if(iconR.eq.0) call Lorentz          
          if(iconR.eq.1) call Sokolov            
@@ -202,7 +202,7 @@ c      call random_seed()
          if(iconR.eq.3) call qedemmit		      !particle loop
          call outorbit2 				      !output extracted electron orbit
  	call system_clock(tmove1)
-      tmove = tmove + (tmove1-tmove0)
+        tmove = tmove + (tmove1-tmove0)
 c
          if(OutRad.eq.1)             call outorbit1 	!store orbit data for emission calculation    
 	   if((mod(kstep,ksout).eq.0)
@@ -232,8 +232,8 @@ c
 c
       if(OutRad.eq.1) then
       	call angdis 
-		call radiation
-	end if
+	call radiation
+      end if
 c      if(OutRad.eq.1) call photon_his
 c
  333  format(A,I2.2,'_',I2.2,'.dat') 
@@ -255,9 +255,9 @@ c
       write(9,*) "reduction(rad):",dble(trdct)/dble(t_rate)
       write(9,*) "others   :",dble(tmall-tinit-tmove-tcurr
      &				-trdct)/dble(t_rate)
-	close(9)
+      close(9)
       call MPI_FINALIZE(IERR)
-	if(myrank.eq.0) 
+      if(myrank.eq.0) 
      &   write(*,*) 
      &   "Final runtime =",tmall/t_rate,"seconds"
 c
@@ -269,8 +269,8 @@ c
       use random_common
       use sim_common
       use mpi_common
-	use R_common
-	use out_common
+      use R_common
+      use out_common
       use omp_lib
       implicit none
       CHARACTER(LEN=8)  :: qed_file = 'vac4.dat'
@@ -282,10 +282,10 @@ c
       Rm = 1.7d0*1.0d1/BL          ! typical Larmor radius [m]
       Rd1 = Rm/div                 ! grid size             [m]
       Rd2 = pw/div2
-	Rd = min(Rd1,Rd2)
+      Rd = min(Rd1,Rd2)
       Rx = Rm                      ! unit scale            [m]
-	Rt = 0.5d0*Rd/VL             ! time step             [s]
-	Rt2= Rt*div                  ! unit time             [s]
+      Rt = 0.5d0*Rd/VL             ! time step             [s]
+      Rt2= Rt*div                  ! unit time             [s]
       dx = dble(1.d0/div)*Rd/Rd1   ! normalized grid size
       dt = 0.5d0*dx                ! normalized time step
       Em = Ev/(0.511d6*rmass)      ! nomalized beam energy 
@@ -326,24 +326,24 @@ c
       write(9,*) "laser wavelength                  [m]",pw
       write(9,*) "pulse length                      [m]",pp
       write(9,*) "pulse duration                    [s]",ppt
-	write(9,*) "pulse duration (FWHM)             [s]",ppt*1.1774d0
+      write(9,*) "pulse duration (FWHM)             [s]",ppt*1.1774d0
       write(9,*) "waist radius (1/e2)               [m]",sp
 c
       write(9,*) " "
       write(9,*) "parameters for electron beam"
       write(9,*) " "
-	if(load.eq.1) then
+      if(load.eq.1) then
 		load_particle=.TRUE.
 		write(9,*) "Load particles from: f_E_smoothed_new_final.txt"
-	else
+      else
 		load_particle=.FALSE.
-	end if
+      end if
       write(9,*) " "
       write(9,*) "parameters for electron beam"
       write(9,*) "initial kinetic energy           [eV]",Ev
       write(9,*) "initital momentum              [p/mc]",Vx
       write(9,*) "initital 3-velocity             [v/c]",Wx
-	if(alpha.gt.1) then
+      if(alpha.gt.1) then
 	     write(9,*) "momentum spread x                 [%]",sigmax*100
 	     write(9,*) "momentum spread y                 [%]",sigmay*100
 	     write(9,*) "momentum spread z                 [%]",sigmaz*100
@@ -354,14 +354,14 @@ c
       write(9,*) "parameters for computation"
       write(9,*) " "
       write(9,*) "Larmor radius / grid separation      ",div
-	write(9,*) "Laser wavelength / grid separation   ",div2
-	write(9,*) "grid separation,Rd1,Rd2           [m]",Rd1,Rd2
+      write(9,*) "Laser wavelength / grid separation   ",div2
+      write(9,*) "grid separation,Rd1,Rd2           [m]",Rd1,Rd2
       write(9,*) "grid separation,Rd=min(Rd1,Rd2)   [m]",Rd
       write(9,*) "physical time step interval       [s]",Rt
       write(9,*) "physical unit time                [s]",Rt2
       write(9,*) "energy bin size of spectrum      [eV]",bin
 c
-	palf = 6.2d-24
+      palf = 6.2d-24
       alf  = palf*dt/Rt
       alf2 = alf*137.d0*9.d0/4.d0
       comp  = palf*137.d0*VL*3.d0*PI 
@@ -380,19 +380,19 @@ c
          write(9,*) "Particle pusher: reduced Landau Lifshitz"
          write(9,*) " "
 	else if(iconR.eq.3) then
-	   write(9,*) " "
+	 write(9,*) " "
          write(9,*) "Particle pusher: Lorentz"
          write(9,*) "        Use QED: Stochastic"
-	   write(9,*) " "
+	 write(9,*) " "
       end if
 c	
-	if(QED.eq.0) then
+      if(QED.eq.0) then
          write(9,*) "Use QED: No, Classical"
          write(9,*) " "
-	else
+      else
          write(9,*) "Use QED: QED_assisted"
          write(9,*) " "
-	end if
+      end if
 c
       write(9,*) "max time step",ksmax
       ksout = 1
@@ -418,8 +418,8 @@ c     diffQ ;   quantum differential cross section (x energy)
 c     diffD ; classical differential cross section 
 c     diffR ;   quantum differential cross section 
 c
-	call getcwd(cwd)
-	table_location = TRIM(cwd)//'/TABLE/'//TRIM(ADJUSTL(qed_file))
+      call getcwd(cwd)
+      table_location = TRIM(cwd)//'/TABLE/'//TRIM(ADJUSTL(qed_file))
       IF (myrank == 0 ) THEN
       INQUIRE(file=TRIM(table_location), exist=exists)
       IF (.NOT.exists) THEN
@@ -434,11 +434,11 @@ c
       read(96) diffC,diffQ,diffD,diffR
       close(96)
 
-	if(QED.eq.1) then 
+      if(QED.eq.1) then 
          totalRC=totalR/totalC
       else
          totalRC=1.d0
-	end if
+      end if
 
       return
       end
@@ -448,32 +448,32 @@ c
       use random_common
       use sim_common
       use mpi_common
-	use R_common
+      use R_common
       use omp_lib
-	use out_common
+      use out_common
       implicit none
-	real(kind=8) :: aa
+      real(kind=8) :: aa
 c generate initial electron conditions for incident beam  
 c---------------------------
       if(alpha.ne.0.d0) then
 c---------------------------
-	sampled = 12 ; sampled2 = sampled/2 
+        sampled = 12 ; sampled2 = sampled/2 
 	sampled3 = (sampled-1)**3
 
 	allocate(Re(11,sampled3))
-      allocate(wight0(sampled3))
+        allocate(wight0(sampled3))
 
 	write(9,*) "transverse beam size   [m]",alpha
  	write(9,*) "electron number per shot  ",enum
 	write(9,*) "incident angle    [degree]",inc_ang
-      inc_ang = inc_ang/180.d0*pi
+        inc_ang = inc_ang/180.d0*pi
 
 	write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
-      open (10,file=fo_name2,form='formatted',status='unknown')
+        open (10,file=fo_name2,form='formatted',status='unknown')
 
 	do k=1,sampled-1
-      do j=1,sampled-1
-      do i=1,sampled-1
+        do j=1,sampled-1
+        do i=1,sampled-1
          kk = (k-1)*(sampled-1)*(sampled-1)+(j-1)*(sampled-1)+i
 	   call random_number(rand)
 	   call random_number(rand1)
@@ -494,40 +494,40 @@ c
      &		  *dsqrt(-2.d0*log(rand))
 	   Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
      &		  *dsqrt(-2.d0*log(rand))
-      end do
+        end do
 	end do
 	end do
-      wight00=0.d0
-      do i=1,sampled3
-         wight00 = wight00 + wight0(i)
-      end do
-      wight0=wight0/wight00
+        wight00=0.d0
+        do i=1,sampled3
+          wight00 = wight00 + wight0(i)
+        end do
+        wight0=wight0/wight00
 c
-      do i=1,sampled3
+        do i=1,sampled3
          Xe = Re(1,i)
          Ye = Re(2,i)
          Vx0 = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
          Vy0 = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
 	   Re(1,i) = Vx0 
 	   Re(2,i) = Vy0
-      end do
+        end do
 c
-      do i=1,sampled3
+        do i=1,sampled3
          Vx0 = Re(4,i)
          Vy0 = Re(5,i)
          Re(4,i) = Vx0*dcos(inc_ang)-Vy0*dsin(inc_ang)
          Re(5,i) = Vx0*dsin(inc_ang)+Vy0*dcos(inc_ang)
-      end do
+        end do
 
-      itotal = int(sampled3/dble(nprocs))
+        itotal = int(sampled3/dble(nprocs))
 	allocate(Rh(11,itotal))
-      allocate(wight(itotal))
-      jj = myrank*itotal
-      write(9,*) "myrank                            ",myrank
-      write(9,*) "total process number, nprocs        ",nprocs
-      write(9,*) "calculated particle number, itotal",itotal
-      write(9,*) "calculated particle number from",jj+1,"to",jj+itotal
-      do i=1,itotal
+        allocate(wight(itotal))
+        jj = myrank*itotal
+        write(9,*) "myrank                            ",myrank
+        write(9,*) "total process number, nprocs        ",nprocs
+        write(9,*) "calculated particle number, itotal",itotal
+        write(9,*) "calculated particle number from",jj+1,"to",jj+itotal
+        do i=1,itotal
          Rh(1,i) = Re(1,i+jj)
          Rh(2,i) = Re(2,i+jj)
          Rh(3,i) = Re(3,i+jj)
@@ -535,7 +535,7 @@ c
          Rh(5,i) = Re(5,i+jj)
          Rh(6,i) = Re(6,i+jj)
          wight(i)= wight0(i+jj)
-      end do
+        end do
 	Re = Rh
 c
       	if(OutRad.eq.1) then
@@ -546,47 +546,47 @@ c
 	call histogram
  	call histogram2d
 c----------
-	else
+      else
 c----------
 	   write(9,*) "single electron"
 	   write(9,*) "electron number per shot = 1  "
 	   allocate(Re(11,1),Rh(11,1))
 	   allocate(wight0(1),wight(1))
 	   itotal = 1
-         Xe = wp*xinit
+           Xe = wp*xinit
 	   Ye = 0.d0
 	   Ze = 0.d0
 	   inc_ang = inc_ang/180.d0*pi
-         Re(1,1)  = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
-         Re(2,1)  = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
-         Re(3,1)  = Ze
+           Re(1,1)  = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
+           Re(2,1)  = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
+           Re(3,1)  = Ze
 	   Re(4,1)  = Vx*(-1.d0)*dcos(inc_ang)
-         Re(5,1)  = Vx*(-1.d0)*dsin(inc_ang)
-         Re(6,1)  = 0.d0
-         wight(1) = 1.d0
+           Re(5,1)  = Vx*(-1.d0)*dsin(inc_ang)
+           Re(6,1)  = 0.d0
+           wight(1) = 1.d0
 		if(OutRad.eq.1) then
 			allocate(phtn(6,ksmax,1)) 
 			phtn = 0.d0
 		end if
-	end if
+      end if
 c
       do i=1,7
          Ne7(i)=(itotal/8)*i+1
          write(9,*) "sampling electron number",i,Ne7(i)
       end do
-c end incident beam generation 
+c     end incident beam generation 
 c
 444   format(A,I4.4,'.dat')
 666   format(3(E14.4,1X))
       return
       end
 !--------------------------------------
-	subroutine outorbit1
+      subroutine outorbit1
 !-------------------------------------
       use random_common
       use sim_common
       use mpi_common
-	use R_common
+      use R_common
       use omp_lib
       implicit none
       real(kind=8)    :: TTY,TTZ
