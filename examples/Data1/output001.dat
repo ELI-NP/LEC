@@ -19,7 +19,7 @@
  INC_ANG=  0.0000000000000000     ,
  /
 &PARAM4
- XINIT=  10.000000000000000     ,
+ XINIT=  5.0000000000000000     ,
  RMASS=  1.0000000000000000     ,
  SIGMAX=  1.0000000000000000E-002,
  SIGMAY=  1.0000000000000000E-002,
@@ -88,13 +88,12 @@
  sampling electron number           5           1
  sampling electron number           6           1
  sampling electron number           7           1
- Total final. particle   1.0000000000000000     
- energy reduction (  EM work) [J]   1.0469522655576304E-015
- energy reduction (radiation) [J]   1.8264485370665960E-011
- total reduction energy [J]   1.8261950826304109E-011
- all      :   43.454999999999998     
- initc    :  0.19100000000000000     
- pmove    :   9.5220000000000002     
- rad      :   24.387000000000000     
+ energy reduction (  EM work) [J]   1.0457878096000931E-015
+ energy reduction (radiation) [J]   1.8264554368731900E-011
+ total reduction energy [J]   1.8261959968351864E-011
+ all      :   36.023000000000003     
+ initc    :  0.18900000000000000     
+ pmove    :   9.4359999999999999     
+ rad      :   24.148000000000000     
  reduction(rad):   0.0000000000000000     
- others   :   9.3550000000000004     
+ others   :   2.2500000000000000     
