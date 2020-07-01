@@ -5,7 +5,7 @@ BINDIR = bin
 FC = $(MPIF90)
 FFLAGS = -O3 -fopenmp -fopt-info-all \
 	-mcmodel=medium -fconvert=big-endian -g \
-	-fbacktrace -fbounds-check -J$(OBJDIR)
+	-fbacktrace -fbounds-check -I$(OBJDIR) -J$(OBJDIR)
 
 LEC: laser.o LEC.o
 	@mkdir -p $(OBJDIR)
