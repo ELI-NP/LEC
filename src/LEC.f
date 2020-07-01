@@ -215,6 +215,7 @@ c
  	   if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)  ) 	 call histogram2d
 =======
+     &     .and.(alpha.gt.0.d0)    ) call histogram
 c
  	   if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram2d
