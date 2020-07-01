@@ -205,14 +205,20 @@ c      call random_seed()
       tmove = tmove + (tmove1-tmove0)
 c
          if(OutRad.eq.1)             call outorbit1 	!store orbit data for emission calculation    
-	   if((mod(kstep, ksout).eq.0)
+	   if((mod(kstep,ksout).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call avgene	!calculate average energy
 c
  	   if((mod(kstep,ksout).eq.0)
+<<<<<<< HEAD
      &     .and.(alpha.gt.0.d0)  )   call histogram
 c
  	   if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)  ) 	 call histogram2d
+=======
+c
+ 	   if((mod(kstep,ksmax).eq.0)
+     &     .and.(alpha.gt.0.d0)    ) call histogram2d
+>>>>>>> 39f293f57723f979cfc44f8caea7c11f60b19dc3
 	   if((mod(kstep,1000).eq.0)
      &     .and.(myrank.eq.0))
      &	write(*,*) "Iteration =",kstep,"; Time step =",Rt*kstep
