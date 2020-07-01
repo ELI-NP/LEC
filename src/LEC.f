@@ -208,18 +208,12 @@ c
 	   if((mod(kstep,ksout).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call avgene	!calculate average energy
 c
- 	   if((mod(kstep,ksout).eq.0)
-<<<<<<< HEAD
-     &     .and.(alpha.gt.0.d0)  )   call histogram
-c
- 	   if((mod(kstep,ksmax).eq.0)
-     &     .and.(alpha.gt.0.d0)  ) 	 call histogram2d
-=======
+           if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram
 c
  	   if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram2d
->>>>>>> 39f293f57723f979cfc44f8caea7c11f60b19dc3
+c
 	   if((mod(kstep,1000).eq.0)
      &     .and.(myrank.eq.0))
      &	write(*,*) "Iteration =",kstep,"; Time step =",Rt*kstep
