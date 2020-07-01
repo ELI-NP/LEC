@@ -29,10 +29,7 @@ Particle code for laser-electron collision
 - fortran compiler (e.g. gfortran)
 - Massage Passing Interface, MPI (e.g. OpenMPI)
 - OpenMP 
-#### Install via Makefile:
-```
-Makefile
-```
+
 #### Install via csh script:
 ```
 ./LEC.cmp
