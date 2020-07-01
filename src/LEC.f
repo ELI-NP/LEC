@@ -264,7 +264,7 @@ c
       STOP
       END
 !--------------------------------------
-	subroutine setprm
+      subroutine setprm
 !--------------------------------------
       use random_common
       use sim_common
@@ -443,7 +443,7 @@ c
       return
       end
 !--------------------------------------
-	subroutine setbeam
+      subroutine setbeam
 !--------------------------------------
       use random_common
       use sim_common
