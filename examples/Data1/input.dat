@@ -1,0 +1,5 @@
+&PARAM1  jobno=001,ksmax=10000000,div=128.d0,div2=40.d0	                  ,&END
+&PARAM2  SL=1.0d22,Ev=100.d6,pw=0.8d-6,pp=5.6d-6,sp=1.44d-6                ,&END
+&PARAM3  alpha=0.0d0,enum=1.0d0,bin=1.d6,shot=1,inc_ang = 0.d0           ,&END
+&PARAM4  xinit=5.d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0 ,&END
+&PARAM5  iconR=0,QED=0,ipl=0,shape=0,load=0,OutRad=1,OutPairs=0 	  ,&END
