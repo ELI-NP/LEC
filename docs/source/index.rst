@@ -10,10 +10,6 @@ Welcome to the LEC guide. This is the documentation for LEC code, a particle cod
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
-.. toctree::
-   :maxdepth: 2
    :caption: Introduction
 
    begin
