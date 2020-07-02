@@ -9,6 +9,7 @@ Features
 ========
 
 * Radiation Reaction (RR)
+
    * Landau-Liftshitz (LL)
    * Sokolov (SKL)
    * Stochastic (SCS)
