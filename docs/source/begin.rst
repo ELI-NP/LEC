@@ -4,7 +4,6 @@ Overview
 
 * This package contain particle code for simulating laser-electron collision
 * Free software: BSD license
-* Documentation: *to do*
 
 Features
 ========
