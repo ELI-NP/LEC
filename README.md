@@ -6,7 +6,7 @@ Particle code for laser-electron collision
 ## Overview
 - This package contain particle code for simulating laser-electron collision
 - Free software: BSD license
-- Documentation: [https://lec.readthedocs.io/en/latest/]
+- [Documentation](https://lec.readthedocs.io/en/latest/)
 ## Features
 - Radiation Reaction (RR)
   - Landau-Liftshitz (LL)
