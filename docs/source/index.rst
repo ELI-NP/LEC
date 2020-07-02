@@ -26,13 +26,6 @@ Welcome to the LEC guide. This is the documentation for LEC code, a particle cod
 
    developers
 
-.. toctree::
-   :maxdepth: 2
-   :caption: References
-
-   references
-
-
 Indices and tables
 ==================
 

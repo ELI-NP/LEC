@@ -6,7 +6,7 @@ Overview
 * Free software: BSD license
 
 Features
-========
+--------
 
 * Radiation Reaction (RR)
 
@@ -39,7 +39,7 @@ Features
 * Load electron beam energy distribution from experimental data
 
 Dependencies
-============
+------------
 
 * fortran compiler (e.g. gfortran)
 
@@ -48,7 +48,7 @@ Dependencies
 * OpenMP 
 
 QuickStart
-==========
+----------
 
 Install via csh script:
 
