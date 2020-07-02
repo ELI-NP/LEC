@@ -132,3 +132,65 @@ The photon number distribution
 The radiation angular distribution
 
 .. figure:: /figures/angular_dist.png
+
+Landau-Liftshitz 
+================
+
+.. math::
+
+   \frac{ dv^{\mu}}{d\tau}=\frac{e}{mc}F^{\mu\nu}v_{\nu}+\tau_{0}\left( \frac{e}{mc} \dot{F}^{\mu\nu} v_{\nu}+\frac{e^{2}}{m^{2}c^{2}}F^{\mu\nu}F_{\alpha\nu}v^{\alpha}
+   \frac{e^{2}}{m^{2}c^{2}}(F^{\alpha\nu}v_{\nu})(F_{\alpha\lambda}v^{\lambda})v^{\mu}\right)
+
+Sokolov
+=======
+
+.. math::
+
+   \frac{ dp^{\mu}}{d\tau}=\frac{e}{mc}F^{\mu\nu}v_{\nu}-\frac{I_{QED}}{mc^2}p^{\mu}+\tau_{0}\frac{e^{2}}{(mc)^{2}}\frac{I_{QED}}{I_{E}}F^{\mu\nu}F_{\nu\alpha}p^{\alpha}
+
+Stochastic
+==========
+
+*to do*
+
+Quantum
+=======
+
+*to do*
+
+Emission cross-section
+----------------------
+
+.. math::
+
+   dW_{em}=\frac{\alpha mc^{2}}{\sqrt{3}\pi\hbar\gamma}\left[\left(1-\xi+\frac{1}{1-\xi} \right)K_{2/3}(\delta)
+   -\int_{\delta}^{\infty}K_{1/3}(s)ds  \right] d\xi
+
+.. math::
+
+   \xi=\frac{\hbar\omega}{\gamma mc^{2}},\:\delta=\frac{2\xi}{3(1-\xi)\chi}
+
+and :math:`K_{\nu}(x)` is modified Bessel function. At classical limit :math:`\chi<<1`
+
+.. math::
+
+   dP&=&\mathcal{E}dW_{em}\nonumber\\ &\rightarrow& \frac{e^{2}\omega_{c}}{ \sqrt{3}\pi c}\frac{1}{\gamma^{2}} 
+   \frac{\omega}{\omega}_{c}[2K_{2/3}(\delta)-\int_{\delta}^{\infty}K_{1/3}(s)ds]d\omega
+
+reduced to classical synchrotron radiation where :math:`\omega_{c}` is the critical frequency and :math:`\delta\longrightarrow 2\xi/3\chi`.
+
+.. figure:: /figures/qchi.png
+
+The function :math:`q(\chi_e)~\text{for}~\chi_e\ll 1` (blue)
+
+.. math::
+
+    q(\chi_e\ll 1)\approx 1-\frac{55}{16}\sqrt{3}\chi + 48\chi^2 
+
+The function :math:`q(\chi_e)~\text{for}~\chi_e\gg 1` (green)
+
+.. math::
+
+    q(\chi_e\gg 1)\approx\frac{48}{243}\Gamma(\frac{2}{3})\chi^{-4/3} 
+    \left[ 1 -\frac{81}{16\Gamma(2/3)}(3\chi)^{-2/3} \right] 
+

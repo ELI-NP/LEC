@@ -21,8 +21,8 @@ def figure_format(fig_width='3.4',fig_height='2.1'):
     """
     golden_ratio = 1.618      # Aesthetic ratio
     fig_size     = [fig_width,fig_height]
-    fontsize     = 15
-    linewidth    = 1.5
+    fontsize     = 10
+    linewidth    = 0.5
     params = {'backend': 'ps',
               'axes.labelsize': fontsize,
               'axes.titlesize': fontsize,
