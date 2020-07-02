@@ -12,24 +12,38 @@ Features
    * Landau-Liftshitz (LL)
    * Sokolov (SKL)
    * Stochastic (SCS)
+
 * Classical and QED-assisted model for LL & SKL
+
 * Radiation model
+
    * Nonlinear Compton Scattering
+
 * Simulating a single electron or an electron bunch
+
 * Calculating radiation spectrum and photon number distribution
+
 * Calculating radiation angular distribution
+
 * Pair production
+
    * Bethe-Heitler
+
    * nonlinear Breit-Wheeler (*to do*)  
+
 * Laser field beyond paraxial approximation up to fifth order
+
 * Spatial and temporal Gaussian shape laser pulse (Linear & Circular polarisation)
+
 * Load electron beam energy distribution from experimental data
 
 Dependencies
 ============
 
 * fortran compiler (e.g. gfortran)
+
 * Massage Passing Interface, MPI (e.g. OpenMPI)
+
 * OpenMP 
 
 QuickStart

@@ -47,6 +47,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 **sigma_{x,y,z}** Electron momentum energy spreads in three directions.
 
 **iconR** Specifying the particle pusher used. Integer.
+
    * ``iconR=0`` Lorentz force
    * ``iconR=1`` Sokolov
    * ``iconR=2`` Reduced Landau-Liftshitz
@@ -57,6 +58,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 **ipl** Specifying laser polarisation. ``ipl=0`` for linear polarisation and ``ipl=1`` for circular polarisation.
 
 **shape** Laser spatial and temporal profile. Laser profile can be modified in *laser.f*. Integer.
+
    * ``shape=0`` 0th order Gaussian beam.
    * ``shape=1`` 5th order paraxial approximation.
 
