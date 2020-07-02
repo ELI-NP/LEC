@@ -1908,7 +1908,7 @@ c
 C-----------------------------------------------------------------
       subroutine pair_init
 c
-c cross section of Bremmstrahlung & pair production (Bethe-Heitler)
+c cross section of Bremsstrahlung & pair production (Bethe-Heitler)
 c
 C-----------------------------------------------------------------
       use random_common

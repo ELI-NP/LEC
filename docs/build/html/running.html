@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Basic &mdash; LEC 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developers" href="developers.html" />
+    <link rel="prev" title="Overview" href="begin.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> LEC
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="begin.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="begin.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="begin.html#dependencies">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="begin.html#quickstart">QuickStart</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-parameters">Input parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Develorpers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html#citation">Citation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LEC</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Basic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/running.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="basic">
+<h1>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="input-parameters">
+<h2>Input parameters<a class="headerlink" href="#input-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The code was written in <code class="docutils literal notranslate"><span class="pre">fortran90</span></code>. The input parameters are contained in the file <code class="docutils literal notranslate"><span class="pre">input.dat</span></code> in the folder <code class="docutils literal notranslate"><span class="pre">Data</span></code>.</p>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span><span class="n">PARAM1</span>  <span class="n">jobno</span><span class="o">=</span><span class="mi">001</span><span class="p">,</span><span class="n">ksmax</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span><span class="n">div</span><span class="o">=</span><span class="mi">6</span><span class="mf">0.d0</span><span class="p">,</span><span class="n">div2</span><span class="o">=</span><span class="mi">4</span><span class="mf">0.d0</span>                     <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM2</span>  <span class="n">SL</span><span class="o">=</span><span class="mf">1.0d22</span><span class="p">,</span><span class="n">Ev</span><span class="o">=</span><span class="mi">1</span><span class="mf">0.d6</span><span class="p">,</span><span class="n">pw</span><span class="o">=</span><span class="mf">0.8d-6</span><span class="p">,</span><span class="n">pp</span><span class="o">=</span><span class="mf">5.6d-6</span><span class="p">,</span><span class="n">sp</span><span class="o">=</span><span class="mf">1.44d-6</span>                <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM3</span>  <span class="n">alpha</span><span class="o">=</span><span class="mf">0.0d-6</span><span class="p">,</span><span class="k">enum</span><span class="o">=</span><span class="mf">1.0d9</span><span class="p">,</span><span class="n">bin</span><span class="o">=</span><span class="mf">1.d6</span><span class="p">,</span><span class="n">shot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inc_ang</span> <span class="o">=</span> <span class="mf">0.d0</span>           <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM4</span>  <span class="n">xinit</span><span class="o">=</span><span class="mf">1.1d0</span><span class="p">,</span><span class="n">rmass</span><span class="o">=</span><span class="mf">1.d0</span><span class="p">,</span><span class="n">sigmax</span><span class="o">=</span><span class="mf">0.01d0</span><span class="p">,</span><span class="n">sigmay</span><span class="o">=</span><span class="mf">0.01d0</span><span class="p">,</span><span class="n">sigmaz</span><span class="o">=</span><span class="mf">0.01d0</span> <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM5</span>  <span class="n">iconR</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">QED</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ipl</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nb">shape</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">load</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">OutRad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">OutPairs</span><span class="o">=</span><span class="mi">0</span>           <span class="p">,&amp;</span><span class="k">END</span>
+</pre></div>
+</div>
+<p><strong>jobno</strong>  The job numbering. Integer.</p>
+<p><strong>ksmax</strong>  Maximum number of time step. Integer.</p>
+<p><strong>div, div2</strong> The number of division/cells per Lamor radius.</p>
+<p><strong>SL</strong> Laser intensity [<span class="math notranslate nohighlight">\(\mathrm{W~cm^{-2}}\)</span>].</p>
+<p><strong>Ev</strong> Electron energy [eV].</p>
+<p><strong>pw</strong> Laser wavelength [meter].</p>
+<p><strong>pp</strong> Laser pulse length [meter]. Pulse duration is <span class="math notranslate nohighlight">\(\tau_\mathrm{L}=\mathrm{pp}/c\)</span>. Pulse duration at FWHM is <span class="math notranslate nohighlight">\(\tau_\mathrm{L}\times 1.1744\)</span></p>
+<p><strong>sp</strong> Laser waist radius (at <span class="math notranslate nohighlight">\(1/e^2\)</span>) [meter].</p>
+<p><strong>alpha</strong> Electron waist radius [meter]. Set to 0.0d-6 for a single electron. If set to a value larger than 0, electron energy distribution in 1D and 2D will be outputted.</p>
+<p><strong>enum</strong> Electron number in a bunch. Used for radiation calculation.</p>
+<p><strong>bin</strong> Radiation spectrum bin size [eV].</p>
+<p><strong>shot</strong> Number of shot. Integer.</p>
+<p><strong>inc_ang</strong> Incident angle of the electron with respect to the x-axis [degree].</p>
+<p><strong>xinit</strong> Initial position of the electron from the collision point. The collision happens at <span class="math notranslate nohighlight">\(t=0\)</span>. The laser is one pulse length away from <span class="math notranslate nohighlight">\(t=0\)</span>.</p>
+<p><strong>rmass</strong> The charge to mass ratio of the colliding particle. Setting to <code class="docutils literal notranslate"><span class="pre">rmass=-1</span></code> represents positron, <code class="docutils literal notranslate"><span class="pre">rmass=-1836</span></code> represents proton.</p>
+<p><strong>sigma_{x,y,z}</strong> Electron momentum energy spreads in three directions.</p>
+<dl class="simple">
+<dt><strong>iconR</strong> Specifying the particle pusher used. Integer.</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">iconR=0</span></code> Lorentz force</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iconR=1</span></code> Sokolov</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iconR=2</span></code> Reduced Landau-Liftshitz</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iconR=3</span></code> Stochastic</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>QED</strong> Specifying whether to use QED for Sokolov and Reduced Landau-Liftshitz. <code class="docutils literal notranslate"><span class="pre">QED=1</span></code> is mandatory for Stochastic process.</p>
+<p><strong>ipl</strong> Specifying laser polarisation. <code class="docutils literal notranslate"><span class="pre">ipl=0</span></code> for linear polarisation and <code class="docutils literal notranslate"><span class="pre">ipl=1</span></code> for circular polarisation.</p>
+<dl class="simple">
+<dt><strong>shape</strong> Laser spatial and temporal profile. Laser profile can be modified in <em>laser.f</em>. Integer.</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">shape=0</span></code> 0th order Gaussian beam.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shape=1</span></code> 5th order paraxial approximation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-note admonition">
+<p class="admonition-title">Note!</p>
+<p>The temporal profile for 5th order paraxial approximation is not Gaussian. The temporal profile is <span class="math notranslate nohighlight">\(g=\mathrm{cosech}((t-x)/\tau_\mathrm{L})\)</span>.</p>
+</div>
+<p><strong>load</strong> Load particle energy distribution from external file. The default filename is <code class="docutils literal notranslate"><span class="pre">f_E_smoothed_new_final.txt</span></code>. To change the filename, please edit the subroutine <code class="docutils literal notranslate"><span class="pre">manual_load</span></code>. Integer.</p>
+<p><strong>OutRad</strong> Specifying whether to calculate radiation. When setting <code class="docutils literal notranslate"><span class="pre">OutRad=1</span></code>, emission spectrum, photon number distribution, radiation angular distribution will be calculated. This part consumes most of the simulation time. Integer.</p>
+<p><strong>OutRad</strong> Specifying whether to calculate pair production. Currently support for Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated. The Z component of nucleus for specific converter is specify in <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">random_commom</span></code>. Integer .</p>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Example of a single electron for <code class="docutils literal notranslate"><span class="pre">Lorentz</span> <span class="pre">vs</span> <span class="pre">Sokolov</span></code>. The input parameters are in <em>examples/Data1(2)</em></p>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span><span class="n">PARAM1</span>  <span class="n">jobno</span><span class="o">=</span><span class="mi">001</span><span class="p">,</span><span class="n">ksmax</span><span class="o">=</span><span class="mi">10000000</span><span class="p">,</span><span class="n">div</span><span class="o">=</span><span class="mi">12</span><span class="mf">8.d0</span><span class="p">,</span><span class="n">div2</span><span class="o">=</span><span class="mi">4</span><span class="mf">0.d0</span>                  <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM2</span>  <span class="n">SL</span><span class="o">=</span><span class="mf">1.0d22</span><span class="p">,</span><span class="n">Ev</span><span class="o">=</span><span class="mi">10</span><span class="mf">0.d6</span><span class="p">,</span><span class="n">pw</span><span class="o">=</span><span class="mf">0.8d-6</span><span class="p">,</span><span class="n">pp</span><span class="o">=</span><span class="mf">5.6d-6</span><span class="p">,</span><span class="n">sp</span><span class="o">=</span><span class="mf">1.44d-6</span>              <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM3</span>  <span class="n">alpha</span><span class="o">=</span><span class="mf">0.0d0</span><span class="p">,</span><span class="k">enum</span><span class="o">=</span><span class="mf">1.0d0</span><span class="p">,</span><span class="n">bin</span><span class="o">=</span><span class="mf">1.d6</span><span class="p">,</span><span class="n">shot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inc_ang</span> <span class="o">=</span> <span class="mf">0.d0</span>           <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM4</span>  <span class="n">xinit</span><span class="o">=</span><span class="mf">5.d0</span><span class="p">,</span><span class="n">rmass</span><span class="o">=</span><span class="mf">1.d0</span><span class="p">,</span><span class="n">sigmax</span><span class="o">=</span><span class="mf">0.01d0</span><span class="p">,</span><span class="n">sigmay</span><span class="o">=</span><span class="mf">0.01d0</span><span class="p">,</span><span class="n">sigmaz</span><span class="o">=</span><span class="mf">0.01d0</span> <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM5</span>  <span class="n">iconR</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">QED</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ipl</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nb">shape</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">load</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">OutRad</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">OutPairs</span><span class="o">=</span><span class="mi">0</span>          <span class="p">,&amp;</span><span class="k">END</span>
+</pre></div>
+</div>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span><span class="n">PARAM1</span>  <span class="n">jobno</span><span class="o">=</span><span class="mi">002</span><span class="p">,</span><span class="n">ksmax</span><span class="o">=</span><span class="mi">10000000</span><span class="p">,</span><span class="n">div</span><span class="o">=</span><span class="mi">12</span><span class="mf">8.d0</span><span class="p">,</span><span class="n">div2</span><span class="o">=</span><span class="mi">4</span><span class="mf">0.d0</span>                  <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM2</span>  <span class="n">SL</span><span class="o">=</span><span class="mf">1.0d22</span><span class="p">,</span><span class="n">Ev</span><span class="o">=</span><span class="mi">10</span><span class="mf">0.d6</span><span class="p">,</span><span class="n">pw</span><span class="o">=</span><span class="mf">0.8d-6</span><span class="p">,</span><span class="n">pp</span><span class="o">=</span><span class="mf">5.6d-6</span><span class="p">,</span><span class="n">sp</span><span class="o">=</span><span class="mf">1.44d-6</span>              <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM3</span>  <span class="n">alpha</span><span class="o">=</span><span class="mf">0.0d0</span><span class="p">,</span><span class="k">enum</span><span class="o">=</span><span class="mf">1.0d0</span><span class="p">,</span><span class="n">bin</span><span class="o">=</span><span class="mf">1.d6</span><span class="p">,</span><span class="n">shot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inc_ang</span> <span class="o">=</span> <span class="mf">0.d0</span>           <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM4</span>  <span class="n">xinit</span><span class="o">=</span><span class="mf">5.d0</span><span class="p">,</span><span class="n">rmass</span><span class="o">=</span><span class="mf">1.d0</span><span class="p">,</span><span class="n">sigmax</span><span class="o">=</span><span class="mf">0.01d0</span><span class="p">,</span><span class="n">sigmay</span><span class="o">=</span><span class="mf">0.01d0</span><span class="p">,</span><span class="n">sigmaz</span><span class="o">=</span><span class="mf">0.01d0</span> <span class="p">,&amp;</span><span class="k">END</span>
+<span class="p">&amp;</span><span class="n">PARAM5</span>  <span class="n">iconR</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">QED</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ipl</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nb">shape</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">load</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">OutRad</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">OutPairs</span><span class="o">=</span><span class="mi">0</span>          <span class="p">,&amp;</span><span class="k">END</span>
+</pre></div>
+</div>
+<p>Multiple run can be performed by executing</p>
+<div class="highlight-csh notranslate"><div class="highlight"><pre><span></span>./LEC_multirun.jcf
+</pre></div>
+</div>
+<p>The number <code class="docutils literal notranslate"><span class="pre">i</span></code> in this file is set according to the numbering of the folder.</p>
+<div class="highlight-csh notranslate"><div class="highlight"><pre><span></span><span class="c">#!/bin/csh</span>
+
+<span class="nb">set </span><span class="nv">i</span> <span class="o">=</span> 1
+
+<span class="k">while</span><span class="o">(</span><span class="nv">$i</span>&lt;3<span class="o">)</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Running simulation &quot;</span><span class="nv">$i</span>
+    <span class="nb">echo </span>examples/Data<span class="nv">$i</span> | mpirun -np 1 ./bin/LEC
+    @ i++
+<span class="k">end</span>
+</pre></div>
+</div>
+<p>The electron trajectories</p>
+<div class="figure align-default">
+<img alt="_images/trajectories.png" src="_images/trajectories.png" />
+</div>
+<p>The time evolution of electron energy</p>
+<div class="figure align-default">
+<img alt="_images/energies.png" src="_images/energies.png" />
+</div>
+<p>The radiation spectrum</p>
+<div class="figure align-default">
+<img alt="_images/spectra.png" src="_images/spectra.png" />
+</div>
+<p>The photon number distribution</p>
+<div class="figure align-default">
+<img alt="_images/photonnumber.png" src="_images/photonnumber.png" />
+</div>
+<p>The radiation angular distribution</p>
+<div class="figure align-default">
+<img alt="_images/angular_dist.png" src="_images/angular_dist.png" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="developers.html" class="btn btn-neutral float-right" title="Developers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="begin.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ong Jian Fuh
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
