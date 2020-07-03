@@ -457,7 +457,7 @@ c generate initial electron conditions for incident beam
 c---------------------------
       if(alpha.ne.0.d0) then
 c---------------------------
-        sampled = 12 ; sampled2 = sampled/2 
+        sampled = 19 ; sampled2 = sampled/2 
 	sampled3 = (sampled-1)**3
 
 	allocate(Re(11,sampled3))
