@@ -95,6 +95,74 @@ Example of a single electron for ``Lorentz vs Sokolov``. The input parameters ar
    &PARAM4  xinit=5.d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0 ,&END
    &PARAM5  iconR=1,QED=0,ipl=0,shape=0,load=0,OutRad=1,OutPairs=0 	    ,&END
 
+The outputs are written in ASCII format. The file ``output001.dat`` records the detail parameters of the simulation. For example:
+
+.. code-block:: fortran
+
+   Parameters for pulse laser
+  
+   Laser polarization: linear
+  
+   0th order Gaussian beam
+  
+   Laser Intensity               [W/cm2]   1.0000000000000000E+022
+   Peak electric field             [V/m]   274000000000000.00     
+   Peak magnetic field           [Gauss]   9280000000.0000000     
+   Larmor radius for light speed     [m]   1.8318965517241380E-009
+   laser wavelength                  [m]   7.9999999999999996E-007
+   pulse length                      [m]   5.5999999999999997E-006
+   pulse duration                    [s]   1.8666666666666665E-014
+   pulse duration (FWHM)             [s]   2.1978133333333330E-014
+   waist radius (1/e2)               [m]   1.4400000000000000E-006
+  
+   parameters for electron beam
+   ...
+
+The file ``orbt1q001.dat`` records the trajectories, energy etc. of the particle. For a single electron, there are 7 files recoding the same output. For example:
+
+.. code-block:: fortran
+
+   -0.466547E-13     0.279928E-04    -0.350081E-14    -0.196692E+03    -0.193187E-03     0.100511E+09     0.491296E-07     0.191798E-03     0.205673E-05
+   -0.466428E-13     0.279857E-04    -0.141161E-13    -0.196692E+03    -0.390705E-03     0.100511E+09     0.100948E-06     0.392282E-03     0.208935E-05
+   -0.466309E-13     0.279785E-04    -0.319586E-13    -0.196692E+03    -0.590080E-03     0.100511E+09     0.152945E-06     0.596550E-03     0.209571E-05
+   -0.466190E-13     0.279714E-04    -0.570502E-13    -0.196692E+03    -0.788800E-03     0.100511E+09     0.202518E-06     0.799480E-03     0.207561E-05
+   -0.466070E-13     0.279642E-04    -0.893211E-13    -0.196692E+03    -0.984349E-03     0.100511E+09     0.247101E-06     0.995990E-03     0.202914E-05
+   ...
+
+The values of each column from the left to right are: time [s], x [m], y [m], :math:`p_x` [normalized], :math:`p_y` [normalized], kinetic energy [eV], work [eV], radiation energy [eV], :math:`\chi_e` [dimensionless]. 
+
+The file ``phtne001.dat`` records the radiation output. For example:
+
+.. code-block:: fortran
+
+   8333.3333333333321        238.86944345907790        6.2633513616217478     
+   25000.000000000000        182.50447244093024        7.5507336932200397     
+   41666.666666666664        104.14244180601469        9.1380529004804760     
+   58333.333333333328        89.422617071344263        9.8579995567498120     
+   75000.000000000000        70.619159337234422        10.697476969356655     
+   91666.666666666657        63.363841302196569        11.199199843048401 
+   ... 
+
+The values in the column from the left to right are the energy [eV], photon number, photon number :math:`\times` energy.
+
+The file ``phtnTe001.dat`` records the radiation angular distribution. For example:
+
+.. code-block:: fortran
+
+   -0.3139E+01    -0.3139E+01     0.0000E+00
+   -0.3132E+01    -0.3139E+01     0.0000E+00
+   -0.3126E+01    -0.3139E+01     0.0000E+00
+   -0.3120E+01    -0.3139E+01     0.0000E+00
+
+The values in the column from the left to right are :math:`\theta_z` [rad], :math:`\theta_y` [rad], radiated energy [a.u].
+
+For an electron bunch, there are more than 7 outputs, depending on the number of MPI processes. Each output record a sample electron information. On the other hand, file such as ``AveEne(jobno).dat``, ``dist_fn(kstep)(jobno).dat``, ``dist_fn2d(kstep)(jobno).dat`` will be output. 
+
+The file ``AveENE`` record the time [s], average kinetic energy [eV], average radiation energy [eV], average + :math:`\sigma` [eV], average - :math:`\sigma` [eV], where :math:`\sigma` is the standard deviation of electron bunch energy. 
+
+The file ``dist_fn`` records energy [eV], electron number [a.u]. 
+
+The file ``dist_fn2d`` records :math:`p_y` [normalized], :math:`p_z` [normalized], electron number [a.u]. 
 
 The electron trajectories
 
