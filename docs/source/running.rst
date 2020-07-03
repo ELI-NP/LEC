@@ -75,7 +75,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 .. _examples:
 
 Example
--------
+=======
 
 Example of a single electron for ``Lorentz vs Sokolov``. The input parameters are in *examples/Data1(2)*
 
