@@ -72,6 +72,8 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 **OutRad** Specifying whether to calculate pair production. Currently support for Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated. The Z component of nucleus for specific converter is specify in ``module random_commom``. Integer .
 
+.. _examples:
+
 Example
 -------
 
@@ -93,25 +95,6 @@ Example of a single electron for ``Lorentz vs Sokolov``. The input parameters ar
    &PARAM4  xinit=5.d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0 ,&END
    &PARAM5  iconR=1,QED=0,ipl=0,shape=0,load=0,OutRad=1,OutPairs=0 	    ,&END
 
-Multiple run can be performed by executing 
-
-.. code-block:: csh
-
-   ./LEC_multirun.jcf
-
-The number ``i`` in this file is set according to the numbering of the folder.
-
-.. code-block:: csh
-
-   #!/bin/csh 
-
-   set i = 1
-
-   while($i<3)
-       echo "Running simulation "$i
-       echo examples/Data$i | mpirun -np 1 ./bin/LEC
-       @ i++
-   end 
 
 The electron trajectories
 
