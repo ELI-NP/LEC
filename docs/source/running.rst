@@ -1,6 +1,8 @@
 Basic
 =====
 
+This section describes the details of the input parameters, output files, and examples.
+
 Input parameters
 ----------------
 
