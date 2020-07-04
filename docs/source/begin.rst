@@ -119,7 +119,7 @@ where ``Data`` is a folder (can be a folder path, e.g. /examples/Data1) contains
 
 In this case the number of threads is ``4``. 
 
-To run multiple simulations at one execution, the output files with each input are prepared. In :ref:`this examples <examples>` the output files are located in ``/examples/Data1`` and ``/examples/Data2``. The output directory can be change to your own/preferred directory followed by ``$i`` without space. For example:
+To run multiple simulations at one execution, the output files with each input are prepared. In :ref:`this examples <examples>` the output files are located in ``/examples/Data1`` and ``/examples/Data2``. The output directory can be changed to your own/preferred directory followed by ``$i`` without space. For example:
 
 .. code-block:: csh
 

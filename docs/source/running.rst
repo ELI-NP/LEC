@@ -34,7 +34,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 **alpha** Electron waist radius [meter]. Set to 0.0d-6 for a single electron. If set to a value larger than 0, electron energy distribution in 1D and 2D will be outputted.
 
-**enum** Electron number in a bunch. Used for radiation calculation.
+**enum** Electron number in a bunch. Used for radiation calculation. For single electron, ``enum=1.d0``
 
 **bin** Radiation spectrum bin size [eV].
 
@@ -46,7 +46,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 **rmass** The charge to mass ratio of the colliding particle. Setting to ``rmass=-1`` represents positron, ``rmass=-1836`` represents proton.
 
-**sigma_{x,y,z}** Electron momentum energy spreads in three directions.
+**sigma_{x,y,z}** Electron momentum energy spreads in three directions. This input is ignored for a single electron
 
 **iconR** Specifying the particle pusher used. Integer.
 
