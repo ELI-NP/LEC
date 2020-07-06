@@ -231,10 +231,13 @@ c
       deallocate(RE,RH)
 c
       if(OutRad.eq.1) then
-      	call angdis 
-	call radiation
+        if(iconR.eq.3) then
+          call photon_his
+        else
+          call angdis 
+          call radiation
+        end if
       end if
-c     if(OutRad.eq.1) call photon_his
 c
  333  format(A,I2.2,'_',I2.2,'.dat') 
  444  format(A,I3.3,'.dat')
