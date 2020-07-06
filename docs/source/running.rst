@@ -182,7 +182,10 @@ On the other hand, a quick visualisation can be performed by using `gnuplot <htt
 Examples
 --------
 
-In this example, we plot several outputs. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub.
+Single electron
+...............
+
+In this example, we plot several outputs of a single electron. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub.
 
 The electron trajectory 
 
