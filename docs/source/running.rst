@@ -1,10 +1,7 @@
-Basic
-=====
+Input parameters
+================
 
 This section describes the details of the input parameters, output files, and examples.
-
-Input parameters
-----------------
 
 The code was written in ``fortran90``. The input parameters are contained in the file ``input.dat`` in the folder ``Data``.
 
@@ -74,10 +71,9 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 **OutRad** Specifying whether to calculate pair production. Currently support for Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated. The Z component of nucleus for specific converter is specify in ``module random_commom``. Integer .
 
-.. _examples:
 
-Example
-=======
+Output files
+============
 
 Example of a single electron for ``Lorentz vs Sokolov``. The input parameters are in *examples/Data1(2)*
 
@@ -166,7 +162,29 @@ The file ``dist_fn`` records energy [eV], electron number [a.u].
 
 The file ``dist_fn2d`` records :math:`p_y` [normalized], :math:`p_z` [normalized], electron number [a.u]. 
 
-The electron trajectories
+Python
+------
+
+In this examples, the visualisation is performed by using Python in `Jupyter notebook <https://jupyter.org>`_. The python codes can be found in ``/examples/**.ipynb``. The extension ``.ipynb`` stand for Jupiter notebook. In the Jupyter notebook, there is a python function ``import figformat``. This function output/display figures with selected parameters. The figure width, **fig_width** is set to 3.4 inches, represents a single column width of a double column journal. The figure width can be override to any number by writing ``fig.set_size_inches(fig_width*2,fig_width/1.618)`` at each plot. The number ``1.618`` is the Golden ratio. Multiplying or dividing the **fig_width** by the Golden ratio for figure height ensure the nice appearance of a figure. Other parameters such as font size, plot line width, ticks width and etc. can be changed in the file ``figformat.py``.
+
+Gnuplot
+-------
+
+On the other hand, a quick visualisation can be performed by using `gnuplot <http://www.gnuplot.info>`_. For example:
+
+:: 
+
+   > plot “***.dat” using ($1):($4) with lines 
+   > replot “***.dat” using ($1):($4) with lines
+
+.. _examples:
+
+Examples
+--------
+
+In this example, we plot several outputs. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub.
+
+The electron trajectory 
 
 .. figure:: /figures/trajectories.png
 
@@ -186,8 +204,12 @@ The radiation angular distribution
 
 .. figure:: /figures/angular_dist.png
 
-Landau-Liftshitz 
+Landau-Liftshitz
 ================
+
+Details numerical implementation can be obtained in Ref. :cite:`mypop`.
+
+*to do*
 
 .. math::
 
@@ -200,6 +222,8 @@ Sokolov
 .. math::
 
    \frac{ dp^{\mu}}{d\tau}=\frac{e}{mc}F^{\mu\nu}v_{\nu}-\frac{I_{QED}}{mc^2}p^{\mu}+\tau_{0}\frac{e^{2}}{(mc)^{2}}\frac{I_{QED}}{I_{E}}F^{\mu\nu}F_{\nu\alpha}p^{\alpha}
+
+*to do*
 
 Stochastic
 ==========
