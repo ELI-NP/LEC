@@ -6,8 +6,10 @@ Particle code for laser-electron collision
 ## Overview
 - This package contain particle code for simulating laser-electron collision
 - Free software: BSD license
-- [Documentation](https://lec.readthedocs.io/en/latest/)
+- Details of the code are described [here](https://lec.readthedocs.io/en/latest/)
+
 ## Features
+This code includes the following features:
 - Radiation Reaction (RR)
   - Landau-Liftshitz (LL)
   - Sokolov (SKL)
@@ -25,7 +27,8 @@ Particle code for laser-electron collision
 - Spatial and temporal Gaussian shape laser pulse (Linear & Circular polarisation)
 - Load electron beam energy distribution from experimental data
 ## QuickStart
-#### Requirements:
+To begin, the following dependencies are required:
+#### Dependencies:
 - fortran compiler (e.g. gfortran)
 - Massage Passing Interface, MPI (e.g. OpenMPI)
 - OpenMP 
