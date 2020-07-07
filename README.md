@@ -6,7 +6,7 @@ Particle code for laser-electron collision
 ## Overview
 - This package contain particle code for simulating laser-electron collision
 - Free software: BSD license
-- Details of the code are described [here](https://lec.readthedocs.io/en/latest/)
+- [Documentation](https://lec.readthedocs.io/en/latest/)
 
 ## Features
 This code includes the following features:

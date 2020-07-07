@@ -1,9 +1,7 @@
 Input parameters
 ================
 
-This section describes the details of the input parameters, output files, and examples.
-
-The code was written in ``fortran90``. The input parameters are contained in the file ``input.dat`` in the folder ``Data``.
+This section describes the details of the input parameters, output files, and examples. The code was written in ``fortran90``. The input parameters are contained in the file ``input.dat`` in the folder ``Data``.
 
 .. code-block:: fortran
 
@@ -54,7 +52,9 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 **QED** Specifying whether to use QED for Sokolov and Reduced Landau-Liftshitz. ``QED=1`` is mandatory for Stochastic process.
 
-**ipl** Specifying laser polarisation. ``ipl=0`` for linear polarisation and ``ipl=1`` for circular polarisation.
+**ipl** Specifying laser polarisation. 
+   * ``ipl=0`` linear polarisation (LP)
+   * ``ipl=1`` circular polarisation (CP).
 
 **shape** Laser spatial and temporal profile. Laser profile can be modified in *laser.f*. Integer.
 
@@ -69,7 +69,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 **OutRad** Specifying whether to calculate radiation. When setting ``OutRad=1``, emission spectrum, photon number distribution, radiation angular distribution will be calculated. This part consumes most of the simulation time. Integer.
 
-**OutRad** Specifying whether to calculate pair production. Currently support for Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated. The Z component of nucleus for specific converter is specify in ``module random_commom``. Integer .
+**OutPairs** Specifying whether to calculate pair production. The code currently support the Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated if ``OutPairs=1``. The Z component of nucleus for the specific converter is specify in ``module random_commom``. Integer.
 
 
 Output files

@@ -63,17 +63,13 @@ The initial program format was FORTRAN77 (CONTINUE, GO TO etc.) with fortran90 f
 QuickStart
 ==========
 
-Download the code with git command:
+This code was written on unix based operating system such as macOS and Linux. Installation and execution are performed by using command line. Download the code with git command:
 
 ::
 
    git clone https://github.com/StevE-Ong/LEC.git
 
-or use the Download Zip button.
-
-This code was written on unix based operating system such as macOS and Linux. Installation and execution are performed by using command line. In the command line, change to the code directory. 
-
-Install via csh script:
+or use the Download Zip button. In the command line, change to the code directory and compile the code by:
 
 .. code-block:: csh
 
@@ -104,7 +100,7 @@ This script run the following command:
 
 The compiler option ``-fopenmp`` is required for programs with OpenMP functions. The option ``-fbounds- check`` is used to detect segmentation errors. This option may be excluded except for debug run. The option ``-O3`` specifies the third level of optimisation. The option ``-o`` specify the name of the executable file. Other compliler options are listed `here <https://gcc.gnu.org/onlinedocs/gcc/Option-Index.html#Option-Index_op_letter-M>`_. If compilation is completed successfully, an executable file ``LEC`` is generated and located in ``/bin``. The file ``cmp.lst`` is the compilation log file. Any code error for an unsuccessful compilation will be written here.  
 
-Running simulation
+To run the simulation:
 
 .. code-block:: csh
 
@@ -132,13 +128,13 @@ To run multiple simulations at one execution, the output files with each input a
        @ i++
    end 
 
-Then run the simulation.
+Then run the simulation:
 
 .. code-block:: csh
 
    ./LEC_multirun.jcf
 
-The following output will be displayed in the command line. In this case, 1 MPI process is used with 64 threads. Radiation emission is calculated. The calculation will terminate with final runtime specified. If there are more than one simulation, the run will continue with similar output.
+The following output will be displayed in the command line. In this case, 1 MPI process is used with 64 threads. Radiation emission is calculated. The calculation will terminate with final runtime indicated. If there are more than one simulation, the run will continue with similar output.
 
 ::
 
