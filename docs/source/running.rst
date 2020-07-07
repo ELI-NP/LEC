@@ -53,6 +53,7 @@ This section describes the details of the input parameters, output files, and ex
 **QED** Specifying whether to use QED for Sokolov and Reduced Landau-Liftshitz. ``QED=1`` is mandatory for Stochastic process.
 
 **ipl** Specifying laser polarisation. 
+
    * ``ipl=0`` linear polarisation (LP)
    * ``ipl=1`` circular polarisation (CP).
 
