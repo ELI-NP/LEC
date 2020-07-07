@@ -98,7 +98,15 @@ This script run the following command:
    echo " ------------    End of  Compile   --------------   "
    #
 
-The compiler option ``-fopenmp`` is required for programs with OpenMP functions. The option ``-fbounds- check`` is used to detect segmentation errors. This option may be excluded except for debug run. The option ``-O3`` specifies the third level of optimisation. The option ``-o`` specify the name of the executable file. Other compliler options are listed `here <https://gcc.gnu.org/onlinedocs/gcc/Option-Index.html#Option-Index_op_letter-M>`_. If compilation is completed successfully, an executable file ``LEC`` is generated and located in ``/bin``. The file ``cmp.lst`` is the compilation log file. Any code error for an unsuccessful compilation will be written here.  
+The compiler option ``-fopenmp`` is required for programs with OpenMP functions. The option ``-fbounds- check`` is used to detect segmentation errors. This option may be excluded except for debug run. The option ``-O3`` specifies the third level of optimisation. The option ``-o`` specify the name of the executable file. Other compliler options are listed `here <https://gcc.gnu.org/onlinedocs/gcc/Option-Index.html#Option-Index_op_letter-M>`_. If compilation is completed successfully, an executable file ``LEC`` is generated and located in ``/bin``. The file ``cmp.lst`` is the compilation log file. Any code error for an unsuccessful compilation will be written here. Example of ``cmp.lst`` file:  
+
+.. code-block:: fortran
+
+   /home/ong/LEC/src/LEC.f:648:9:
+
+          end
+            1
+   Error: Expecting END SUBROUTINE statement at (1)
 
 To run the simulation:
 
