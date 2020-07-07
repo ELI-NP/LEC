@@ -23,14 +23,19 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
+extensions = ['sphinx.ext.mathjax',
+              'sphinx.ext.napoleon',
+              'breathe',
+              'sphinxcontrib.programoutput',
+              'matplotlib.sphinxext.plot_directive']
+
+# napoleon autodoc config
+napoleon_include_init_with_doc = True
+#autoclass_content="init"
+autodoc_mock_imports = [
+    'ipywidgets',
+    'ipympl',
 ]
-autoclass_content="init"
     
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -74,9 +79,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -130,38 +132,6 @@ latex_documents = [
      u'Ong Jian Fuh', 'manual'),
 ]
 
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#
-# latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#
-# latex_use_parts = False
-
-# If true, show page references after internal links.
-#
-# latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-#
-# latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-#
-# latex_appendices = []
-
-# It false, will not define \strong, \code, 	itleref, \crossref ... but only
-# \sphinxstrong, ..., \sphinxtitleref, ... To help avoid clash with user added
-# packages.
-#
-# latex_keep_old_macro_names = True
-
-# If false, no module index is generated.
-#
-# latex_domain_indices = True
-
 
 # -- Options for manual page output ---------------------------------------
 
@@ -187,19 +157,3 @@ texinfo_documents = [
      author, 'LEC', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-# Documents to append as an appendix to all manuals.
-#
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-#
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-#
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-#
-# texinfo_no_detailmenu = False
