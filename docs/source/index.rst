@@ -9,19 +9,20 @@ Welcome to LEC's documentation!
 Welcome to the LEC guide. This is the documentation for LEC code, a particle code for laser-electron collision. 
 
 .. toctree::
-   :maxdepth: 2
    :caption: Introduction
+   :maxdepth: 1
+   :hidden:
 
    begin
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Usage
 
    running
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Developers
 
    developers
