@@ -234,7 +234,7 @@ c
         if(iconR.eq.3) then
           call photon_his
         else
-c          call angdis 
+          call angdis 
           call radiation
         end if
       end if
