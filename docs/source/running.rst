@@ -207,6 +207,11 @@ The radiation angular distribution
 
 .. figure:: /figures/angular_dist.png
 
+Electron bunch
+--------------
+
+*to do*
+
 
 Models
 ======
