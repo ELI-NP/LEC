@@ -1034,7 +1034,7 @@ c
       if(myrank.eq.0) write(*,*) "Calculating angular distribution..."
 	
 !$omp workshare
-      Lall = 1000000/icpu + 1
+      Lall = int(ksmax/icpu) 
       emit2= 0.d0
 !$omp end workshare
 c
@@ -1042,8 +1042,8 @@ c
 !$omp&  ,Um,TmY,TmZ,ii,jj)
 !$omp&shared(phtn,PKsout,wight,emit2)
       do LP=1,icpu
-         IPTSS = (LP-1)*Lall+1
-         IPTFF = min(LP*Lall,1000000)
+         IPTSS =    (LP-1)*Lall+1
+         IPTFF =     LP   *Lall
       do j=IPTSS,IPTFF
       do L=1,itotal
          Xi  = phtn(1,j,L)        ! quantum parameter
