@@ -55,3 +55,24 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# -- Options for PDF output-------------------------
+
+latex_elements = {
+     # The paper size ('letterpaper' or 'a4paper').
+     #
+       'papersize': 'a4paper',
+
+     # The font size ('10pt', '11pt' or '12pt').
+     #
+       'pointsize': '12pt',
+
+     # Additional stuff for the LaTeX preamble.
+     #
+     # 'preamble': '',
+
+     # Latex figure (float) alignment
+     #
+       'figure_align': 'htbp',
+    'extraclassoptions': 'openany',
+}
