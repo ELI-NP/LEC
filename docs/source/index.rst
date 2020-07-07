@@ -16,14 +16,16 @@ Welcome to the LEC guide. This is the documentation for LEC code, a particle cod
    begin
 
 .. toctree::
-   :maxdepth: 1
    :caption: Usage
+   :maxdepth: 1
+   :hidden:
 
    running
 
 .. toctree::
-   :maxdepth: 1
    :caption: Developers
+   :maxdepth: 1
+   :hidden:
 
    developers
 
