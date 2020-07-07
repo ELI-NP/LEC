@@ -540,11 +540,6 @@ c
            wight(i)= wight0(i+jj)
         end do
 	Re = Rh
-c
-      	if(OutRad.eq.1) then
-          allocate(phtn(6,ksmax,itotal))
-          phtn = 0.d0
-	end if
 c	
 	call histogram
  	call histogram2d
@@ -593,7 +588,10 @@ c
       use omp_lib
       implicit none
       real(kind=8)    :: TTY,TTZ
-	if(mod(kstep,ksoutP).eq.0) then 
+
+      if(kstep.eq.0) allocate(phtn(6,ksmax,itotal))
+ 
+      if(mod(kstep,ksoutP).eq.0) then 
         j=kstep/ksoutP
         if(j.le.1000000) then 
           do i=1,itotal
