@@ -24,7 +24,7 @@ author = 'Ong Jian Fuh'
 # The short X.Y version.
 version = u'0.0.1'
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = u'0.0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -56,23 +56,24 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# -- Options for PDF output-------------------------
+# -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-     # The paper size ('letterpaper' or 'a4paper').
-     #
-     'papersize': 'a4paper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    # 'papersize': 'letterpaper',
+    'papersize': 'a4paper',
 
-     # The font size ('10pt', '11pt' or '12pt').
-     #
-     'pointsize': '12pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #
+    # 'pointsize': '10pt',
 
-     # Additional stuff for the LaTeX preamble.
-     #
-     # 'preamble': '',
-     'preamble': r'\setcounter{tocdepth}{2}',
-     # Latex figure (float) alignment
-     #
-     'figure_align': 'htbp',
-     'extraclassoptions': 'openany',
+    # Additional stuff for the LaTeX preamble.
+    #
+    # 'preamble': '',
+    'preamble': r'\setcounter{tocdepth}{2}',
+
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
 }
