@@ -647,7 +647,7 @@ c
       return
       end
 !--------------------------------------
-     subroutine avgene
+      subroutine avgene
 !--------------------------------------
       use random_common
       use sim_common

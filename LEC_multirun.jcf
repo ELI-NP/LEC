@@ -1,10 +1,10 @@
 #!/bin/csh 
 
-set i = 1
+set i = 3
 
-while($i<3)
+while($i<6)
     echo "Running simulation "$i
-    echo examples/Data$i | mpirun -np 1 ./bin/LEC
+    echo examples/Data$i | mpirun -np 32 ./bin/LEC
     @ i++
 end 
 
