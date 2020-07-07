@@ -1,5 +1,5 @@
 Overview
-========
+########
 
 This simulation was developed to simulate the laser-electron bunch collision and written in Fortran. The electrons are described by weighted computational particles and their motion are governed by Lorentz force equation. The laser energy is assumed to be constant, which is true unless the electron charge is in the order of nanoCoulomb. Therefore, Maxwell's equations are not solved and the laser fields are treated as functions in space and time. The particle and laser have three-dimensional components, i.e., :math:`x, y, z, v_{x,y,z}, E,B_{x,y,z}`. Additional :ref:`features <features>` for laser and electron are available. The simulation setup is depicted as follow:
 
@@ -12,7 +12,7 @@ This simulation was developed to simulate the laser-electron bunch collision and
 .. _features:
 
 Features
-========
+########
 
 * Radiation Reaction (RR)
 
@@ -46,7 +46,7 @@ Features
 
 
 Dependencies
-============
+############
 
 The initial program format was FORTRAN77 (CONTINUE, GO TO etc.) with fortran90 features (modules, allocatable array etc.). Standard functions of Massage Passing Interface (MPI) and OpenMP are used. To install the code, the following dependencies are needed in your PC as well as cluster. Please refer to the links below for the installation of these dependencies.
 
@@ -61,7 +61,7 @@ The initial program format was FORTRAN77 (CONTINUE, GO TO etc.) with fortran90 f
    * OpenMP is shipped along with GCC 4.2 and above.
 
 QuickStart
-==========
+##########
 
 Download the code with git command:
 

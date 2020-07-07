@@ -13,15 +13,15 @@ The code was written in ``fortran90``. The input parameters are contained in the
    &PARAM4  xinit=1.1d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0 ,&END
    &PARAM5  iconR=2,QED=1,ipl=0,shape=0,load=0,OutRad=0,OutPairs=0 	     ,&END
 
-**jobno**  The job numbering. Integer.
+**jobno**    The job numbering. Integer.
 
-**ksmax**  Maximum number of time step. Integer.
+**ksmax**    Maximum number of time step. Integer.
 
-**div, div2** The number of division/cells per Lamor radius.
+**div,div2** The number of division or cells per Lamor radius.
 
-**SL** Laser intensity [:math:`\mathrm{W~cm^{-2}}`].
+**SL**       Laser intensity [:math:`\mathrm{W~cm^{-2}}`].
 
-**Ev** Electron energy [eV].
+**Ev**       Electron energy [eV].
 
 **pw** Laser wavelength [meter].
 
@@ -210,7 +210,7 @@ The radiation angular distribution
 Electron bunch
 --------------
 
-*to do*
+.. todo:: To do
 
 
 Models

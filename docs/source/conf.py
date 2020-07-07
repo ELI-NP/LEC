@@ -87,7 +87,11 @@ exclude_patterns = []
 # keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
+extensions.append('sphinx.ext.todo')
+todo_include_todos=True
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'default'
 
 # -- Options for HTML output -------------------------------------------------
 
