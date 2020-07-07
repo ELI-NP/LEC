@@ -12,7 +12,7 @@ This simulation was developed to simulate the laser-electron bunch collision and
 .. _features:
 
 Features
---------
+========
 
 * Radiation Reaction (RR)
 
@@ -46,7 +46,7 @@ Features
 
 
 Dependencies
-------------
+============
 
 The initial program format was FORTRAN77 (CONTINUE, GO TO etc.) with fortran90 features (modules, allocatable array etc.). Standard functions of Massage Passing Interface (MPI) and OpenMP are used. To install the code, the following dependencies are needed in your PC as well as cluster. Please refer to the links below for the installation of these dependencies.
 
@@ -61,7 +61,7 @@ The initial program format was FORTRAN77 (CONTINUE, GO TO etc.) with fortran90 f
    * OpenMP is shipped along with GCC 4.2 and above.
 
 QuickStart
-----------
+==========
 
 Download the code with git command:
 
@@ -181,7 +181,3 @@ The following output will be displayed in the command line. In this case, 1 MPI 
    Output directory:examples/Data2/ 
    .
    .
-
- 
-
-
