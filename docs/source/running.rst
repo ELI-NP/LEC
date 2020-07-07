@@ -216,12 +216,12 @@ Electron bunch
 Models
 ======
 
+.. todo:: To do
+
+   Details numerical implementation can be obtained in Ref. :cite:`mypop`.
+
 Landau-Liftshitz
 ----------------
-
-Details numerical implementation can be obtained in Ref. :cite:`mypop`.
-
-*to do*
 
 .. math::
 
@@ -235,17 +235,15 @@ Sokolov
 
    \frac{ dp^{\mu}}{d\tau}=\frac{e}{mc}F^{\mu\nu}v_{\nu}-\frac{I_{QED}}{mc^2}p^{\mu}+\tau_{0}\frac{e^{2}}{(mc)^{2}}\frac{I_{QED}}{I_{E}}F^{\mu\nu}F_{\nu\alpha}p^{\alpha}
 
-*to do*
-
 Stochastic
 ----------
 
-*to do*
+
 
 Quantum
 -------
 
-*to do*
+
 
 Emission cross-section
 ----------------------

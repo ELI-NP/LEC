@@ -91,7 +91,9 @@ extensions.append('sphinx.ext.todo')
 todo_include_todos=True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'default'
+pygments_style = 'sphinx'
+
+exclude_patterns = ['_build']
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -100,6 +102,7 @@ pygments_style = 'default'
 #
 import sphinx_rtd_theme
 html_theme = 'sphinx_rtd_theme'
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
