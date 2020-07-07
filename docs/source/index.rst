@@ -4,16 +4,24 @@
    contain the root `toctree` directive.
 
 Welcome to LEC's documentation!
-===============================
+-------------------------------
 
 Welcome to the LEC guide. This is the documentation for LEC code, a particle code for laser-electron collision. 
 
+************
+Installation
+************
+
 .. toctree::
-   :caption: Introduction
+   :caption: Installation
    :maxdepth: 1
    :hidden:
 
    begin
+
+*****
+Usage
+*****
 
 .. toctree::
    :caption: Usage
@@ -21,6 +29,10 @@ Welcome to the LEC guide. This is the documentation for LEC code, a particle cod
    :hidden:
 
    running
+
+***********
+Developers
+***********
 
 .. toctree::
    :caption: Developers

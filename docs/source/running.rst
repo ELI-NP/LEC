@@ -1,5 +1,5 @@
 Input parameters
-----------------
+================
 
 This section describes the details of the input parameters, output files, and examples.
 
@@ -73,7 +73,7 @@ The code was written in ``fortran90``. The input parameters are contained in the
 
 
 Output files
-------------
+============
 
 Example of a single electron for ``Lorentz vs Sokolov``. The input parameters are in *examples/Data1(2)*
 
@@ -180,10 +180,10 @@ On the other hand, a quick visualisation can be performed by using `gnuplot <htt
 .. _examples:
 
 Examples
---------
+========
 
 Single electron
-...............
+---------------
 
 In this example, we plot several outputs of a single electron. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub.
 
@@ -209,10 +209,10 @@ The radiation angular distribution
 
 
 Models
-------
+======
 
 Landau-Liftshitz
-................
+----------------
 
 Details numerical implementation can be obtained in Ref. :cite:`mypop`.
 
@@ -224,7 +224,7 @@ Details numerical implementation can be obtained in Ref. :cite:`mypop`.
    \frac{e^{2}}{m^{2}c^{2}}(F^{\alpha\nu}v_{\nu})(F_{\alpha\lambda}v^{\lambda})v^{\mu}\right)
 
 Sokolov
-.......
+-------
 
 .. math::
 
@@ -233,17 +233,17 @@ Sokolov
 *to do*
 
 Stochastic
-..........
+----------
 
 *to do*
 
 Quantum
-.......
+-------
 
 *to do*
 
 Emission cross-section
-......................
+----------------------
 
 .. math::
 
