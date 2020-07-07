@@ -61,18 +61,18 @@ html_static_path = ['_static']
 latex_elements = {
      # The paper size ('letterpaper' or 'a4paper').
      #
-       'papersize': 'a4paper',
+     'papersize': 'a4paper',
 
      # The font size ('10pt', '11pt' or '12pt').
      #
-       'pointsize': '12pt',
+     'pointsize': '12pt',
 
      # Additional stuff for the LaTeX preamble.
      #
      # 'preamble': '',
-
+     'preamble': r'\setcounter{tocdepth}{2}',
      # Latex figure (float) alignment
      #
-       'figure_align': 'htbp',
-    'extraclassoptions': 'openany',
+     'figure_align': 'htbp',
+     'extraclassoptions': 'openany',
 }
