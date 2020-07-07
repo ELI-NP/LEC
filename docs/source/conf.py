@@ -14,12 +14,45 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+# -- General configuration ------------------------------------------------
+
+# If your documentation needs a minimal Sphinx version, state it here.
+#
+# needs_sphinx = '1.0'
+
+# Add any Sphinx extension module names here, as strings. They can be
+# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
+# ones.
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
+]
+autoclass_content="init"
+    
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
+# The suffix(es) of source filenames.
+# You can specify multiple suffix as a list of string:
+#
+# source_suffix = ['.rst', '.md']
+source_suffix = '.rst'
+
+# The encoding of source files.
+#
+# source_encoding = 'utf-8-sig'
+
+# The master toctree document.
+master_doc = 'index'
 
 # -- Project information -----------------------------------------------------
 
-project = 'LEC'
-copyright = '2020, Ong Jian Fuh'
-author = 'Ong Jian Fuh'
+project = u'LEC'
+copyright = u'2020, Ong Jian Fuh'
+author = u'Ong Jian Fuh'
 
 # The short X.Y version.
 version = u'0.0.1'
@@ -42,6 +75,17 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'sphinx'
+
+# A list of ignored prefixes for module index sorting.
+# modindex_common_prefix = []
+
+# If true, keep warnings as "system message" paragraphs in the built documents.
+# keep_warnings = False
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = False
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -77,3 +121,85 @@ latex_elements = {
     #
     # 'figure_align': 'htbp',
 }
+
+# Grouping the document tree into LaTeX files. List of tuples
+# (source start file, target name, title,
+#  author, documentclass [howto, manual, or own class]).
+latex_documents = [
+    (master_doc, 'lec.tex', u'lec Documentation',
+     u'Ong Jian Fuh', 'manual'),
+]
+
+# The name of an image file (relative to this directory) to place at the top of
+# the title page.
+#
+# latex_logo = None
+
+# For "manual" documents, if this is true, then toplevel headings are parts,
+# not chapters.
+#
+# latex_use_parts = False
+
+# If true, show page references after internal links.
+#
+# latex_show_pagerefs = False
+
+# If true, show URL addresses after external links.
+#
+# latex_show_urls = False
+
+# Documents to append as an appendix to all manuals.
+#
+# latex_appendices = []
+
+# It false, will not define \strong, \code, 	itleref, \crossref ... but only
+# \sphinxstrong, ..., \sphinxtitleref, ... To help avoid clash with user added
+# packages.
+#
+# latex_keep_old_macro_names = True
+
+# If false, no module index is generated.
+#
+# latex_domain_indices = True
+
+
+# -- Options for manual page output ---------------------------------------
+
+# One entry per manual page. List of tuples
+# (source start file, name, description, authors, manual section).
+man_pages = [
+    (master_doc, 'lec', u'lec Documentation',
+     [author], 1)
+]
+
+# If true, show URL addresses after external links.
+#
+# man_show_urls = False
+
+
+# -- Options for Texinfo output -------------------------------------------
+
+# Grouping the document tree into Texinfo files. List of tuples
+# (source start file, target name, title, author,
+#  dir menu entry, description, category)
+texinfo_documents = [
+    (master_doc, 'lec', u'lec Documentation',
+     author, 'lec', 'One line description of project.',
+     'Miscellaneous'),
+]
+
+# Documents to append as an appendix to all manuals.
+#
+# texinfo_appendices = []
+
+# If false, no module index is generated.
+#
+# texinfo_domain_indices = True
+
+# How to display URL addresses: 'footnote', 'no', or 'inline'.
+#
+# texinfo_show_urls = 'footnote'
+
+# If true, do not generate a @detailmenu in the "Top" node's menu.
+#
+# texinfo_no_detailmenu = False
