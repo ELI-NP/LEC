@@ -1753,10 +1753,10 @@ c
          IPTFF =     LP   *Lall
       do j=IPTSS,IPTFF           ! timestep loop			
       do L=1,itotal              ! particle loop        
-         ENE = phtn(4,j,L)*Pksout
+         ENE = phtn(4,j,L)*Pksout*wight(L)
          i = max(idnint(ENE*enediv*enegrid),1)
 	   i = min(enegrid,i)
-         his(i) = his(i) + wight(L)
+         his(i) = his(i) + 1
 	end do
 	end do
 	end do
@@ -1772,7 +1772,7 @@ c
 c
 	call mpi_allreduce(ff,ffsum,1,mpi_real8
      &                                 ,mpi_sum,mpi_comm_world,ierr)
-      const = pin/(Em/enegrid)
+      const = pin/(Em/enegrid)*enum
 	if(myrank.eq.0) then
 	  write(*,*) const
         write(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
