@@ -5,13 +5,14 @@
       real(kind=8),parameter :: Zcm3=   4.3d0   ! zcm3 = zcom**(1/3)
 c     real(kind=8),parameter :: Zcom=   13.d0  ! Z component for nucl
 c     real(kind=8),parameter :: Zcm3=   2.35d0 ! zcm3 = zcom**(1/3)
-      integer,parameter      :: LPx =200   
+      integer,parameter      :: LPx =200
       real(kind=8),parameter :: BPx =200.d0
       real(kind=8),parameter :: Emax=10000.d0
 c
       real(kind=8) :: dp1
       real(kind=8),save,dimension(LE0,LPx) :: resultL
       real(kind=8),save,dimension(    LPx) :: totalH,totalH2
+      integer,PARAMETER :: ang = 1024
       end module random_common
 c
       module sim_common
@@ -19,7 +20,7 @@ c
       integer      :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl
      &               ,itotal,ksoutP,iconR,SKL,LL,polar,shape
      &               ,photon,species,shot,itotal0,L,OutRad,OutPairs
-     &		     ,QED,sampled,sampled2,sampled3,sampled4,load		   
+     &		           ,QED,sampled,sampled2,sampled3,sampled4,load
       logical      :: emmits,exists,load_particle
       real(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       real(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
@@ -39,7 +40,6 @@ c
       real(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
       real(kind=8) :: PQM       ! charge/mass ; rmass=-1.d0 for electron
       real(kind=8),dimension(:,:), allocatable   :: RE,RH
-      real(kind=8),dimension(:,:), allocatable   :: phn,cphn
       real(kind=8) :: ERD,EKE,EKK,ERK
       real(kind=8),dimension(0:3000+1,200):: diffC,diffQ,diffD,diffR
       real(kind=8),dimension(200) :: totalR,totalC,totalP,totalRC
@@ -61,23 +61,27 @@ c
       CHARACTER(LEN=100):: fo_name2,cwd
       CHARACTER(LEN=10) :: filename = 'input.dat'
       CHARACTER(LEN=100):: data_dir,data_file,input_file
-      CHARACTER(LEN=*), PARAMETER :: data_dir_file = 
+      CHARACTER(LEN=*), PARAMETER :: data_dir_file =
      &					'USE_DATA_DIRECTORY'
       end module out_common
 
       module R_common
       integer      :: Lall,LP,IPTSS,IPTFF,jj
       integer,dimension(7) :: Ne7
-      real(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
-c      real(kind=8),dimension(:,:,:), allocatable:: phtn
-      real(kind=8),dimension(:  ), allocatable:: wmit3,vmit3
-      real(kind=8),dimension(:,:), allocatable:: emit3,fmit3,qmit3
-      real(kind=8),dimension(:  ), allocatable:: emitT3,fmitT3,qmitT3
-      real(kind=8),dimension(:  ), allocatable:: emitTT,fmitTT,qmitTT
       real(kind=8) :: wight00,const
       real(kind=8),dimension(:), allocatable :: wight0
-      real(kind=8),dimension(:), allocatable :: wight  
+      real(kind=8),dimension(:), allocatable :: wight
       real(kind=8) :: TmY,TmZ
+      real(kind=8),dimension(:), allocatable :: total
+      real(kind=8),dimension(:,:), allocatable :: diff1,diff2
+      real(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
+      real(kind=8), allocatable:: wmit3,vmit3
+			real(kind=8),dimension(:,:), allocatable:: phtn
+      real(kind=8),dimension(:), allocatable:: emit3,fmit3
+      real(kind=8),dimension(:  ), allocatable:: emitT3,fmitT3
+      real(kind=8),dimension(:  ), allocatable:: emitTT,fmitTT
+      real(kind=8),dimension(:,:), allocatable:: emit2,qmit3
+      real(kind=8),dimension(:,:), allocatable:: emitT2,emitTT2
       end module R_common
 c
       program main
@@ -102,7 +106,7 @@ c
       call MPI_COMM_RANK(MPI_COMM_WORLD,MYRANK,IERR)	!initialize MPI
 c
       tmove=0 ; tcurr=0 ; trdct=0
-      tmall=0 ; tinit=0 
+      tmall=0 ; tinit=0
 c
       PI  = 4.D0*DATAN( 1.D0 )
       PI2 = PI*2.D0
@@ -114,7 +118,7 @@ c
          IF (ierr == 0) THEN
       	    READ(41,'(A)') data_dir
             CLOSE(41)
-      	    PRINT*, 'Using data directory "' 
+      	    PRINT*, 'Using data directory "'
      &	          // TRIM(data_dir) // '"'
          ELSE
      	    PRINT*, 'Specify output directory'
@@ -126,31 +130,31 @@ c
       input_file = TRIM(ADJUSTL(data_dir))//'/'
      &	    // TRIM(ADJUSTL(filename))
 
-      data_file =  TRIM(ADJUSTL(data_dir))//'/' 
-c 
+      data_file =  TRIM(ADJUSTL(data_dir))//'/'
+c
       INQUIRE(file=input_file, exist=exists)
       IF (.NOT. exists .AND. myrank == 0) THEN
         PRINT *, '*** ERROR ***'
-        PRINT *, 'Input deck file "' // TRIM(input_file) 
+        PRINT *, 'Input deck file "' // TRIM(input_file)
      &            // '" does not exist.'
         PRINT *, 'Create the file and rerun the code.'
       END IF
 c
-      if(myrank==0) then 
+      if(myrank==0) then
          WRITE(*,*) 'Output directory:',data_file
       end if
 
       open ( 8,status="old",file=TRIM(input_file),form='formatted')	!read input data file
-      read ( 8,PARAM1) 
+      read ( 8,PARAM1)
 c
       jobno = jobno + myrank
       write(fo_name2,444) TRIM(ADJUSTL(data_file))//'output',jobno
       open ( 9,file=fo_name2,form='formatted')
 c
       write( 9,PARAM1)
-      read ( 8,PARAM2) ; write(9,PARAM2) 
+      read ( 8,PARAM2) ; write(9,PARAM2)
       read ( 8,PARAM3) ; write(9,PARAM3)
-      read ( 8,PARAM4) ; write(9,PARAM4) 
+      read ( 8,PARAM4) ; write(9,PARAM4)
       read ( 8,PARAM5) ; write(9,PARAM5)
       close( 8)
 c
@@ -159,7 +163,7 @@ c
       threads = omp_get_num_threads()
 !$omp end parallel
       write(9,*) "total number of threads=",threads
-c 
+c
       call setprm  						!parameter setup
       call welcome
 c
@@ -170,7 +174,7 @@ c
       open (10,file=fo_name2,form='formatted',status='REPLACE')
       write(fo_name2,444) TRIM(data_file)//'orbt2q',jobno
       open (11,file=fo_name2,form='formatted',status='REPLACE')
-      write(fo_name2,444) TRIM(data_file)//'orbt3q',jobno 
+      write(fo_name2,444) TRIM(data_file)//'orbt3q',jobno
       open (12,file=fo_name2,form='formatted',status='REPLACE')
       write(fo_name2,444) TRIM(data_file)//'orbt4q',jobno
       open (13,file=fo_name2,form='formatted',status='REPLACE')
@@ -183,38 +187,36 @@ c
       call system_clock(tinit )
       tinit = tinit-tinit0
 c
-c     orbit calculation 
+c     orbit calculation
 c
       T      = -wp*xinit
       RAD    = 0.d0
-      TT1    = 0.d0 
-      photon = 0
-      kstep  = 0 
+      TT1    = 0.d0
+      kstep  = 0
 c
-c     call random_seed()
-1000  CONTINUE              					! time loop
+1000  CONTINUE              									! time loop
 	KSTEP = KSTEP + 1
         T=T+dt
-	call system_clock(tmove0)        
-        if(iconR.eq.0) call Lorentz          
-        if(iconR.eq.1) call Sokolov            
-        if(iconR.eq.2) call Landau_Lifshitz            
+				call system_clock(tmove0)
+        if(iconR.eq.0) call Lorentz
+        if(iconR.eq.1) call Sokolov
+        if(iconR.eq.2) call Landau_Lifshitz
         if(iconR.eq.3) call qedemmit		      !particle loop
-        call outorbit2 				      !output extracted electron orbit
- 	call system_clock(tmove1)
+        call outorbit 				                !output extracted electron orbit
+ 				call system_clock(tmove1)
         tmove = tmove + (tmove1-tmove0)
 c
-        if(OutRad.eq.1)             call outorbit1 	!store orbit data for emission calculation    
-	if((mod(kstep,ksout).eq.0)
-     &     .and.(alpha.gt.0.d0)    ) call avgene	!calculate average energy
+        if(OutRad.eq.1)              call emission 	!calculate emission
+				if((mod(kstep,ksout).eq.0)
+     &     .and.(alpha.gt.0.d0)    ) call avgene	    !calculate average energy
 c
         if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram
 c
- 	if((mod(kstep,ksmax).eq.0)
+ 				if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram2d
 c
-	if((mod(kstep,1000).eq.0)
+				if((mod(kstep,1000).eq.0)
      &     .and.(myrank.eq.0))
      &	write(*,*) "Iteration =",kstep,"; Time step =",Rt*kstep
 c---------------------------------------------------------
@@ -229,23 +231,14 @@ c
 c
 2500  CONTINUE
       deallocate(RE,RH)
+			if(OutPairs.eq.1) call Bethe_Heitler
+   		if(OutRad.eq.1)   call deallocate_emission
+      deallocate(wight0,wight)
 c
-      if(OutRad.eq.1) then
-        if(iconR.eq.3) then
-          call photon_his
-        else
-          call angdis 
-          call radiation
-        end if
-      end if
-c
- 333  format(A,I2.2,'_',I2.2,'.dat') 
+ 333  format(A,I2.2,'_',I2.2,'.dat')
  444  format(A,I3.3,'.dat')
  555  format(A,I2.2,'_',I2.2,'_',I2.2,'.dat')
  666  format(11(E16.6,1X))
-c
-      if(OutRad.eq.1) deallocate(phtn)
-      deallocate(wight0,wight)
 c
 9999  continue
 c
@@ -260,8 +253,8 @@ c
      &				-trdct)/dble(t_rate)
       close(9)
       call MPI_FINALIZE(IERR)
-      if(myrank.eq.0) 
-     &   write(*,*) 
+      if(myrank.eq.0)
+     &   write(*,*)
      &   "Final runtime =",tmall/t_rate,"seconds"
 c
       STOP
@@ -291,7 +284,7 @@ c
       Rt2= Rt*div                  ! unit time             [s]
       dx = dble(1.d0/div)*Rd/Rd1   ! normalized grid size
       dt = 0.5d0*dx                ! normalized time step
-      Em = Ev/(0.511d6*rmass)      ! nomalized beam energy 
+      Em = Ev/(0.511d6*rmass)      ! nomalized beam energy
       Vx = dsqrt((Em+1.d0)**2-1.d0)! normalized 4-velocity (+x)
       Wx = Vx/(Em+1.d0)            ! normalized 3-velocity (+x)
       Vy = 0.d0                    ! normalized 4-velocity (+y)
@@ -304,7 +297,7 @@ c
       wpi= 1.d0/wp
       wsi= 1.d0/ws
       pin= bin/(0.511d6*rmass)     ! normalized bin size
-      rin= Em/6000.d0              ! reference bin size 
+      rin= Em/6000.d0              ! reference bin size
       wb = alpha/Rd*dx             ! normalized transverse beam size
       PQM =-1.d0/rmass
 c
@@ -336,10 +329,10 @@ c
       write(9,*) "parameters for electron beam"
       write(9,*) " "
       if(load.eq.1) then
-	load_particle=.TRUE.
-	write(9,*) "Load particles from: f_E_smoothed_new_final.txt"
+  	    load_particle=.TRUE.
+        write(9,*) "Load particles from: f_E_smoothed_new_final.txt"
       else
-	load_particle=.FALSE.
+	      load_particle=.FALSE.
       end if
       write(9,*) " "
       write(9,*) "parameters for electron beam"
@@ -347,9 +340,9 @@ c
       write(9,*) "initital momentum              [p/mc]",Vx
       write(9,*) "initital 3-velocity             [v/c]",Wx
       if(alpha.gt.1) then
-	write(9,*) "momentum spread x                 [%]",sigmax*100
-	write(9,*) "momentum spread y                 [%]",sigmay*100
-	write(9,*) "momentum spread z                 [%]",sigmaz*100
+   	    write(9,*) "momentum spread x                 [%]",sigmax*100
+	      write(9,*) "momentum spread y                 [%]",sigmay*100
+	      write(9,*) "momentum spread z                 [%]",sigmaz*100
       end if
       write(9,*) "number of shot                       ",shot
 c
@@ -367,8 +360,8 @@ c
       palf = 6.2d-24
       alf  = palf*dt/Rt
       alf2 = alf*137.d0*9.d0/4.d0
-      comp  = palf*137.d0*VL*3.d0*PI 
-      write(9,*) "coefficient for radiation         [s]",palf 
+      comp  = palf*137.d0*VL*3.d0*PI
+      write(9,*) "coefficient for radiation         [s]",palf
       write(9,*) "Compton wavelength                [m]",comp
       if(iconR.eq.0) then
         write(9,*) " "
@@ -376,7 +369,7 @@ c
         write(9,*) " "
       else if(iconR.eq.1) then
         write(9,*) " "
-        write(9,*) "Particle pusher: Sokolov"                                                          
+        write(9,*) "Particle pusher: Sokolov"
         write(9,*) " "
       else if(iconR.eq.2) then
         write(9,*) " "
@@ -386,9 +379,9 @@ c
         write(9,*) " "
         write(9,*) "Particle pusher: Lorentz"
         write(9,*) "        Use QED: Stochastic"
-	write(9,*) " "
+	      write(9,*) " "
       end if
-c	
+c
       if(QED.eq.0) then
         write(9,*) "Use QED: No, Classical"
         write(9,*) " "
@@ -405,8 +398,8 @@ c
       Pksout= dble(ksoutP)
 c setup for theoretical cross sections
 c
-      EmaxV= 1000.d0 
-      we0 =(log(EmaxV)-log(0.001d0))/199.0 !! 
+      EmaxV= 1000.d0
+      we0 =(log(EmaxV)-log(0.001d0))/199.0 !!
       we0i= 1.d0/we0
 c
 c radiation & pair production in strong-field
@@ -418,8 +411,8 @@ c     totalS : quantum   total cross section            ; dcem
 c     totalT : classical total cross section            ; ecem
 c     diffC ; classical differential cross section (x energy)
 c     diffQ ;   quantum differential cross section (x energy)
-c     diffD ; classical differential cross section 
-c     diffR ;   quantum differential cross section 
+c     diffD ; classical differential cross section
+c     diffR ;   quantum differential cross section
 c
       call getcwd(cwd)
       table_location = TRIM(cwd)//'/TABLE/'//TRIM(ADJUSTL(qed_file))
@@ -427,17 +420,17 @@ c
       INQUIRE(file=TRIM(table_location), exist=exists)
       IF (.NOT.exists) THEN
          WRITE(*,*) '*** ERROR ***'
-         WRITE(*,*) 'Unable to find QED tables in the ', 
+         WRITE(*,*) 'Unable to find QED tables in the ',
      &   'directory "' // TRIM(table_location) // '"'
       END IF
       END IF
-      
+
       open(96,file=table_location,form='unformatted')
       read(96) totalR,totalC,totalP,totalS,totalT
       read(96) diffC,diffQ,diffD,diffR
       close(96)
 
-      if(QED.eq.1) then 
+      if(QED.eq.1) then
         totalRC=totalR/totalC
       else
         totalRC=1.d0
@@ -456,50 +449,50 @@ c
       use out_common
       implicit none
       real(kind=8) :: aa
-c generate initial electron conditions for incident beam  
+c generate initial electron conditions for incident beam
 c---------------------------
       if(alpha.ne.0.d0) then
 c---------------------------
-        sampled = 19 ; sampled2 = sampled/2 
-	sampled3 = (sampled-1)**3
+        sampled = 19 ; sampled2 = sampled/2
+	      sampled3 = (sampled-1)**3
 
-	allocate(Re(11,sampled3))
+	      allocate(Re(11,sampled3))
         allocate(wight0(sampled3))
 
-	write(9,*) "transverse beam size   [m]",alpha
- 	write(9,*) "electron number per shot  ",enum
-	write(9,*) "incident angle    [degree]",inc_ang
+	      write(9,*) "transverse beam size   [m]",alpha
+ 	      write(9,*) "electron number per shot  ",enum
+	      write(9,*) "incident angle    [degree]",inc_ang
         inc_ang = inc_ang/180.d0*pi
 
-	write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
+	      write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
         open (10,file=fo_name2,form='formatted',status='unknown')
 
-	do k=1,sampled-1
+	      do k=1,sampled-1
         do j=1,sampled-1
         do i=1,sampled-1
            kk = (k-1)*(sampled-1)*(sampled-1)+(j-1)*(sampled-1)+i
-	   call random_number(rand)
-	   call random_number(rand1)
-	   phaseX  = (dble(k-sampled2))/(sampled2-1)*0.707d0
+	         call random_number(rand)
+	         call random_number(rand1)
+	         phaseX  = (dble(k-sampled2))/(sampled2-1)*0.707d0
            phaseY  = (dble(i-sampled2))/(sampled2-1)*0.707d0
            phaseZ  = (dble(j-sampled2))/(sampled2-1)*0.707d0
-           Re(1,kk)= wp*xinit + phaseX*wb                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+           Re(1,kk)= wp*xinit + phaseX*wb
            Re(2,kk)= phaseY*wb
            Re(3,kk)= phaseZ*wb
-	   write(10,666) Re(1,kk),Re(2,kk),Re(3,kk)
+	         write(10,666) Re(1,kk),Re(2,kk),Re(3,kk)
            wight0(kk)= dexp(-phaseX**2-phaseY**2-phaseZ**2)
 c
-	   if(load_particle) call manual_load
+	         if(load_particle) call manual_load
 c
-	   Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
-     &		  *Vx*dsqrt(-2.d0*log(rand))
-	   Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*rand1)
-     &		  *dsqrt(-2.d0*log(rand))
-	   Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
-     &		  *dsqrt(-2.d0*log(rand))
+	         Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
+     &		            *Vx*dsqrt(-2.d0*log(rand))
+	         Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*rand1)
+     &		            *dsqrt(-2.d0*log(rand))
+	         Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
+     &	          	  *dsqrt(-2.d0*log(rand))
         end do
-	end do
-	end do
+	      end do
+	      end do
         wight00=0.d0
         do i=1,sampled3
             wight00 = wight00 + wight0(i)
@@ -511,8 +504,8 @@ c
            Ye = Re(2,i)
            Vx0 = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
            Vy0 = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
-	   Re(1,i) = Vx0 
-	   Re(2,i) = Vy0
+	         Re(1,i) = Vx0
+	         Re(2,i) = Vy0
         end do
 c
         do i=1,sampled3
@@ -523,7 +516,7 @@ c
         end do
 
         itotal = int(sampled3/dble(nprocs))
-	allocate(Rh(11,itotal))
+	      allocate(Rh(11,itotal))
         allocate(wight(itotal))
         jj = myrank*itotal
         write(9,*) "myrank                            ",myrank
@@ -539,52 +532,44 @@ c
            Rh(6,i) = Re(6,i+jj)
            wight(i)= wight0(i+jj)
         end do
-	Re = Rh
+	      Re = Rh
 c
-      	if(OutRad.eq.1) then
-          allocate(phtn(6,ksmax,itotal))
-          phtn = 0.d0
-	end if
-c	
-	call histogram
- 	call histogram2d
+       	call histogram
+       	call histogram2d
 c----------
       else
 c----------
-	write(9,*) "single electron"
-	write(9,*) "electron number per shot = 1  "
+	      write(9,*) "single electron"
+	      write(9,*) "electron number per shot = 1  "
         allocate(Re(11,1),Rh(11,1))
-	allocate(wight0(1),wight(1))
-	itotal = 1
+	      allocate(wight0(1),wight(1))
+	      itotal = 1
         Xe = wp*xinit
-	Ye = 0.d0
-	Ze = 0.d0
-	inc_ang = inc_ang/180.d0*pi
+	      Ye = 0.d0
+      	Ze = 0.d0
+      	inc_ang = inc_ang/180.d0*pi
         Re(1,1)  = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
         Re(2,1)  = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
         Re(3,1)  = Ze
-	Re(4,1)  = Vx*(-1.d0)*dcos(inc_ang)
+      	Re(4,1)  = Vx*(-1.d0)*dcos(inc_ang)
         Re(5,1)  = Vx*(-1.d0)*dsin(inc_ang)
         Re(6,1)  = 0.d0
         wight(1) = 1.d0
-        if(OutRad.eq.1) then
-	  allocate(phtn(6,ksmax,1)) 
-	  phtn = 0.d0
-	end if
       end if
 c
       do i=1,7
          Ne7(i)=(itotal/8)*i+1
          write(9,*) "sampling electron number",i,Ne7(i)
       end do
-c     end incident beam generation 
+c
+			if(OutRad.eq.1) call allocate_emission
 c
 444   format(A,I4.4,'.dat')
 666   format(3(E14.4,1X))
       return
       end
 !--------------------------------------
-      subroutine outorbit1
+      subroutine emission
 !-------------------------------------
       use random_common
       use sim_common
@@ -593,36 +578,36 @@ c
       use omp_lib
       implicit none
       real(kind=8)    :: TTY,TTZ
-	if(mod(kstep,ksoutP).eq.0) then 
-        j=kstep/ksoutP
-        if(j.le.1000000) then 
-          do i=1,itotal
-             Vx =Re( 4,i)
-             Vy =Re( 5,i)
-             Vz =Re( 6,i)
+c
+      do i=1,itotal
+         Vx =Re( 4,i)
+         Vy =Re( 5,i)
+         Vz =Re( 6,i)
 	       ff =Re( 7,i)
-             TTT=Re( 9,i)
-             Xi =Re(10,i)
-             ENE=Re(11,i)
-             TTY = dsqrt(Vx**2+Vy**2)
-             TmY = acos(Vx*(-1.d0)/TTY)
-             if(Vy.lt.0.d0) TmY=(-1.d0)*TmY
- 		 TTZ = dsqrt(Vx**2+Vz**2)
-             TmZ = acos(Vx*(-1.d0)/TTZ)
-             if(Vz.lt.0.d0) TmZ=(-1.d0)*TmZ   ! direction angleZ
-             phtn(1,j,i)=Xi 
-             phtn(2,j,i)=ENE
-             phtn(3,j,i)=TmY 
-             phtn(4,j,i)=TTT
-             phtn(5,j,i)=ff
-    		 phtn(6,j,i)=TmZ
-          end do
-        end if
-	end if
+         TTT=Re( 9,i)
+         Xi =Re(10,i)
+         ENE=Re(11,i)
+         TTY = dsqrt(Vx**2+Vy**2)
+         TmY = acos(Vx*(-1.d0)/TTY)
+         if(Vy.lt.0.d0) TmY=(-1.d0)*TmY
+ 	       TTZ = dsqrt(Vx**2+Vz**2)
+         TmZ = acos(Vx*(-1.d0)/TTZ)
+         if(Vz.lt.0.d0) TmZ=(-1.d0)*TmZ   ! direction angleZ
+         phtn(1,i)=Xi
+         phtn(2,i)=ENE
+         phtn(3,i)=TmY
+         phtn(4,i)=TTT
+         phtn(5,i)=ff
+    		 phtn(6,i)=TmZ
+      end do
+c
+			if(iconR.ne.3) call radiation
+	   	if(iconR.eq.3) call photon_his
+c
       return
       end
 !--------------------------------------
-      subroutine outorbit2
+      subroutine outorbit
 !--------------------------------------
       use random_common
       use sim_common
@@ -638,7 +623,7 @@ c
          Vy=Re(5,k)
          Vz=Re(6,k)
          ENE=dsqrt(1.d0+Vx**2+Vy**2+Vz**2)
-         write(9+i,666) t*Rt2,Re(1,k)*Rx,Re(2,k)*Rx	!t, x, y 
+         write(9+i,666) t*Rt2,Re(1,k)*Rx,Re(2,k)*Rx	!t, x, y
      &             ,Re(4,k),Re(5,k),(ENE)*0.511d6	!px, py, K.E
      &	       ,abs(TTT)*0.511d6,RAD*0.511d6,Xi	!Wem,Wrad,chi_e
       end do
@@ -657,13 +642,13 @@ c
       use omp_lib
       implicit none
       real(kind=8) :: SIG_neg,SIG_pos
-     &		   ,SIGE_pos,SIGE_neg,sss
+     &		           ,SIGE_pos,SIGE_neg,sss
       integer      :: num_p,num_n,num_pp,num_nn
       integer,dimension(icpu)      :: num_pos, num_neg
-      real(kind=8),dimension(icpu) :: SE,SE_pos,SE_neg,SR
+      real(kind=8),dimension(icpu) :: SE,SE_pos,SE_neg
       include "mpif.h"
 
-      SE = 0.d0 ; SR = 0.d0
+      SE = 0.d0
       itotal0 = int(itotal/icpu+1)
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
@@ -672,10 +657,9 @@ c
             Vx  = Re(4,L)
             Vy  = Re(5,L)
             Vz  = Re(6,L)
- 		RRR = Re(9,L)
+ 	         	RRR = Re(9,L)
             GAMM = sqrt(1.d0+Vx*Vx+Vy*Vy+Vz*Vz)
             SE(LP)=SE(LP)+GAMM
-		SR(LP)=SR(LP)+RRR
          end do
       end do
 c
@@ -683,22 +667,17 @@ c
       RRR =0.d0
       do LP=1,icpu,4
          GAMM = GAMM + SE(LP)  + SE(LP+1)
-     &		   + SE(LP+2)+ SE(LP+3)
-	 RRR  = RRR  + SR(LP)  + SR(LP+1)
-     &		   + SR(LP+2)+ SR(LP+3)
+     &		      + SE(LP+2) + SE(LP+3)
       end do
 
       EKK=0.d0
-      ERK=0.d0
 c---------------------------------------------------------
       call mpi_allreduce(GAMM,EKK,1,MPI_REAL8,MPI_SUM
      &                                ,mpi_comm_world ,ierr)
-      call mpi_allreduce(RRR,ERK,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
 c
-      EKK = EKK /(itotal*nprocs) ; ERK = ERK /(itotal*nprocs)
-      SE_neg = 0.d0 ; SE_pos = 0.d0 
-      num_pos=0 ; num_neg=0 
+      EKK = EKK /(itotal*nprocs)
+      SE_neg = 0.d0 ; SE_pos = 0.d0
+      num_pos=0 ; num_neg=0
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
@@ -707,14 +686,14 @@ c
             Vy  = Re(5,L)
             Vz  = Re(6,L)
             GAMM = sqrt(1.d0+Vx*Vx+Vy*Vy+Vz*Vz)
-	      sss = GAMM-EKK
+	           sss = GAMM-EKK
             if(sss.lt.0.d0) then
-		  SE_neg(LP) = SE_neg(LP) + abs(sss)
+		          SE_neg(LP) = SE_neg(LP) + abs(sss)
               num_neg(LP) = num_neg(LP) + 1
-            else 
-      	  SE_pos(LP) = SE_pos(LP) + abs(sss)
-              num_pos(LP) = num_pos(LP) + 1 
-		end if
+            else
+      	      SE_pos(LP) = SE_pos(LP) + abs(sss)
+              num_pos(LP) = num_pos(LP) + 1
+	        	end if
          end do
       end do
 c
@@ -731,8 +710,8 @@ c
      &                   + num_neg(LP+2)+num_neg(LP+3)
       end do
 
-c     
-      SIGE_pos=0.d0 ; SIGE_neg=0.d0 
+c
+      SIGE_pos=0.d0 ; SIGE_neg=0.d0
       num_pp=0 ; num_nn=0
       call mpi_allreduce(SIG_pos,SIGE_pos,1,MPI_REAL8,MPI_SUM
      &                                ,mpi_comm_world ,ierr)
@@ -742,14 +721,14 @@ c
      &                                ,mpi_comm_world ,ierr)
       call mpi_allreduce(num_n,num_nn,1,MPI_INTEGER,MPI_SUM
      &                                ,mpi_comm_world ,ierr)
-c	
+c
       SIGE_pos=SIGE_pos/num_pp
       SIGE_neg=SIGE_neg/num_nn
 c
       if(myrank==0) then
         write(fo_name2,444) TRIM(data_file)//'AveEne',jobno
         open (20,file=fo_name2,form='formatted',status='unknown')
-        write(20,666) t*Rt2,EKK*0.511d6,ERK*0.511d6
+        write(20,666) t*Rt2,EKK*0.511d6
      &		 ,(EKK+SIGE_pos)*0.511d6
      &		 ,(EKK-SIGE_neg)*0.511d6
       end if
@@ -757,9 +736,57 @@ c
  666  format(11(E16.6,1X))
       return
       end
-!--------------------------------------
+!---------------------------------
+      subroutine allocate_emission
+!---------------------------------
+			use R_common
+			use sim_common
+			use random_common
+      implicit none
+c
+      allocate(  emit2(ang,ang))
+      allocate( emitT2(ang,ang))
+      allocate(emitTT2(ang,ang))
+      allocate(wmit3,vmit3)
+      allocate(emit3(6000)) ; allocate(fmit3(6000))
+      allocate(emitT3(6000)) ; allocate(fmitT3(6000))
+      allocate(emitTT(6000)) ; allocate(fmitTT(6000))
+      allocate(total(6000))
+      allocate(diff1(0:3000+1,200))
+      allocate(diff2(0:3000+1,200))
+			allocate(phtn(6,itotal))
+!$omp workshare
+			emit2 = 0.d0 ; emitT2= 0.d0
+      emit3 = 0.d0 ; fmit3 = 0.d0
+      wmit3 = 0.d0 ; vmit3 = 0.d0
+!$omp end workshare
+      if(QED.eq.1) then
+			  total=totalR
+			  diff1=diffR
+			  diff2=diffQ
+		  else if(QED.eq.0) then
+			  total=totalC
+			  diff1=diffD
+			  diff2=diffC
+		  end if
+      return
+      end
+!-----------------------------------
+      subroutine deallocate_emission
+!-----------------------------------
+			use R_common
+      implicit none
+      deallocate(wmit3 , vmit3)
+      deallocate(emit3 , fmit3)
+      deallocate(emitT3,fmitT3)
+      deallocate(emitTT,fmitTT)
+      deallocate(total,diff1,diff2)
+      deallocate(emit2,emitT2,emitTT2)
+      return
+      end
+!-------------------------
       subroutine radiation
-!--------------------------------------
+!-------------------------
       use random_common
       use sim_common
       use mpi_common
@@ -768,57 +795,29 @@ c
       use omp_lib
       implicit none
       include "mpif.h"
-      real(kind=8),dimension(:), allocatable :: total
-      real(kind=8),dimension(:,:), allocatable :: diff1,diff2
+c
       if(myrank.eq.0) write(*,*) "calculating radiation"
 c
 c distribute electron energy reduction onto emission energy spectum
-
-      allocate(wmit3(icpu),vmit3(icpu))
-      allocate(emit3(6000,icpu)) ; allocate(fmit3(6000,icpu))
-      allocate(emitT3(6000)  ) ; allocate(fmitT3(6000)  ) 
-      allocate(emitTT(6000)  ) ; allocate(fmitTT(6000)  )
-      allocate(total(6000)) 
-      allocate(diff1(0:3000+1,200))
-      allocate(diff2(0:3000+1,200))
-c
       call system_clock(tcurr0)
-      if(QED.eq.1) then
-	total=totalR
-        diff1=diffR
-	diff2=diffQ
-      else if(QED.eq.0) then
-	total=totalC
-        diff1=diffD
-	diff2=diffC
-      end if
 !$omp workshare
       ENEh = 1.0d0*Em
       ENEd = ENEh/6000.d0
-      Lall = int(ksmax/icpu) 
-      emit3= 0.d0
-      fmit3= 0.d0
-      wmit3= 0.d0
-      vmit3= 0.d0
 !$omp end workshare
 c
 c     diffC ; classical differential cross section (x energy)
 c     diffQ ;   quantum differential cross section (x energy)
-c     diffD ; classical differential cross section 
+c     diffD ; classical differential cross section
 c     diffR ;   quantum differential cross section
 !$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
 !$omp&  ,ENE,Um,hh,kk,ff,FF1,gg,k,ENE0,Xe,TTT,PXS)
 !$omp&shared(we0i,phtn,PKsout,total,wight
 !$omp&  ,emit3,fmit3,diffR,diffQ,wmit3,vmit3)
-      do LP=1,icpu                 ! parallelization loop
-         IPTSS =    (LP-1)*Lall+1
-         IPTFF =     LP   *Lall
-      do j=IPTSS,IPTFF           ! timestep loop			
       do L=1,itotal              ! particle loop
-         Xi = phtn(1,j,L)        ! quantum parameter
-         ENE= phtn(2,j,L)        ! energy
-         Um = phtn(4,j,L)*Pksout ! energy defference
-         hh = phtn(5,j,L)*Pksout ! energy defference
+         Xi = phtn(1,L)        ! quantum parameter
+         ENE= phtn(2,L)        ! energy
+         Um = phtn(4,L)*Pksout ! energy defference
+         hh = phtn(5,L)*Pksout ! energy defference
 c
          if(XI.gt.0.001) then
            kk = min(idnint(log(XI*1000.d0)*we0i+1.5d0),200)
@@ -827,7 +826,6 @@ c integration of total cross section
 c coefficient
            FF1= ENE/3000.d0
            gg = Um/ff*ENEd/FF1*wight(L)
-c
            do k=1,6000
               ENE0 = (dble(k)-0.5d0)*ENEd
               ii   = idnint(ENE0/ENE*3000.d0+0.5d0)
@@ -835,55 +833,53 @@ c
               if(ii.gt.2999) exit
               TTT  = diff1(ii,kk)+Xe*(diff1(ii+1,kk)-diff1(ii,kk))
               PXS  = diff2(ii,kk)+Xe*(diff2(ii+1,kk)-diff2(ii,kk))
-              emit3(k  ,LP)=emit3(k  ,LP)+TTT*gg/ENE
-              fmit3(k  ,LP)=fmit3(k  ,LP)+PXS*gg
+              emit3(k)=emit3(k)+TTT*gg/ENE
+              fmit3(k)=fmit3(k)+PXS*gg
            end do
         end if
-        wmit3(LP)=wmit3(LP)+Um*wight(L)
-        vmit3(LP)=vmit3(LP)+hh*wight(L)
+        wmit3=wmit3+Um*wight(L)
+        vmit3=vmit3+hh*wight(L)
       end do
-      end do
-      end do
-!$omp end parallel do 
-
+!$omp end parallel do
 c
-!$omp parallel do private(i,k,Tm,ff) 
-!$omp&      shared(emit3,fmit3,emitT3,fmitT3) 
+      Tm = 0.d0
+      ff = 0.d0
+!$omp parallel do private(i,k,Tm,ff)
+!$omp&      shared(emit3,fmit3,emitT3,fmitT3)
       do i=1,6000
-         Tm = 0.d0
-         ff = 0.d0
-         do k=1,icpu,4
-            Tm = Tm + emit3(i,k)  + emit3(i,k+1)
-     &		  + emit3(i,k+2)+ emit3(i,k+3)
-            ff = ff + fmit3(i,k)  + fmit3(i,k+1)
-     &		  + fmit3(i,k+2)+ fmit3(i,k+3)
-         end do
+         Tm = Tm + emit3(i)
+         ff = ff + fmit3(i)
          emitT3(i)=Tm
          fmitT3(i)=ff
       end do
 !$omp end parallel do
 c
-      wmitT3=0.d0
-      vmitT3=0.d0
-!$omp parallel do private(k) shared(wmit3,vmit3) 
-!$omp&         reduction(+:wmitT3,vmitT3)
-      do k=1,icpu,4
-         wmitT3=wmitT3+wmit3(k)  +wmit3(k+1)
-     &		    +wmit3(k+2)+wmit3(k+3)
-         vmitT3=vmitT3+vmit3(k)  +vmit3(k+1)
-     &		    +vmit3(k+2)+vmit3(k+3)
-      end do
-!$omp end parallel do
+      wmitT3=wmit3
+      vmitT3=vmit3
+c
       call system_clock(tcurr1)
       tcurr=tcurr+tcurr1-tcurr0
 c
-c summation in MPI processes
-c
-      if(kstep.ne.ksmax) return  
-c
-c     goto 9999
-c
-	call system_clock(trdct0)
+      if(kstep.ne.ksmax) RETURN
+			call sum_emission
+      return
+      end
+!----------------------------
+			subroutine sum_emission
+!----------------------------
+      use random_common
+      use sim_common
+      use mpi_common
+      use R_common
+      use out_common
+      use omp_lib
+      implicit none
+      include "mpif.h"
+	    call system_clock(trdct0)
+			emitTT  = 0.d0
+			fmitTT = 0.d0
+			wmitTT = 0.d0
+			vmitTT = 0.d0
       vmitT3  = abs(vmitT3)
       call mpi_allreduce(emitT3,emitTT ,6000,mpi_real8
      &                                 ,mpi_sum,mpi_comm_world,ierr)
@@ -910,11 +906,11 @@ c
       if(myrank==0) then
         write(fo_name2,444) TRIM(data_file)//'phtne',jobno
         open (19,file=fo_name2,form='formatted',status='unknown')
-c      
+c
         do i=1,6000
           ENE0 = (dble(i)-0.5d0)*ENEd
           write(19,*) ENE0*0.511d6,emitTT(i)*const,fmitTT(i)*const
-        end do 
+        end do
         close(19)
       end if
 c
@@ -926,14 +922,30 @@ c
 !$omp end parallel do
 c
       write(9,*) "total reduction energy [J]",ff*0.511d6*1.6d-19
-
-      if(OutPairs.eq.0) return
+444   format(A,I3.3,'.dat')
+      return
+      end
+!-----------------------------
+			subroutine Bethe_Heitler
+!-----------------------------
+      use random_common
+      use sim_common
+      use mpi_common
+      use R_common
+      use out_common
+      use omp_lib
+      implicit none
+      include "mpif.h"
+      real(kind=8),dimension(:  ), allocatable:: qmitT3
+      real(kind=8),dimension(:  ), allocatable:: qmitTT
+c
+			if(OutRad.eq.0) RETURN
 c     setup for theoretical cross sections
       call pair_init
 c
       if(myrank.eq.0) write(*,*) "Convert Pairs"
 c
-      allocate(qmit3(6000,30)) 
+      allocate(qmit3(6000,30))
       allocate(qmitT3(6000)  )
       allocate(qmitTT(6000)  )
 c
@@ -946,13 +958,13 @@ c
          IPTFF =  LP   *Lall
       do i=IPTSS,IPTFF
          ENE0 = (dble(i)-0.5d0)*ENEd
-	 if(ENE0.ge.2.d0) then 
+	 if(ENE0.ge.2.d0) then
            kk   = min(idnint(log(ENE0*0.5d0)/dp1+1.d0),LPx)
            ff   = totalH(kk)
-           ENE  = (1.d0-dexp(-3.d-5*ff))*emitT3(i) 
-c integration of total cross section 
+           ENE  = (1.d0-dexp(-3.d-5*ff))*emitT3(i)
+c integration of total cross section
            ff = totalH2(kk)*1000.d0
-c coefficient 
+c coefficient
            FF1= ENE0/1000.d0
            gg = ENE/ff*ENEd/FF1
 c
@@ -961,7 +973,7 @@ c
               ii   = idnint(ENEA/ENE0*1000.d0+0.5d0)
               Xe   = ENEA/ENE0*1000.d0+0.5d0 - dble(ii)
               if(ii.ge.1000) exit
-              if(ii.ge.1) then 
+              if(ii.ge.1) then
               TTT  = resultL(ii,kk)+Xe*(resultL(ii+1,kk)-resultL(ii,kk))
               qmit3(k   ,LP)=qmit3(k   ,LP)+TTT*gg
               end if
@@ -999,20 +1011,14 @@ c
       end if
 c
       close(34)
-
-      deallocate(wmit3 , vmit3)
-      deallocate(emit3 , fmit3) 
-      deallocate(emitT3,fmitT3) 
-      deallocate(emitTT,fmitTT) 
-      deallocate(total,diff1,diff2)
+c
       deallocate(qmit3,qmitT3,qmitTT)
- 444  format(A,I3.3,'.dat')
+444   format(A,I3.3,'.dat')
       return
       end
-
-C=============================================================
+!----------------------
       subroutine angdis
-C=============================================================
+!----------------------
       use random_common
       use sim_common
       use mpi_common
@@ -1021,58 +1027,30 @@ C=============================================================
       use omp_lib
       implicit none
       include "mpif.h"
-      integer,PARAMETER :: ang = 1024
       real(kind=8) :: thetay,thetaz,ang2
-      real(kind=8),dimension(:,:,:), allocatable:: emit2
-      real(kind=8),dimension(:,:  ), allocatable:: emitT2,emitTT2
 c
       ang2=dble(ang/2)
-      allocate(  emit2(ang,ang,icpu))
-      allocate( emitT2(ang,ang     ))
-      allocate(emitTT2(ang,ang     ))
 c
       if(myrank.eq.0) write(*,*) "Calculating angular distribution..."
-	
-!$omp workshare
-      Lall = int(ksmax/icpu) 
-      emit2= 0.d0
-!$omp end workshare
 c
 !$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
 !$omp&  ,Um,TmY,TmZ,ii,jj)
 !$omp&shared(phtn,PKsout,wight,emit2)
-      do LP=1,icpu
-         IPTSS =    (LP-1)*Lall+1
-         IPTFF =     LP   *Lall
-      do j=IPTSS,IPTFF
       do L=1,itotal
-         Xi  = phtn(1,j,L)        ! quantum parameter
-         TmY = phtn(3,j,L)
-         TmZ = phtn(6,j,L)
-         Um  = phtn(4,j,L)*Pksout ! energy defference
+         Xi  = phtn(1,L)        ! quantum parameter
+         TmY = phtn(3,L)
+         TmZ = phtn(6,L)
+         Um  = phtn(4,L)*Pksout ! energy defference
 c
          if(XI.gt.0.001) then
            ii = min(idnint(TmZ/(pi)*ang2+0.5d0+ang2),ang)
            jj = min(idnint(TmY/(pi)*ang2+0.5d0+ang2),ang)  ! angle in radian
-           emit2(ii,jj,LP)=emit2(ii,jj,LP) + Um*wight(L)
+           emit2(ii,jj)=emit2(ii,jj) + Um*wight(L)
          end if
-      end do
-      end do
       end do
 !$omp end parallel do
 
-!$omp parallel do private(j,i,Tm,k) shared(emit2,emitT2) 
-	do j=1,ang
-	do i=1,ang
-         Tm = 0.d0
-         do k=1,icpu,4
-            Tm = Tm + emit2(i,j,k  ) + emit2(i,j,k+1)
-     &		  + emit2(i,j,k+2) + emit2(i,j,k+3)
-         end do
-         emitT2(i,j)=Tm
-      end do
-      end do
-!$omp end parallel do
+      emitT2=emit2
 c
 c summation in MPI processes
 c
@@ -1099,7 +1077,6 @@ c
         close(21)
       end if
 c
-      deallocate(emit2,emitT2,emitTT2)
 
 444   format(A,I3.3,'.dat')
 666   format(3(E14.4,1X))
@@ -1115,8 +1092,8 @@ c
       use omp_lib
       implicit none
 c
-      itotal0 = int(itotal/icpu+1) 
-!$omp do            
+      itotal0 = int(itotal/icpu+1)
+!$omp do
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
@@ -1135,7 +1112,7 @@ c
 	 else
 	    CALL parax
 	 END IF
-c     
+c
          VX = VX0+ AVEX*DT1
          VY = VY0+ AVEY*DT1
          VZ = VZ0+ AVEZ*DT1
@@ -1148,7 +1125,7 @@ c
          PXS = VX + ( VY*BZT - VZ*BYT )
          PYS = VY + ( VZ*BXT - VX*BZT )
          PZS = VZ + ( VX*BYT - VY*BXT )
-c     
+c
          ff  = 2.0/( 1.0+ ( BXT*BXT + BYT*BYT + BZT*BZT ) )
          VX  = VX + AVEX*DT1 + ff*( PYS*BZT - PZS*BYT )
          VY  = VY + AVEY*DT1 + ff*( PZS*BXT - PXS*BZT )
@@ -1161,7 +1138,7 @@ c
          Wz0= Vz*GAMMI
 c
 	 DTI = 1.0d0/DT
-         BXT = (Vx-Vx0)*DTI ! fVx 
+         BXT = (Vx-Vx0)*DTI ! fVx
          BYT = (Vy-Vy0)*DTI ! fVy
          BZT = (Vz-Vz0)*DTI ! fVz
 c
@@ -1171,7 +1148,7 @@ c
 c
 c------------------------------------------------------------------
 c
-         ff = BXT*BXT + BYT*BYT + BZT*BZT 
+         ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
@@ -1196,7 +1173,7 @@ c
 c
          Re(10,i) = Xi
          Re(11,i) = ENE0
-c      
+c
          end do
       end do     ! end particle loop
 !$omp end do
@@ -1213,8 +1190,8 @@ c
       use omp_lib
       implicit none
 c
-      itotal0 = int(itotal/icpu+1) 
-!$omp do            
+      itotal0 = int(itotal/icpu+1)
+!$omp do
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
@@ -1233,7 +1210,7 @@ c
 	 else
 	   CALL parax
 	 END IF
-c     
+c
          VX = VX0+ AVEX*DT1
          VY = VY0+ AVEY*DT1
          VZ = VZ0+ AVEZ*DT1
@@ -1246,7 +1223,7 @@ c
          PXS = VX + ( VY*BZT - VZ*BYT )
          PYS = VY + ( VZ*BXT - VX*BZT )
          PZS = VZ + ( VX*BYT - VY*BXT )
-c     
+c
          ff  = 2.0/( 1.0+ ( BXT*BXT + BYT*BYT + BZT*BZT ) )
          VX  = VX + AVEX*DT1 + ff*( PYS*BZT - PZS*BYT )
          VY  = VY + AVEY*DT1 + ff*( PZS*BXT - PXS*BZT )
@@ -1259,7 +1236,7 @@ c
          Wz0= Vz*GAMMI
 c
 	   DTI = 1.0d0/DT
-         BXT = (Vx-Vx0)*DTI ! fVx 
+         BXT = (Vx-Vx0)*DTI ! fVx
          BYT = (Vy-Vy0)*DTI ! fVy
          BZT = (Vz-Vz0)*DTI ! fVz
 c
@@ -1267,7 +1244,7 @@ c
          Vy0 = Vy
          Vz0 = Vz
 c------------------------------------------------------------------
-         ff = BXT*BXT + BYT*BYT + BZT*BZT 
+         ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
@@ -1328,8 +1305,8 @@ c
       real(kind=8) :: LLT2X,LLT2Y,LLT2Z,LL3TX,LL3TY,LL3TZ
       real(kind=8) :: BXK,BYK,BZK
 c
-      itotal0 = int(itotal/icpu+1) 
-!$omp do            
+      itotal0 = int(itotal/icpu+1)
+!$omp do
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
@@ -1348,7 +1325,7 @@ c
 	 else
 	   CALL parax
          END IF
-c     
+c
          VX = VX0+ AVEX*DT1
          VY = VY0+ AVEY*DT1
          VZ = VZ0+ AVEZ*DT1
@@ -1361,7 +1338,7 @@ c
          PXS = VX + ( VY*BZT - VZ*BYT )
          PYS = VY + ( VZ*BXT - VX*BZT )
          PZS = VZ + ( VX*BYT - VY*BXT )
-c     
+c
          ff  = 2.0/( 1.0+ ( BXT*BXT + BYT*BYT + BZT*BZT ) )
          VX  = VX + AVEX*DT1 + ff*( PYS*BZT - PZS*BYT )
          VY  = VY + AVEY*DT1 + ff*( PZS*BXT - PXS*BZT )
@@ -1374,7 +1351,7 @@ c
          Wz0= Vz*GAMMI
 c
 	 DTI = 1.0d0/DT
-         BXT = (Vx-Vx0)*DTI ! fVx 
+         BXT = (Vx-Vx0)*DTI ! fVx
          BYT = (Vy-Vy0)*DTI ! fVy
          BZT = (Vz-Vz0)*DTI ! fVz
 c
@@ -1382,7 +1359,7 @@ c
          Vy0 = Vy
          Vz0 = Vz
 c------------------------------------------------------------------
-         ff = BXT*BXT + BYT*BYT + BZT*BZT 
+         ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
@@ -1537,8 +1514,8 @@ c
         stop
 	end if
 c
-	itotal0 = int(itotal/icpu+1) 
-!$omp do            
+	itotal0 = int(itotal/icpu+1)
+!$omp do
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
@@ -1557,7 +1534,7 @@ c
 	   else
 	     CALL parax
 	   END IF
-c     
+c
          VX = VX0+ AVEX*DT1
          VY = VY0+ AVEY*DT1
          VZ = VZ0+ AVEZ*DT1
@@ -1570,7 +1547,7 @@ c
          PXS = VX + ( VY*BZT - VZ*BYT )
          PYS = VY + ( VZ*BXT - VX*BZT )
          PZS = VZ + ( VX*BYT - VY*BXT )
-c     
+c
          ff  = 2.0/( 1.0+ ( BXT*BXT + BYT*BYT + BZT*BZT ) )
          VX  = VX + AVEX*DT1 + ff*( PYS*BZT - PZS*BYT )
          VY  = VY + AVEY*DT1 + ff*( PZS*BXT - PXS*BZT )
@@ -1583,7 +1560,7 @@ c
          Wz0= Vz*GAMMI
 c
 	   DTI = 1.0d0/DT
-         BXT = (Vx-Vx0)*DTI ! fVx 
+         BXT = (Vx-Vx0)*DTI ! fVx
          BYT = (Vy-Vy0)*DTI ! fVy
          BZT = (Vz-Vz0)*DTI ! fVz
 c
@@ -1591,7 +1568,7 @@ c
          Vy0 = Vy
          Vz0 = Vz
 c------------------------------------------------------------------
-         ff = BXT*BXT + BYT*BYT + BZT*BZT 
+         ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
@@ -1664,10 +1641,10 @@ c
       integer :: enegrid
 	real(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
       real(kind=8),dimension(:), allocatable:: his,his_sum
-c	
+c
       enegrid = 512
       allocate(his(enegrid))
-	allocate(his_sum(enegrid)) 
+	allocate(his_sum(enegrid))
 
       sigma=max(sigmax,sigmay,sigmaz)
 !$omp workshare
@@ -1677,7 +1654,7 @@ c
 !$omp end workshare
 c
 	itotal0 = int(itotal/icpu)+1
-!$omp do            
+!$omp do
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
@@ -1690,8 +1667,8 @@ c
 	end do
 	end do
 !$omp end do
-c     
-      ff = 0.d0 
+c
+      ff = 0.d0
       do i=1,enegrid
          ff = ff + his(i)
       end do
@@ -1728,41 +1705,34 @@ c
       use sim_common
       use mpi_common
       use R_common
-	use out_common
+			use out_common
       use omp_lib
       implicit none
-	include "mpif.h"
+			include "mpif.h"
       integer :: enegrid
-	real(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
+			real(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
       real(kind=8),dimension(:), allocatable:: his,his_sum
-c	
+c
       enegrid =512
       allocate(his(enegrid))
-	allocate(his_sum(enegrid))
+			allocate(his_sum(enegrid))
 
 !$omp workshare
       enediv  = 1/Em
-      Lall = int(ksmax/icpu)
-	his = 0.d0
-	his_sum = 0.d0
+			his = 0.d0
+			his_sum = 0.d0
 !$omp end workshare
 c
-!$omp do            
-      do LP=1,icpu                 ! parallelization loop
-         IPTSS =    (LP-1)*Lall+1
-         IPTFF =     LP   *Lall
-      do j=IPTSS,IPTFF           ! timestep loop			
-      do L=1,itotal              ! particle loop        
-         ENE = phtn(4,j,L)*Pksout*wight(L)
+!$omp do
+      do L=1,itotal              ! particle loop
+         ENE = phtn(4,L)*Pksout*wight(L)
          i = max(idnint(ENE*enediv*enegrid),1)
-	   i = min(enegrid,i)
+	   			i = min(enegrid,i)
          his(i) = his(i) + 1
-	end do
-	end do
-	end do
+			end do
 !$omp end do
 c
-      ff = 0.d0 
+      ff = 0.d0
       do i=1,enegrid
          ff = ff + his(i)
       end do
@@ -1770,27 +1740,26 @@ c
       call mpi_allreduce(his,his_sum,enegrid,mpi_real8
      &                                 ,mpi_sum,mpi_comm_world,ierr)
 c
-	call mpi_allreduce(ff,ffsum,1,mpi_real8
+			call mpi_allreduce(ff,ffsum,1,mpi_real8
      &                                 ,mpi_sum,mpi_comm_world,ierr)
       const = pin/(Em/enegrid)*enum
-	if(myrank.eq.0) then
-	  write(*,*) const
+			if(myrank.eq.0) then
+	  	write(*,*) const
         write(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
         open (34,file=fo_name2,form='formatted',status='unknown')
-	  do i=1,enegrid
-	     ENE0 = i*Em/enegrid
-           write(34,666) ENE0*0.511d6
-     &		      , his_sum(i)*const
+	  		do i=1,enegrid
+	     		 ENE0 = i*Em/enegrid
+           write(34,666) ENE0*0.511d6, his_sum(i)*const
         end do
         close(34)
-	end if
+			end if
 c
-	if(kstep.eq.ksmax) write(9,*) 'Total photon', ffsum
-	deallocate(his,his_sum)
+			if(kstep.eq.ksmax) write(9,*) 'Total photon', ffsum
+			deallocate(his,his_sum)
 
 444   format(A,I4.4,'.dat')
 666   format(2(E14.4,1X))
-	return
+			return
       end
 !-------------------------------------
       subroutine histogram2d
@@ -1798,44 +1767,44 @@ c
       use sim_common
       use mpi_common
       use R_common
-	use out_common
+			use out_common
       use omp_lib
       implicit none
-	include "mpif.h"
+			include "mpif.h"
       integer :: grid1, grid2
-	real(kind=8) :: b1,b4,b5,b6,momdiv1,momdiv2,aa
+			real(kind=8) :: b1,b4,b5,b6,momdiv1,momdiv2,aa
       real(kind=8),dimension(:,:), allocatable:: his,his_sum
-c	
+c
       grid1 = 64
-	grid2 = 64
+			grid2 = 64
       allocate(his(grid1,grid2))
-	allocate(his_sum(grid1,grid2)) 
+			allocate(his_sum(grid1,grid2))
 
-	Vx = dsqrt((Em+1.d0)**2-1.d0)
+			Vx = dsqrt((Em+1.d0)**2-1.d0)
 !$omp workshare
       momdiv1 = 1.d0/(0.15*Vx)
       momdiv2 = momdiv1
-	his = 0.d0
+			his = 0.d0
 !$omp end workshare
 c
-	itotal0 = int(itotal/icpu+1) 
-!$omp do            
+			itotal0 = int(itotal/icpu+1)
+!$omp do
       do LP = 1,icpu
          IPTSS  = itotal0*(LP-1)+1
          IPTFF  = min(itotal0* LP,itotal)
       do k  = IPTSS,IPTFF      ! particle loop
          b4=Re(4,k) ; b5=Re(5,k) ; b6=Re(6,k)
-         b5=-1.d0*b4*dsin(inc_ang) + b5*dcos(inc_ang)	   
+         b5=-1.d0*b4*dsin(inc_ang) + b5*dcos(inc_ang)
          i = max(idnint(b5*momdiv1*32.d0)+32,1)
-	   j = max(idnint(b6*momdiv2*32.d0)+32,1)
-	   i = min(grid1,i)
-	   j = min(grid2,j)
+	   	 	 j = max(idnint(b6*momdiv2*32.d0)+32,1)
+	   		 i = min(grid1,i)
+	       j = min(grid2,j)
          his(i,j) = his(i,j) + wight(k)
-	end do
-	end do
+			end do
+			end do
 !$omp end do
 c
-	his_sum = 0.d0
+			his_sum = 0.d0
       call mpi_allreduce(his,his_sum,grid1*grid2,mpi_real8
      &                                 ,mpi_sum,mpi_comm_world,ierr)
 c
@@ -1844,25 +1813,24 @@ c
      &			   ,kstep/100000,jobno
         open (32,file=fo_name2,form='formatted',status='unknown')
 c
-	  do i=1,grid1
-	  do j=1,grid2
+	  	do i=1,grid1
+	  	do j=1,grid2
            write(32,666) (i-32)/(32*momdiv1)   !py
      &			,(j-32)/(32*momdiv2)   !pz
      &			,his_sum(i,j)
-        end do
-	  end do
+      end do
+	  	end do
 
-	  close(32)
-	end if
+	  	close(32)
+			end if
 c
-	deallocate(his,his_sum)
-
+			deallocate(his,his_sum)
 444   format(A,I4.4,I4.4,'.dat')
 666   format(3(E14.4,1X))
-	return
+			return
       end
 !--------------------------------------
-	subroutine manual_load
+			subroutine manual_load
 !--------------------------------------
       use random_common
       use sim_common
@@ -1886,9 +1854,9 @@ c
 
       CLOSE(33)
 c
-	call random_number(rand)
+			call random_number(rand)
 c
-	W = 0.d0
+			W = 0.d0
       do k=1,3000
          ii   = idnint((k-0.5d0)*116.d0/3000.d0 + 0.5d0)
          if(ii.gt.115) exit
@@ -1902,21 +1870,18 @@ c
          end if
       end do
 
-	energy = ENN*2300/0.511/3000
-	p_x = dsqrt((energy+1.d0)**2-1.d0) 
-	Vx  = p_x
-	return
+			energy = ENN*2300/0.511/3000
+			p_x = dsqrt((energy+1.d0)**2-1.d0)
+			Vx  = p_x
+			return
       end
-
-C-----------------------------------------------------------------
+C------------------------------------------------------------------
       subroutine pair_init
-c
 c cross section of Bremsstrahlung & pair production (Bethe-Heitler)
-c
-C-----------------------------------------------------------------
+C------------------------------------------------------------------
       use random_common
-	use mpi_common
-	use out_common
+	    use mpi_common
+	    use out_common
       implicit none
       integer :: i,j
       real(kind=8) :: pi,pi2
@@ -1933,12 +1898,12 @@ c
       PI  = 4.D0*DATAN( 1.D0 )
       PI2 = PI*2.D0
 c
-	if(myrank.eq.0) write(*,*) "Bethe-Heitler"
+			if(myrank.eq.0) write(*,*) "Bethe-Heitler"
 c
       totalmin = log(183.d0/Zcm3)
       totalmin2= 0.925d0*(Zcom/137.d0)**2 ! for high Z
 c     totalmin2= 1.200d0*(Zcom/137.d0)**2 ! for  low Z
-      dp1=(log(Emax)-log(2.0d0))/BPx  !! 
+      dp1=(log(Emax)-log(2.0d0))/BPx  !!
       corrct  =0.6d0/82.d0*Zcom
 
       do j=1,LPx
@@ -1959,7 +1924,7 @@ c     totalmin2= 1.200d0*(Zcom/137.d0)**2 ! for  low Z
             ec =2.d0*log(E0+P0)               ! E+
             ee =2.d0*log(E +p )               ! E-
 
-            ppi= 1.d0/(p0*p) 
+            ppi= 1.d0/(p0*p)
             p3i= 1.d0/(p0**3)
             p3j= 1.d0/(p**3)
 
@@ -1973,7 +1938,7 @@ c     totalmin2= 1.200d0*(Zcom/137.d0)**2 ! for  low Z
             Fd = (p0*p*kk*(D1+D2+eL*(D4-D3-D5)))*(k0-2.d0)
 
             resultH(i,j)=Fd
-c 
+c
 c     relativistic & screening
 c
             eL =(E**2+E0**2+(2.d0/3.d0)*E*E0)*totalmin
@@ -1988,7 +1953,7 @@ c
             Fd1= -2.d0*kk*eL*(k0-2.d0)
 
             resultJ(i,j)=Fd1+Fd0
-c         
+c
 c     Coulomb correction for non relativistic case
 c
             v0 = p0/dsqrt(1.d0+p0**2)
@@ -2020,21 +1985,21 @@ c
 
             eL = min(E,E0)
             ee = E*E0/k0
-            if((ee.gt.8.d0).and.(ee.lt.24.d0)) then 
+            if((ee.gt.8.d0).and.(ee.lt.24.d0)) then
               ele =(ee-8.d0)/16.d0
               red = (1.d0-ele)*resultH(i,j) + ele*resultJ(i,j)
               resultL(i,j)=red
-            else if(ee.ge.24.d0) then 
+            else if(ee.ge.24.d0) then
               resultL(i,j)=resultJ(i,j)
-            else if((eL.gt.0.1d0).and.(eL.lt.0.6d0)) then 
+            else if((eL.gt.0.1d0).and.(eL.lt.0.6d0)) then
               ele =(eL-0.1d0)/0.5d0
               red = (1.d0-ele)*resultK(i,j) + ele*resultH(i,j)
               resultL(i,j)=red
-            else if(eL.le.0.1d0) then 
+            else if(eL.le.0.1d0) then
               resultL(i,j)=resultK(i,j)
-            else  
+            else
               resultL(i,j)=resultH(i,j)
-            end if    
+            end if
          end do
       end do
 c
@@ -2044,7 +2009,7 @@ c
          dk =(k0-2.d0)/dble(LE0)       ! minus 2*mc^2
          totL=0.d0
          do i=1,LE0
-            if(k0.gt.2.d0) then 
+            if(k0.gt.2.d0) then
               k=dk/(k0-2.d0)
               totL = totL+resultL(i,j)*k
             end if
@@ -2054,51 +2019,51 @@ c
 c
       do j=1,LPx
          totL=0.d0
-         do i=1,LE0 
+         do i=1,LE0
             totL = totL+resultL(i,j)/dble(LE0)
          end do
          totalH2(j)=totL
       end do
-	
-	if(myrank==0) then
+
+			if(myrank==0) then
         write(fo_name2,444) TRIM(data_file)//'Bethe-Heitler',jobno
         open (33,file=fo_name2,form='formatted',status='unknown')
 c
-	  do i=1,LPx
+	  		do i=1,LPx
            write(33,*) i, totalH(i), totalH2(i)
-	  end do
-	  close(33)
-	end if 
+	  		end do
+	  		close(33)
+			end if
 444   format(A,I4.4,'.dat')
-      return 
+      return
       end
 C-----------------------------------------------------------------
       subroutine welcome
 C-----------------------------------------------------------------
-	use mpi_common
-	use sim_common
+			use mpi_common
+			use sim_common
       if(myrank.ne.0) return
-	write(*,*) ' '//achar(27)//'[34m'
-	write(*,*) ' '//achar(27)//'[1m'
-	write(*,*) '	###L      ########E    #######C      '
-	write(*,*) '	###L      ########E   ##########C  	 '   
-	write(*,*) '	###L      ###E       ###C    ###C    '
-	write(*,*) '	###L      ########E  ###C            '
-	write(*,*) '	###L      ########E  ###C            '
-	write(*,*) '	###L      ###E       ###C    ###C    '
-	write(*,*) '	#######L  ########E   ##########C    '
-	write(*,*) '	LASER###  ELECTRON#    COLLISION     '
-	write(*,*) ' '//achar(27)//'[32m'
-	write(*,*) 'Welcome to Laser Electron Collision code (v-1.3.0)'
-	write(*,*) ' '//achar(27)//'[0m'
+			write(*,*) ' '//achar(27)//'[34m'
+			write(*,*) ' '//achar(27)//'[1m'
+			write(*,*) '	###L      ########E    #######C      '
+			write(*,*) '	###L      ########E   ##########C  	 '
+			write(*,*) '	###L      ###E       ###C    ###C    '
+			write(*,*) '	###L      ########E  ###C            '
+			write(*,*) '	###L      ########E  ###C            '
+			write(*,*) '	###L      ###E       ###C    ###C    '
+			write(*,*) '	#######L  ########E   ##########C    '
+			write(*,*) '	#LASER##  ELECTRON#    COLLISION     '
+			write(*,*) ' '//achar(27)//'[32m'
+			write(*,*) 'Welcome to Laser Electron Collision code (v-1.3.0)'
+			write(*,*) ' '//achar(27)//'[0m'
       write(*,*) '*****************************************************'
       write(*,*) "The code is running on",NPROCS," processors"
       write(*,*) "		       ",threads," threads"
       write(*,*) '*****************************************************'
-	if(load.eq.1) 
+			if(load.eq.1)
      &	write(*,*) "Load particles from: f_E_smoothed_new_final.txt"
       if(OutRad.eq.1  ) write(*,*) 'Produce radiation'
-	if(OutPairs.eq.1) write(*,*) 'Produce pairs'
+			if(OutPairs.eq.1) write(*,*) 'Produce pairs'
       write(*,*)
-      return 
+      return
       end
