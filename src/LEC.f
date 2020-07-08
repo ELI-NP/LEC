@@ -532,10 +532,10 @@ c
            Rh(6,i) = Re(6,i+jj)
            wight(i)= wight0(i+jj)
         end do
-	      Re = Rh
+	  Re = Rh
 c
-       	call histogram
-       	call histogram2d
+        call histogram
+        call histogram2d
 c----------
       else
 c----------
