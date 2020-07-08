@@ -516,7 +516,7 @@ c
         end do
 
         itotal = int(sampled3/dble(nprocs))
-	  allocate(Rh(11,itotal))
+        allocate(Rh(11,itotal))
         allocate(wight(itotal))
         jj = myrank*itotal
         write(9,*) "myrank                            ",myrank
@@ -532,7 +532,7 @@ c
            Rh(6,i) = Re(6,i+jj)
            wight(i)= wight0(i+jj)
         end do
-	  Re = Rh
+        Re = Rh
 c
         call histogram
         call histogram2d
