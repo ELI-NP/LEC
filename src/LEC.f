@@ -599,8 +599,11 @@ c
          phtn(6,i)=TmZ
       end do
 c
-      if(iconR.ne.3) call radiation
-      if(iconR.eq.3) call photon_his
+      if(iconR.ne.3) then
+         call radiation
+      else
+         call photon_his
+      end if
 c
       return
       end
@@ -805,10 +808,10 @@ c     diffC ; classical differential cross section (x energy)
 c     diffQ ;   quantum differential cross section (x energy)
 c     diffD ; classical differential cross section
 c     diffR ;   quantum differential cross section
-!$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
+!$omp parallel do private(L,Xi
 !$omp&  ,ENE,Um,hh,kk,ff,FF1,gg,k,ENE0,Xe,TTT,PXS)
-!$omp&shared(we0i,phtn,PKsout,total,wight
-!$omp&  ,emit3,fmit3,diffR,diffQ,wmit3,vmit3)
+!$omp&shared(we0i,phtn,Pksout,total,wight
+!$omp&  ,emit3,fmit3,diff1,diff2,wmit3,vmit3)
       do L=1,itotal              ! particle loop
          Xi = phtn(1,L)        ! quantum parameter
          ENE= phtn(2,L)        ! energy
@@ -900,7 +903,7 @@ c
       end if
 c
       ff=0.d0
-!$omp parallel do private(k) shared(fmit3) reduction(+:ff)
+!$omp parallel do private(i) shared(fmit3) reduction(+:ff)
       do i=1,6000
          ff=ff+fmitTT(i)*enum
       end do
@@ -1014,9 +1017,9 @@ c
       include "mpif.h"
 c
       ang2=dble(ang/2)
-!$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
+!$omp parallel do private(L,Xi
 !$omp&  ,Um,TmY,TmZ,ii,jj)
-!$omp&shared(phtn,PKsout,wight,emit2)
+!$omp&shared(phtn,Pksout,wight,emit2)
       do L=1,itotal
          Xi  = phtn(1,L)        ! quantum parameter
          TmY = phtn(3,L)
@@ -1284,7 +1287,6 @@ c
 !$omp end do
       return
       end
-c
 !--------------------------------------
       subroutine Landau_Lifshitz
 !--------------------------------------
@@ -1408,7 +1410,6 @@ c
 !$omp end do
       return
       end
-c
 !-------------------------------------
       subroutine random
 !-------------------------------------
@@ -1428,7 +1429,6 @@ c      call date_and_time(values=values)
 c
       return
       end
-c
 !-------------------------------------
       subroutine phemit
 !-------------------------------------
@@ -1463,7 +1463,6 @@ c      write(*,*) rand
 c
       return
       end
-c
 !-------------------------------------
       subroutine qmemit
 !-------------------------------------
@@ -1490,7 +1489,6 @@ c
       end do
       return
       end
-c
 !-------------------------------------
       subroutine qedemmit
 !-------------------------------------
@@ -1618,7 +1616,6 @@ c
       end do
       return
       end
-c
 !-------------------------------------
       subroutine histogram
 !-------------------------------------
