@@ -197,26 +197,26 @@ c
 1000  CONTINUE              									! time loop
 	KSTEP = KSTEP + 1
         T=T+dt
-	  call system_clock(tmove0)
+        call system_clock(tmove0)
         if(iconR.eq.0) call Lorentz
         if(iconR.eq.1) call Sokolov
         if(iconR.eq.2) call Landau_Lifshitz
         if(iconR.eq.3) call qedemmit		      !particle loop
         call outorbit 				            !output extracted electron orbit
- 	  call system_clock(tmove1)
+        call system_clock(tmove1)
         tmove = tmove + (tmove1-tmove0)
 c
         if(OutRad.eq.1)              call emission    !calculate emission
-	  if((mod(kstep,ksout).eq.0)
+        if((mod(kstep,ksout).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call avgene	!calculate average energy
 c
         if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram
 c
- 	  if((mod(kstep,ksmax).eq.0)
+        if((mod(kstep,ksmax).eq.0)
      &     .and.(alpha.gt.0.d0)    ) call histogram2d
 c
-	  if((mod(kstep,1000).eq.0)
+        if((mod(kstep,1000).eq.0)
      &     .and.(myrank.eq.0))
      &	write(*,*) "Iteration =",kstep,"; Time step =",Rt*kstep
 c---------------------------------------------------------
@@ -231,8 +231,8 @@ c
 c
 2500  CONTINUE
       deallocate(RE,RH)
-	if(OutPairs.eq.1) call Bethe_Heitler
-   	if(OutRad.eq.1)   call deallocate_emission
+      if(OutPairs.eq.1) call Bethe_Heitler
+      if(OutRad.eq.1)   call deallocate_emission
       deallocate(wight0,wight)
 c
  333  format(A,I2.2,'_',I2.2,'.dat')
