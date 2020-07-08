@@ -467,32 +467,32 @@ c---------------------------
         write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
         open (10,file=fo_name2,form='formatted',status='unknown')
 
-	  do k=1,sampled-1
+        do k=1,sampled-1
         do j=1,sampled-1
         do i=1,sampled-1
            kk = (k-1)*(sampled-1)*(sampled-1)+(j-1)*(sampled-1)+i
-	     call random_number(rand)
-	     call random_number(rand1)
-	     phaseX  = (dble(k-sampled2))/(sampled2-1)*0.707d0
+           call random_number(rand)
+           call random_number(rand1)
+           phaseX  = (dble(k-sampled2))/(sampled2-1)*0.707d0
            phaseY  = (dble(i-sampled2))/(sampled2-1)*0.707d0
            phaseZ  = (dble(j-sampled2))/(sampled2-1)*0.707d0
            Re(1,kk)= wp*xinit + phaseX*wb
            Re(2,kk)= phaseY*wb
            Re(3,kk)= phaseZ*wb
-	     write(10,666) Re(1,kk),Re(2,kk),Re(3,kk)
+           write(10,666) Re(1,kk),Re(2,kk),Re(3,kk)
            wight0(kk)= dexp(-phaseX**2-phaseY**2-phaseZ**2)
 c
-	     if(load_particle) call manual_load
+           if(load_particle) call manual_load
 c
-	     Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
+           Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
      &		            *Vx*dsqrt(-2.d0*log(rand))
-	     Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*rand1)
+           Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*rand1)
      &		            *dsqrt(-2.d0*log(rand))
-	     Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
+           Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
      &	          	  *dsqrt(-2.d0*log(rand))
         end do
-	  end do
-	  end do
+        end do
+        end do
         wight00=0.d0
         do i=1,sampled3
             wight00 = wight00 + wight0(i)
@@ -504,8 +504,8 @@ c
            Ye = Re(2,i)
            Vx0 = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
            Vy0 = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
-	     Re(1,i) = Vx0
-	     Re(2,i) = Vy0
+           Re(1,i) = Vx0
+           Re(2,i) = Vy0
         end do
 c
         do i=1,sampled3
@@ -539,15 +539,15 @@ c
 c----------
       else
 c----------
-	  write(9,*) "single electron"
-	  write(9,*) "electron number per shot = 1  "
-	  allocate(Re(11,1),Rh(11,1))
-	  allocate(wight0(1),wight(1))
-	  itotal = 1
+        write(9,*) "single electron"
+        write(9,*) "electron number per shot = 1  "
+        allocate(Re(11,1),Rh(11,1))
+        allocate(wight0(1),wight(1))
+        itotal = 1
         Xe = wp*xinit
-	  Ye = 0.d0
-	  Ze = 0.d0
-	  inc_ang = inc_ang/180.d0*pi
+        Ye = 0.d0
+        Ze = 0.d0
+        inc_ang = inc_ang/180.d0*pi
         Re(1,1)  = Xe*dcos(inc_ang) - Ye*dsin(inc_ang)
         Re(2,1)  = Xe*dsin(inc_ang) + Ye*dcos(inc_ang)
         Re(3,1)  = Ze
@@ -562,7 +562,7 @@ c
          write(9,*) "sampling electron number",i,Ne7(i)
       end do
 c
-	if(OutRad.eq.1) call allocate_emission
+      if(OutRad.eq.1) call allocate_emission
 c
 444   format(A,I4.4,'.dat')
 666   format(3(E14.4,1X))
@@ -583,14 +583,14 @@ c
          Vx =Re( 4,i)
          Vy =Re( 5,i)
          Vz =Re( 6,i)
-	   ff =Re( 7,i)
+         ff =Re( 7,i)
          TTT=Re( 9,i)
          Xi =Re(10,i)
          ENE=Re(11,i)
          TTY = dsqrt(Vx**2+Vy**2)
          TmY = acos(Vx*(-1.d0)/TTY)
          if(Vy.lt.0.d0) TmY=(-1.d0)*TmY
- 	   TTZ = dsqrt(Vx**2+Vz**2)
+         TTZ = dsqrt(Vx**2+Vz**2)
          TmZ = acos(Vx*(-1.d0)/TTZ)
          if(Vz.lt.0.d0) TmZ=(-1.d0)*TmZ   ! direction angleZ
          phtn(1,i)=Xi
