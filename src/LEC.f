@@ -184,7 +184,7 @@ c
       write(fo_name2,444) TRIM(data_file)//'orbt6q',jobno
       open (15,file=fo_name2,form='formatted',status='REPLACE')
       write(fo_name2,444) TRIM(data_file)//'orbt7q',jobno
-      open (17,file=fo_name2,form='formatted',status='REPLACE')
+      open (16,file=fo_name2,form='formatted',status='REPLACE')
       call system_clock(tinit )
       tinit = tinit-tinit0
 c
@@ -437,7 +437,7 @@ c
       else
         totalRC=1.d0
       end if
-
+c
       return
       end
 !--------------------------------------
@@ -466,9 +466,6 @@ c---------------------------
         write(9,*) "incident angle    [degree]",inc_ang
         inc_ang = inc_ang/180.d0*pi
 
-        write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
-        open (10,file=fo_name2,form='formatted',status='unknown')
-
         do k=1,sampled-1
         do j=1,sampled-1
         do i=1,sampled-1
@@ -481,7 +478,6 @@ c---------------------------
            Re(1,kk)= wp*xinit + phaseX*wb
            Re(2,kk)= phaseY*wb
            Re(3,kk)= phaseZ*wb
-           write(10,666) Re(1,kk),Re(2,kk),Re(3,kk)
            wight0(kk)= dexp(-phaseX**2-phaseY**2-phaseZ**2)
 c
            if(load_particle) call manual_load
@@ -603,8 +599,11 @@ c
          phtn(6,i)=TmZ
       end do
 c
-      if(iconR.ne.3) call radiation
-      if(iconR.eq.3) call photon_his
+      if(iconR.ne.3) then
+         call radiation
+      else
+         call photon_his
+      end if
 c
       return
       end
@@ -809,10 +808,10 @@ c     diffC ; classical differential cross section (x energy)
 c     diffQ ;   quantum differential cross section (x energy)
 c     diffD ; classical differential cross section
 c     diffR ;   quantum differential cross section
-!$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
+!$omp parallel do private(L,Xi
 !$omp&  ,ENE,Um,hh,kk,ff,FF1,gg,k,ENE0,Xe,TTT,PXS)
-!$omp&shared(we0i,phtn,PKsout,total,wight
-!$omp&  ,emit3,fmit3,diffR,diffQ,wmit3,vmit3)
+!$omp&shared(we0i,phtn,Pksout,total,wight
+!$omp&  ,emit3,fmit3,diff1,diff2,wmit3,vmit3)
       do L=1,itotal              ! particle loop
          Xi = phtn(1,L)        ! quantum parameter
          ENE= phtn(2,L)        ! energy
@@ -904,7 +903,7 @@ c
       end if
 c
       ff=0.d0
-!$omp parallel do private(k) shared(fmit3) reduction(+:ff)
+!$omp parallel do private(i) shared(fmit3) reduction(+:ff)
       do i=1,6000
          ff=ff+fmitTT(i)*enum
       end do
@@ -1018,9 +1017,9 @@ c
       include "mpif.h"
 c
       ang2=dble(ang/2)
-!$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
+!$omp parallel do private(L,Xi
 !$omp&  ,Um,TmY,TmZ,ii,jj)
-!$omp&shared(phtn,PKsout,wight,emit2)
+!$omp&shared(phtn,Pksout,wight,emit2)
       do L=1,itotal
          Xi  = phtn(1,L)        ! quantum parameter
          TmY = phtn(3,L)
@@ -1288,7 +1287,6 @@ c
 !$omp end do
       return
       end
-c
 !--------------------------------------
       subroutine Landau_Lifshitz
 !--------------------------------------
@@ -1412,7 +1410,6 @@ c
 !$omp end do
       return
       end
-c
 !-------------------------------------
       subroutine random
 !-------------------------------------
@@ -1432,7 +1429,6 @@ c      call date_and_time(values=values)
 c
       return
       end
-c
 !-------------------------------------
       subroutine phemit
 !-------------------------------------
@@ -1467,7 +1463,6 @@ c      write(*,*) rand
 c
       return
       end
-c
 !-------------------------------------
       subroutine qmemit
 !-------------------------------------
@@ -1494,7 +1489,6 @@ c
       end do
       return
       end
-c
 !-------------------------------------
       subroutine qedemmit
 !-------------------------------------
@@ -1622,7 +1616,6 @@ c
       end do
       return
       end
-c
 !-------------------------------------
       subroutine histogram
 !-------------------------------------
