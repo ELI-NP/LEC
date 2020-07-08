@@ -184,7 +184,7 @@ c
       write(fo_name2,444) TRIM(data_file)//'orbt6q',jobno
       open (15,file=fo_name2,form='formatted',status='REPLACE')
       write(fo_name2,444) TRIM(data_file)//'orbt7q',jobno
-      open (17,file=fo_name2,form='formatted',status='REPLACE')
+      open (16,file=fo_name2,form='formatted',status='REPLACE')
       call system_clock(tinit )
       tinit = tinit-tinit0
 c
@@ -437,7 +437,7 @@ c
       else
         totalRC=1.d0
       end if
-
+c
       return
       end
 !--------------------------------------
@@ -466,9 +466,6 @@ c---------------------------
         write(9,*) "incident angle    [degree]",inc_ang
         inc_ang = inc_ang/180.d0*pi
 
-        write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
-        open (10,file=fo_name2,form='formatted',status='unknown')
-
         do k=1,sampled-1
         do j=1,sampled-1
         do i=1,sampled-1
@@ -481,7 +478,6 @@ c---------------------------
            Re(1,kk)= wp*xinit + phaseX*wb
            Re(2,kk)= phaseY*wb
            Re(3,kk)= phaseZ*wb
-           write(10,666) Re(1,kk),Re(2,kk),Re(3,kk)
            wight0(kk)= dexp(-phaseX**2-phaseY**2-phaseZ**2)
 c
            if(load_particle) call manual_load
