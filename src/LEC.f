@@ -69,7 +69,7 @@ c
       integer      :: Lall,LP,IPTSS,IPTFF,jj
       integer,dimension(7) :: Ne7
       real(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
-      real(kind=8),dimension(:,:,:), allocatable:: phtn
+c      real(kind=8),dimension(:,:,:), allocatable:: phtn
       real(kind=8),dimension(:  ), allocatable:: wmit3,vmit3
       real(kind=8),dimension(:,:), allocatable:: emit3,fmit3,qmit3
       real(kind=8),dimension(:  ), allocatable:: emitT3,fmitT3,qmitT3
