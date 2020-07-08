@@ -45,6 +45,7 @@ c
       real(kind=8),dimension(200) :: totalR,totalC,totalP,totalRC
      &                              ,totalS,totalT
       real(kind=8) :: rand,rand1
+      real(kind=8) :: thetay,thetaz,ang2
       integer,save :: tmove,tmove0,tmove1
      &		   ,trdct,trdct0,trdct1
      &		   ,tmall,tmall0, t_max
@@ -230,9 +231,10 @@ c
       close(16) ;	close(20)
 c
 2500  CONTINUE
-      deallocate(RE,RH)
+      if(OutRad.eq.1)   call sum_emission
       if(OutPairs.eq.1) call Bethe_Heitler
       if(OutRad.eq.1)   call deallocate_emission
+      deallocate(RE,RH)
       deallocate(wight0,wight)
 c
  333  format(A,I2.2,'_',I2.2,'.dat')
@@ -768,6 +770,7 @@ c
         diff1=diffD
         diff2=diffC
       end if
+
       return
       end
 !-----------------------------------
@@ -794,8 +797,6 @@ c
       use omp_lib
       implicit none
       include "mpif.h"
-c
-      if(myrank.eq.0) write(*,*) "calculating radiation"
 c
 c distribute electron energy reduction onto emission energy spectum
       call system_clock(tcurr0)
@@ -841,17 +842,8 @@ c coefficient
       end do
 !$omp end parallel do
 c
-      Tm = 0.d0
-      ff = 0.d0
-!$omp parallel do private(i,k,Tm,ff)
-!$omp&      shared(emit3,fmit3,emitT3,fmitT3)
-      do i=1,6000
-         Tm = Tm + emit3(i)
-         ff = ff + fmit3(i)
-         emitT3(i)=Tm
-         fmitT3(i)=ff
-      end do
-!$omp end parallel do
+      emitT3=emit3
+      fmitT3=fmit3
 c
       wmitT3=wmit3
       vmitT3=vmit3
@@ -859,8 +851,6 @@ c
       call system_clock(tcurr1)
       tcurr=tcurr+tcurr1-tcurr0
 c
-      if(kstep.ne.ksmax) RETURN
-	call sum_emission
       return
       end
 !----------------------------
@@ -875,7 +865,7 @@ c
       implicit none
       include "mpif.h"
       call system_clock(trdct0)
-      emitTT  = 0.d0
+      emitTT = 0.d0
       fmitTT = 0.d0
       wmitTT = 0.d0
       vmitTT = 0.d0
@@ -1026,12 +1016,8 @@ c
       use omp_lib
       implicit none
       include "mpif.h"
-      real(kind=8) :: thetay,thetaz,ang2
 c
       ang2=dble(ang/2)
-c
-      if(myrank.eq.0) write(*,*) "Calculating angular distribution..."
-c
 !$omp parallel do private(LP,IPTSS,IPTFF,j,L,Xi
 !$omp&  ,Um,TmY,TmZ,ii,jj)
 !$omp&shared(phtn,PKsout,wight,emit2)
@@ -1053,15 +1039,28 @@ c
 c
 c summation in MPI processes
 c
-      if(kstep.ne.ksmax) return
+      return
+      end
+!--------------------------
+      subroutine sum_angdis
+!--------------------------
+      use random_common
+      use sim_common
+      use mpi_common
+      use R_common
+      use out_common
+      use omp_lib
+      implicit none
+      include "mpif.h"
 c
+      ang2=dble(ang/2)
       call mpi_allreduce(emitT2,emitTT2,ang*ang,mpi_real8
      &                                 ,mpi_sum,mpi_comm_world,ierr)
 c end distribute onto emission energy spectum
 
 c output photon spectrum data
       const = pin/rin*shot*enum
-
+c
       if(myrank==0) then
         write(fo_name2,444) TRIM(data_file)//'phtnTe',jobno
         open (21,file=fo_name2,form='formatted',status='unknown')
