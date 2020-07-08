@@ -329,10 +329,10 @@ c
       write(9,*) "parameters for electron beam"
       write(9,*) " "
       if(load.eq.1) then
-  	  load_particle=.TRUE.
+        load_particle=.TRUE.
         write(9,*) "Load particles from: f_E_smoothed_new_final.txt"
       else
-	    load_particle=.FALSE.
+        load_particle=.FALSE.
       end if
       write(9,*) " "
       write(9,*) "parameters for electron beam"
@@ -379,7 +379,7 @@ c
         write(9,*) " "
         write(9,*) "Particle pusher: Lorentz"
         write(9,*) "        Use QED: Stochastic"
-	  write(9,*) " "
+        write(9,*) " "
       end if
 c
       if(QED.eq.0) then
@@ -454,17 +454,17 @@ c---------------------------
       if(alpha.ne.0.d0) then
 c---------------------------
         sampled = 19 ; sampled2 = sampled/2
-	  sampled3 = (sampled-1)**3
+        sampled3 = (sampled-1)**3
 
-	  allocate(Re(11,sampled3))
+        allocate(Re(11,sampled3))
         allocate(wight0(sampled3))
 
-	  write(9,*) "transverse beam size   [m]",alpha
- 	  write(9,*) "electron number per shot  ",enum
-	  write(9,*) "incident angle    [degree]",inc_ang
+        write(9,*) "transverse beam size   [m]",alpha
+        write(9,*) "electron number per shot  ",enum
+        write(9,*) "incident angle    [degree]",inc_ang
         inc_ang = inc_ang/180.d0*pi
 
-	  write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
+        write(fo_name2,444) TRIM(data_file)//'dist_sp',jobno
         open (10,file=fo_name2,form='formatted',status='unknown')
 
 	  do k=1,sampled-1
