@@ -598,11 +598,11 @@ c
          phtn(3,i)=TmY
          phtn(4,i)=TTT
          phtn(5,i)=ff
-    	   phtn(6,i)=TmZ
+         phtn(6,i)=TmZ
       end do
 c
-	if(iconR.ne.3) call radiation
-	if(iconR.eq.3) call photon_his
+      if(iconR.ne.3) call radiation
+      if(iconR.eq.3) call photon_his
 c
       return
       end
@@ -666,7 +666,7 @@ c
       RRR =0.d0
       do LP=1,icpu,4
          GAMM = GAMM + SE(LP)  + SE(LP+1)
-     &		   + SE(LP+2) + SE(LP+3)
+     &               + SE(LP+2) + SE(LP+3)
       end do
 
       EKK=0.d0
@@ -685,14 +685,14 @@ c
             Vy  = Re(5,L)
             Vz  = Re(6,L)
             GAMM = sqrt(1.d0+Vx*Vx+Vy*Vy+Vz*Vz)
-	      sss = GAMM-EKK
+            sss = GAMM-EKK
             if(sss.lt.0.d0) then
-		  SE_neg(LP) = SE_neg(LP) + abs(sss)
+              SE_neg(LP) = SE_neg(LP) + abs(sss)
               num_neg(LP) = num_neg(LP) + 1
             else
-      	  SE_pos(LP) = SE_pos(LP) + abs(sss)
+              SE_pos(LP) = SE_pos(LP) + abs(sss)
               num_pos(LP) = num_pos(LP) + 1
-	      end if
+            end if
          end do
       end do
 c
