@@ -20,7 +20,7 @@ c
       integer      :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl
      &               ,itotal,ksoutP,iconR,SKL,LL,polar,shape
      &               ,photon,species,shot,itotal0,L,OutRad,OutPairs
-     &		           ,QED,sampled,sampled2,sampled3,sampled4,load
+     &		   ,QED,sampled,sampled2,sampled3,sampled4,load
       logical      :: emmits,exists,load_particle
       real(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       real(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
@@ -76,7 +76,7 @@ c
       real(kind=8),dimension(:,:), allocatable :: diff1,diff2
       real(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
       real(kind=8), allocatable:: wmit3,vmit3
-	real(kind=8),dimension(:,:), allocatable:: phtn
+      real(kind=8),dimension(:,:), allocatable:: phtn
       real(kind=8),dimension(:), allocatable:: emit3,fmit3
       real(kind=8),dimension(:  ), allocatable:: emitT3,fmitT3
       real(kind=8),dimension(:  ), allocatable:: emitTT,fmitTT
