@@ -68,12 +68,12 @@ c
       INTEGER      :: Lall,LP,IPTSS,IPTFF,jj
       INTEGER,DIMENSION(7) :: Ne7
       REAL(kind=8) :: wight00,const
-      REAL(kind=8),DIMENSION(:), ALLOCATABLE :: wight0
-      REAL(kind=8),DIMENSION(:), ALLOCATABLE :: wight
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wight0
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wight
       REAL(kind=8) :: TmY,TmZ
       REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
       REAL(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
-      REAL(kind=8),ALLOCATABLE,DIMENSION(:):: wmit3,vmit3
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE,:: wmit3,vmit3
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitT3,fmitT3,qmitT3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitTT,fmitTT,qmitTT
@@ -223,17 +223,17 @@ c
       CLOSE(16) ;	CLOSE(20)
 c
 2500  CONTINUE
-c      IF(OutRad.EQ.1) THEN
-c         IF(iconR.EQ.3) THEN
-c            CALL photon_his
-c         ELSE
+      DEALLOCATE(RE,RH)
+      IF(OutRad.EQ.1) THEN
+         IF(iconR.EQ.3) THEN
+            CALL photon_his
+         ELSE
             CALL radiation
-c         END IF
-         DEALLOCATE(phtn)
-c      END IF
+         END IF
+      END IF
       IF(OutPairs.EQ.1) CALL Bethe_Heitler
 c
-      DEALLOCATE(RE,RH)
+      IF(OutRad.EQ.1) DEALLOCATE(phtn)
       DEALLOCATE(wight0,wight)
 c
 333   FORMAT(A,I2.2,'_',I2.2,'.dat')
