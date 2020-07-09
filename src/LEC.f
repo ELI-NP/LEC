@@ -160,13 +160,10 @@ c
       WRITE(9,*) "total number of thREADs=",thREADs
 c
       CALL setprm  						!PARAMETER setup
-      IF(myrank.EQ.0) WRITE(*,*) "setprm"
       CALL welcome
-      IF(myrank.EQ.0) WRITE(*,*) "welcome"
 c
       CALL system_clock(tinit0)
       CALL setbeam
-      IF(myrank.EQ.0) WRITE(*,*) "setbeam"
 c
       WRITE(fo_name2,444) TRIM(data_file)//'orbt1q',jobno
       OPEN (10,file=fo_name2,form='formatted',status='REPLACE')
@@ -204,17 +201,13 @@ c
         CALL system_clock(tmove1)
         tmove = tmove + (tmove1 - tmove0)
 c
-        IF(myrank.EQ.0) WRITE(*,*) "step", kstep
         IF(OutRad.EQ.1) CALL outphtn    !calculate emission
-        IF(myrank.EQ.0) WRITE(*,*) "outphtn"
         IF((MOD(kstep,ksout).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL avgene !calculate average energy
 c
-        IF(myrank.EQ.0) WRITE(*,*) "avgene"
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram
 c
-        IF(myrank.EQ.0) WRITE(*,*) "histogram"
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram2d
 c
@@ -460,8 +453,8 @@ c generate initial electron conditions for incident beam
 c---------------------------
       IF(alpha.NE.0.d0) THEN
 c---------------------------
-        sampled = 12 ; sampled2 = sampled/2
-        sampled3 = (sampled - 1)**3
+        sampled = 19 ; sampled2 = sampled/2
+        sampled3 = (sampled - 1)**2
 
         ALLOCATE(Re(11,sampled3))
         ALLOCATE(wight0(sampled3))
@@ -470,21 +463,18 @@ c---------------------------
         WRITE(9,*) "electron number per shot  ", enum
         WRITE(9,*) "incident angle    [degree]", inc_ang
         inc_ang = inc_ang/180.d0*pi
-        IF(myrank.EQ.0)  WRITE(*,*) "1"
-        DO k = 1,sampled - 1
+c
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
-           kk = (k - 1)*(sampled - 1)*(sampled - 1)
-     &          + (j - 1)*(sampled - 1) + i
+           kk = (k - 1)*(sampled - 1) + i
            CALL random_number(rand)
            CALL random_number(rand1)
-           phaseX  = (DBLE(k - sampled2))/(sampled2 - 1)*0.707d0
-           phaseY  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
-           phaseZ  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
+           phaseX  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
+           phaseY  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
            Re(1,kk) = wp*xinit + phaseX*wb
            Re(2,kk) = phaseY*wb
            Re(3,kk) = phaseZ*wb
-           wight0(kk) = dexp(-phaseX**2 - phaseY**2 - phaseZ**2)
+           wight0(kk) = dexp(-phaseX**2 - phaseY**2)
 c
            IF(load_particle) CALL manual_load
 c
@@ -496,8 +486,7 @@ c
      &	          	  *dsqrt(-2.d0*log(rand))
         END DO
         END DO
-        END DO
-        IF(myrank.EQ.0) WRITE(*,*) "2"
+c
         wight00 = 0.d0
         DO i = 1,sampled3
              wight00 = wight00 + wight0(i)
@@ -519,7 +508,7 @@ c
            Re(4,i) = Vx0*dcos(inc_ang)-Vy0*dsin(inc_ang)
            Re(5,i) = Vx0*dsin(inc_ang)+Vy0*dcos(inc_ang)
         END DO
-        IF(myrank.EQ.0) WRITE(*,*) "3"
+c
         itotal = INT(sampled3/DBLE(nprocs))
         ALLOCATE(Rh(11,itotal))
         ALLOCATE(wight(itotal))
@@ -540,9 +529,7 @@ c
         END DO
         Re = Rh
 c
-        IF(myrank.EQ.0) WRITE(*,*) "4"
         CALL histogram
-        IF(myrank.EQ.0) WRITE(*,*) "5"
         CALL histogram2d
 c----------
       ELSE
@@ -569,8 +556,16 @@ c
          Ne7(i)=(itotal/8)*i + 1
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
+
+      i = sampled3/2+1
+      j = i/itotal+1
+      WRITE(9,*) "rank number with head-on collision", j-1
+      IF((jj+1.LE.i).and.(jj+itotal.GE.i)) THEN
+         WRITE(9,*) "head-on collision case myrank=", myrank
+         WRITE(9,*) "adjust head-on collision case to Ne7(1)"
+         Ne7(1) = i - jj
+      END IF
 c
-      IF(myrank.EQ.0) WRITE(*,*) "6"
       if(OutRad.EQ.1) THEN
          ALLOCATE(phtn(6,ksmax,itotal))
          phtn = 0.d0
