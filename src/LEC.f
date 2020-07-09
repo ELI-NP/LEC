@@ -533,6 +533,10 @@ c
         END DO
         Re = Rh
 c
+        if(OutRad.EQ.1) THEN
+           ALLOCATE(phtn(6,ksmax,itotal))
+           phtn = 0.d0
+        END IF
         CALL histogram
         CALL histogram2d
 c----------
@@ -554,6 +558,10 @@ c----------
         Re(5,1)  = Vx*(-1.d0)*dsin(inc_ang)
         Re(6,1)  = 0.d0
         wight(1) = 1.d0
+        if(OutRad.EQ.1) THEN
+           ALLOCATE(phtn(6,ksmax,itotal))
+           phtn = 0.d0
+        END IF
       END IF
 c
       DO i = 1,7
@@ -561,11 +569,6 @@ c
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 c
-      if(OutRad.EQ.1) THEN
-         ALLOCATE(phtn(6,ksmax,itotal))
-         phtn = 0.d0
-      END IF
-
 444   FORMAT(A,I4.4,'.dat')
 666   FORMAT(3(E14.4,1X))
       RETURN
