@@ -519,7 +519,7 @@ c
            Re(4,i) = Vx0*dcos(inc_ang)-Vy0*dsin(inc_ang)
            Re(5,i) = Vx0*dsin(inc_ang)+Vy0*dcos(inc_ang)
         END DO
-
+        WRITE(*,*) "3"
         itotal = INT(sampled3/DBLE(nprocs))
         ALLOCATE(Rh(11,itotal))
         ALLOCATE(wight(itotal))
@@ -540,7 +540,9 @@ c
         END DO
         Re = Rh
 c
+        WRITE(*,*) "4"
         CALL histogram
+        WRITE(*,*) "5"
         CALL histogram2d
 c----------
       ELSE
@@ -568,6 +570,7 @@ c
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 c
+        WRITE(*,*) "6"
       if(OutRad.EQ.1) THEN
          ALLOCATE(phtn(6,ksmax,itotal))
          phtn = 0.d0
