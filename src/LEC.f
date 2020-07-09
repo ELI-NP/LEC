@@ -72,11 +72,11 @@ c
       REAL(kind=8),DIMENSION(:), ALLOCATABLE :: wight
       REAL(kind=8) :: TmY,TmZ
       REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
-      REAL(kind = 8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
+      REAL(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
       REAL(kind=8),ALLOCATABLE,DIMENSION(:):: wmit3,vmit3
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3
-      REAL(kind=8),DIMENSION(: ),ALLOCATABLE :: emitT3,fmitT3
-      REAL(kind=8),DIMENSION(: ),ALLOCATABLE :: emitTT,fmitTT
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitT3,fmitT3,qmitT3
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitTT,fmitTT,qmitTT
       END MODULE R_common
 c
       program main
@@ -229,6 +229,7 @@ c
          ELSE
             CALL radiation
          END IF
+         DEALLOCATE(phtn)
       END IF
       IF(OutPairs.EQ.1) CALL Bethe_Heitler
 c
@@ -373,7 +374,7 @@ c
         WRITE(9,*) " "
       ELSE IF(iconR.EQ.2) THEN
         WRITE(9,*) " "
-        WRITE(9,*) "Particle pusher: reduced Landau LIFshitz"
+        WRITE(9,*) "Particle pusher: reduced Landau Lifshitz"
         WRITE(9,*) " "
       ELSE IF(iconR.EQ.3) THEN
         WRITE(9,*) " "
@@ -492,7 +493,7 @@ c
         END DO
         wight00 = 0.d0
         DO i = 1,sampled3
-            wight00 = wight00 + wight0(i)
+             wight00 = wight00 + wight0(i)
         END DO
         wight0 = wight0/wight00
 c
@@ -560,7 +561,11 @@ c
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 c
-      if(OutRad.EQ.1) ALLOCATE(phtn(6,ksmax,itotal))
+      if(OutRad.EQ.1) THEN
+         ALLOCATE(phtn(6,ksmax,itotal))
+         phtn = 0.d0
+      END IF
+
 444   FORMAT(A,I4.4,'.dat')
 666   FORMAT(3(E14.4,1X))
       RETURN
@@ -912,9 +917,6 @@ c
       USE omp_lib
       IMPLICIT NONE
       INCLUDE "mpif.h"
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE:: qmit3
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE:: qmitT3
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE:: qmitTT
 c
       IF(OutRad.EQ.0) RETURN
 c     setup for theoretical cross sections
