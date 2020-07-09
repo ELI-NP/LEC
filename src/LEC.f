@@ -197,13 +197,13 @@ c
         IF(iconR.EQ.1) CALL Sokolov
         IF(iconR.EQ.2) CALL Landau_Lifshitz
         IF(iconR.EQ.3) CALL qedemmit	  !particle loop
-        CALL out_orbit 				  !output extracted electron orbit
+        CALL outorbit 				  !output extracted electron orbit
         CALL system_clock(tmove1)
         tmove = tmove + (tmove1 - tmove0)
 c
-        IF(OutRad.EQ.1) CALL store_orbit    !calculate emission
+        IF(OutRad.EQ.1) CALL outphtn    !calculate emission
         IF((MOD(kstep,ksout).EQ.0)
-     &     .AND.(alpha.GT.0.d0)  ) CALL average_energy !calculate average energy
+     &     .AND.(alpha.GT.0.d0)  ) CALL avgene !calculate average energy
 c
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram
@@ -570,7 +570,7 @@ c
       RETURN
       END
 !--------------------------------------
-      SUBROUTINE store_orbit
+      SUBROUTINE outphtn
 !-------------------------------------
       USE random_common
       USE sim_common
@@ -609,7 +609,7 @@ c
       RETURN
       END
 !--------------------------------------
-      SUBROUTINE out_orbit
+      SUBROUTINE outorbit
 !--------------------------------------
       USE random_common
       USE sim_common
@@ -634,7 +634,7 @@ c
       RETURN
       END
 !------------------------------
-      SUBROUTINE average_energy
+      SUBROUTINE avgene
 !------------------------------
       USE random_common
       USE sim_common
