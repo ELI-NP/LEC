@@ -223,14 +223,14 @@ c
       CLOSE(16) ;	CLOSE(20)
 c
 2500  CONTINUE
-      IF(OutRad.EQ.1) THEN
-         IF(iconR.EQ.3) THEN
-            CALL photon_his
-         ELSE
+c      IF(OutRad.EQ.1) THEN
+c         IF(iconR.EQ.3) THEN
+c            CALL photon_his
+c         ELSE
             CALL radiation
-         END IF
+c         END IF
          DEALLOCATE(phtn)
-      END IF
+c      END IF
       IF(OutPairs.EQ.1) CALL Bethe_Heitler
 c
       DEALLOCATE(RE,RH)
