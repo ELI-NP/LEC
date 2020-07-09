@@ -160,10 +160,13 @@ c
       WRITE(9,*) "total number of thREADs=",thREADs
 c
       CALL setprm  						!PARAMETER setup
+      WRITE(*,*) "setprm"
       CALL welcome
+      WRITE(*,*) "welcome"
 c
       CALL system_clock(tinit0)
       CALL setbeam
+      WRITE(*,*) "setbeam"
 c
       WRITE(fo_name2,444) TRIM(data_file)//'orbt1q',jobno
       OPEN (10,file=fo_name2,form='formatted',status='REPLACE')
@@ -201,13 +204,17 @@ c
         CALL system_clock(tmove1)
         tmove = tmove + (tmove1 - tmove0)
 c
+        WRITE(*,*) "step", kstep
         IF(OutRad.EQ.1) CALL outphtn    !calculate emission
+        WRITE(*,*) "outphtn"
         IF((MOD(kstep,ksout).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL avgene !calculate average energy
 c
+        WRITE(*,*) "avgene"
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram
 c
+        WRITE(*,*) "histogram"
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram2d
 c
