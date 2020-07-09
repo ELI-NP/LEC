@@ -472,8 +472,8 @@ c
            phaseX  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
            phaseY  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
            Re(1,kk) = wp*xinit + phaseX*wb
-           Re(2,kk) = phaseY*wb
-           Re(3,kk) = phaseZ*wb
+           Re(2,kk) = phaseX*wb
+           Re(3,kk) = phaseY*wb
            wight0(kk) = dexp(-phaseX**2 - phaseY**2)
 c
            IF(load_particle) CALL manual_load
