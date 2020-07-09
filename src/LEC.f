@@ -949,7 +949,7 @@ c
               ENEA = (DBLE(k)-0.5d0)*ENEd
               ii = IDNINT(ENEA/ENE0*1000.d0 + 0.5d0)
               Xe = ENEA/ENE0*1000.d0 + 0.5d0 - DBLE(ii)
-              IF(ii.GE.1000) exit
+              IF(ii.GE.1000) EXIT
               IF(ii.GE.1) THEN
               TTT = resultL(ii,kk)
      &              + Xe*(resultL(ii + 1,kk) - resultL(ii,kk))
@@ -970,7 +970,6 @@ c
 c
 c END convert to the positron track data using materical filter
 c
-c
 c summation in MPI processes
 c
       CALL mpi_allreduce(qmitT3,qmitTT,6000,mpi_real8
@@ -978,6 +977,7 @@ c
 c
 c output positron spectrum data
 c
+      const = pin/rin*shot*enum
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'pairTT', jobno
         OPEN (34,file=fo_name2,form='formatted',status='unknown')
@@ -2028,7 +2028,7 @@ c
       END DO
 
       IF(myrank.EQ.0) THEN
-        WRITE(fo_name2,444) TRIM(data_file)//'Bethe - Heitler', jobno
+        WRITE(fo_name2,444) TRIM(data_file)//'Bethe-Heitler', jobno
         OPEN (33,file = fo_name2,form='formatted',status='unknown')
 c
         DO i=1,LPx
