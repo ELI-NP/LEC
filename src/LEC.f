@@ -73,7 +73,7 @@ c
       REAL(kind=8) :: TmY,TmZ
       REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
       REAL(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE,:: wmit3,vmit3
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wmit3,vmit3
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitT3,fmitT3,qmitT3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitTT,fmitTT,qmitTT
