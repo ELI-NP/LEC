@@ -231,7 +231,6 @@ c
             CALL radiation
          END IF
       END IF
-      IF(OutPairs.EQ.1) CALL Bethe_Heitler
 c
       IF(OutRad.EQ.1) DEALLOCATE(phtn)
       DEALLOCATE(wight0,wight)
@@ -533,10 +532,6 @@ c
         END DO
         Re = Rh
 c
-        if(OutRad.EQ.1) THEN
-           ALLOCATE(phtn(6,ksmax,itotal))
-           phtn = 0.d0
-        END IF
         CALL histogram
         CALL histogram2d
 c----------
@@ -558,10 +553,6 @@ c----------
         Re(5,1)  = Vx*(-1.d0)*dsin(inc_ang)
         Re(6,1)  = 0.d0
         wight(1) = 1.d0
-        if(OutRad.EQ.1) THEN
-           ALLOCATE(phtn(6,ksmax,itotal))
-           phtn = 0.d0
-        END IF
       END IF
 c
       DO i = 1,7
@@ -569,6 +560,11 @@ c
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 c
+      if(OutRad.EQ.1) THEN
+         ALLOCATE(phtn(6,ksmax,itotal))
+         phtn = 0.d0
+      END IF
+
 444   FORMAT(A,I4.4,'.dat')
 666   FORMAT(3(E14.4,1X))
       RETURN
@@ -855,7 +851,9 @@ c
 !$omp end parallel do
       CALL system_clock(tcurr1)
       tcurr = tcurr + tcurr1 - tcurr0
+c
 c summation in MPI processes
+c
       IF(kstep.NE.ksmax) RETURN
 c
       CALL system_clock(trdct0)
@@ -901,27 +899,8 @@ c
 c
       WRITE(9,*) "total reduction energy [J]", ff*0.511d6*1.6d-19
 
-      DEALLOCATE(wmit3,vmit3)
-      DEALLOCATE(emit3,fmit3)
-      DEALLOCATE(fmitT3)
-      DEALLOCATE(emitTT,fmitTT)
-      DEALLOCATE(total,diff1,diff2)
-444   FORMAT(A,I3.3,'.dat')
-      RETURN
-      END
-!-----------------------------
-      SUBROUTINE Bethe_Heitler
-!-----------------------------
-      USE random_common
-      USE sim_common
-      USE mpi_common
-      USE R_common
-      USE out_common
-      USE omp_lib
-      IMPLICIT NONE
-      INCLUDE "mpif.h"
-c
-      IF(OutRad.EQ.0) RETURN
+      IF(OutPairs.EQ.0) RETURN
+
 c     setup for theoretical cross sections
       CALL pair_init
 c
@@ -995,7 +974,13 @@ c
 c
       CLOSE(34)
 c
-      DEALLOCATE(qmit3,qmitT3,qmitTT,emitT3)
+
+      DEALLOCATE(wmit3,vmit3)
+      DEALLOCATE(emit3,fmit3)
+      DEALLOCATE(emitT3,fmitT3)
+      DEALLOCATE(emitTT,fmitTT)
+      DEALLOCATE(total,diff1,diff2)
+      DEALLOCATE(qmit3,qmitT3,qmitTT)
 444   FORMAT(A,I3.3,'.dat')
       RETURN
       END
