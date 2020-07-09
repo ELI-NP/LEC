@@ -936,7 +936,7 @@ c
       DO i = IPTSS,IPTFF
          ENE0 = (DBLE(i)-0.5d0)*ENEd
          IF(ENE0.GE.2.d0) THEN
-           kk   = MIN(IDNINT(log(ENE0*0.5d0)/dp1 + 1.d0),LPx)
+           kk   = min(IDNINT(log(ENE0*0.5d0)/dp1 + 1.d0),LPx)
            ff   = totalH(kk)
            ENE  = (1.d0 - dexp(-3.d - 5*ff))*emitT3(i)
 c INTegration of total cross section
@@ -1915,7 +1915,7 @@ c     totalmin2 = 1.200d0*(Zcom/137.d0)**2 ! for  low Z
          k0 = dsqrt(kx**2)
          dk =(k0 - 2.d0)/DBLE(LE0)       ! minus 2*mc^2
          kk = 1.d0/(k0*k0*k0)
-         IF(k0.LE.2.d0) cycle
+         IF(k0.LE.2.d0) CYCLE
          DO i = 1,LE0
             k = dk*(DBLE(i)-0.5d0) ! ratio of emission positron energy
             E0 = k + 1.d0     ! positron energy
@@ -1926,7 +1926,7 @@ c     totalmin2 = 1.200d0*(Zcom/137.d0)**2 ! for  low Z
 
             eL = 2.d0*log((E*E0 + p*p0 + 1.d0)/k0) ! L
             ec = 2.d0*log(E0 + P0)               ! E+
-            ee = 2.d0*log(E +p)               ! E-
+            ee = 2.d0*log(E + p)               ! E-
 
             ppi = 1.d0/(p0*p)
             p3i = 1.d0/(p0**3)
@@ -1953,7 +1953,7 @@ c
 c     Coulomb correction for relativistic case
 c
             eL = (E**2 + E0**2 + (2.d0/3.d0)*E*E0)*totalmin2
-            Fd1= -2.d0*kk*eL*(k0 - 2.d0)
+            Fd1 = -2.d0*kk*eL*(k0 - 2.d0)
 
             resultJ(i,j) = Fd1 + Fd0
 c
