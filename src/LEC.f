@@ -203,16 +203,16 @@ c
 c
         IF(OutRad.EQ.1) CALL store_orbit    !calculate emission
         IF((MOD(kstep,ksout).EQ.0)
-     &     .and.(alpha.GT.0.d0)  ) CALL average_energy !calculate average energy
+     &     .AND.(alpha.GT.0.d0)  ) CALL average_energy !calculate average energy
 c
         IF((MOD(kstep,ksmax).EQ.0)
-     &     .and.(alpha.GT.0.d0)  ) CALL histogram
+     &     .AND.(alpha.GT.0.d0)  ) CALL histogram
 c
         IF((MOD(kstep,ksmax).EQ.0)
-     &     .and.(alpha.GT.0.d0)  ) CALL histogram2d
+     &     .AND.(alpha.GT.0.d0)  ) CALL histogram2d
 c
         IF((MOD(kstep,1000).EQ.0)
-     &     .and.(myrank.EQ.0))
+     &     .AND.(myrank.EQ.0))
      &	WRITE(*,*) "Iteration =", kstep,"; Time step =", Rt*kstep
 c---------------------------------------------------------
       IF(kstep.GE.ksmax) GO TO 2500
@@ -656,32 +656,32 @@ c
             Vy  = Re(5,L)
             Vz  = Re(6,L)
             GAMM = sqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
-            SE(LP) = SE(LP)  +GAMM
+            SE(LP) = SE(LP) + GAMM
          END DO
       END DO
 c
       GAMM = 0.d0
       DO LP=1,icpu,4
-         GAMM = GAMM + SE(LP)  + SE(LP + 1)
+         GAMM = GAMM + SE(LP) + SE(LP + 1)
      &          + SE(LP + 2) + SE(LP + 3)
       END DO
 
       EKK = 0.d0
 c---------------------------------------------------------
       CALL mpi_allreduce(GAMM,EKK,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world ,ierr)
 c
       EKK = EKK/(itotal*nprocs)
       SE_neg = 0.d0 ; SE_pos = 0.d0
       num_pos=0 ; num_neg = 0
       DO LP = 1, icpu
-         IPTSS  = itotal0*(LP - 1)+1
-         IPTFF  = MIN(itotal0* LP, itotal)
-         DO L  = IPTSS,IPTFF
+         IPTSS = itotal0*(LP - 1) + 1
+         IPTFF = MIN(itotal0*LP, itotal)
+         DO L = IPTSS,IPTFF
             Vx  = Re(4,L)
             Vy  = Re(5,L)
             Vz  = Re(6,L)
-            GAMM = sqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
+            GAMM = dsqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
             sss = GAMM - EKK
             IF(sss.LT.0.d0) THEN
               SE_neg(LP) = SE_neg(LP) + abs(sss)
@@ -699,33 +699,33 @@ c
          SIG_pos = SIG_pos + SE_pos(LP)  + SE_pos(LP + 1)
      &		 + SE_pos(LP + 2) + SE_pos(LP + 3)
          SIG_neg = SIG_neg + SE_neg(LP)  + SE_neg(LP + 1)
-     &		 + SE_neg(LP + 2)+ SE_neg(LP + 3)
+     &		 + SE_neg(LP + 2) + SE_neg(LP + 3)
           num_p = num_p   + num_pos(LP) + num_pos(LP + 1)
-     &            + num_pos(LP + 2)+num_pos(LP + 3)
+     &            + num_pos(LP + 2) + num_pos(LP + 3)
           num_n = num_n  + num_neg(LP) + num_neg(LP + 1)
-     &            + num_neg(LP + 2)+num_neg(LP + 3)
+     &            + num_neg(LP + 2) + num_neg(LP + 3)
       END DO
 c
       SIGE_pos = 0.d0 ; SIGE_neg = 0.d0
       num_pp = 0 ; num_nn = 0
       CALL mpi_allreduce(SIG_pos,SIGE_pos,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
       CALL mpi_allreduce(SIG_neg,SIGE_neg,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
       CALL mpi_allreduce(num_p,num_pp,1,MPI_INTEGER,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
       CALL mpi_allreduce(num_n,num_nn,1,MPI_INTEGER,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
 c
-      SIGE_pos=SIGE_pos/num_pp
+      SIGE_pos = SIGE_pos/num_pp
       SIGE_neg = SIGE_neg/num_nn
 c
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'AveEne',jobno
         OPEN (20,file=fo_name2,form='formatted',status='unknown')
-        WRITE(20,666) t*Rt2,EKK*0.511d6
-     &		 ,(EKK + SIGE_pos)*0.511d6
-     &		 ,(EKK - SIGE_neg)*0.511d6
+        WRITE(20,666) t*Rt2, EKK*0.511d6
+     &		 , (EKK + SIGE_pos)*0.511d6
+     &		 , (EKK - SIGE_neg)*0.511d6
       END IF
 444   FORMAT(A,I3.3,'.dat')
 666   FORMAT(11(E16.6,1X))
@@ -1695,7 +1695,7 @@ c
 
 444   FORMAT(A,I4.4,I4.4,'.dat')
 666   FORMAT(2(E14.4,1X))
-	RETURN
+      RETURN
       END
 !-------------------------------------
       SUBROUTINE photon_his
