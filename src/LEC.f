@@ -470,7 +470,7 @@ c---------------------------
         WRITE(9,*) "electron number per shot  ", enum
         WRITE(9,*) "incident angle    [degree]", inc_ang
         inc_ang = inc_ang/180.d0*pi
-
+        WRITE(*,*) "1"
         DO k = 1,sampled - 1
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
@@ -497,6 +497,7 @@ c
         END DO
         END DO
         END DO
+        WRITE(*,*) "2"
         wight00 = 0.d0
         DO i = 1,sampled3
              wight00 = wight00 + wight0(i)
