@@ -160,13 +160,13 @@ c
       WRITE(9,*) "total number of thREADs=",thREADs
 c
       CALL setprm  						!PARAMETER setup
-      WRITE(*,*) "setprm"
+      IF(myrank.EQ.0) WRITE(*,*) "setprm"
       CALL welcome
-      WRITE(*,*) "welcome"
+      IF(myrank.EQ.0) WRITE(*,*) "welcome"
 c
       CALL system_clock(tinit0)
       CALL setbeam
-      WRITE(*,*) "setbeam"
+      IF(myrank.EQ.0) WRITE(*,*) "setbeam"
 c
       WRITE(fo_name2,444) TRIM(data_file)//'orbt1q',jobno
       OPEN (10,file=fo_name2,form='formatted',status='REPLACE')
@@ -204,17 +204,17 @@ c
         CALL system_clock(tmove1)
         tmove = tmove + (tmove1 - tmove0)
 c
-        WRITE(*,*) "step", kstep
+        IF(myrank.EQ.0) WRITE(*,*) "step", kstep
         IF(OutRad.EQ.1) CALL outphtn    !calculate emission
-        WRITE(*,*) "outphtn"
+        IF(myrank.EQ.0) WRITE(*,*) "outphtn"
         IF((MOD(kstep,ksout).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL avgene !calculate average energy
 c
-        WRITE(*,*) "avgene"
+        IF(myrank.EQ.0) WRITE(*,*) "avgene"
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram
 c
-        WRITE(*,*) "histogram"
+        IF(myrank.EQ.0) WRITE(*,*) "histogram"
         IF((MOD(kstep,ksmax).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL histogram2d
 c
@@ -423,7 +423,7 @@ c     diffR ;   quantum differential cross section
 c
       CALL getcwd(cwd)
       table_location = TRIM(cwd)//'/TABLE/'//TRIM(ADJUSTL(qed_file))
-      IF (myrank.EQ.0) THEN
+      IF(myrank.EQ.0) THEN
       INQUIRE(file=TRIM(table_location), exist=exists)
       IF (.NOT.exists) THEN
          WRITE(*,*) '*** ERROR ***'
@@ -460,7 +460,7 @@ c generate initial electron conditions for incident beam
 c---------------------------
       IF(alpha.NE.0.d0) THEN
 c---------------------------
-        sampled = 19 ; sampled2 = sampled/2
+        sampled = 12 ; sampled2 = sampled/2
         sampled3 = (sampled - 1)**3
 
         ALLOCATE(Re(11,sampled3))
@@ -470,7 +470,7 @@ c---------------------------
         WRITE(9,*) "electron number per shot  ", enum
         WRITE(9,*) "incident angle    [degree]", inc_ang
         inc_ang = inc_ang/180.d0*pi
-        WRITE(*,*) "1"
+        IF(myrank.EQ.0)  WRITE(*,*) "1"
         DO k = 1,sampled - 1
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
@@ -497,7 +497,7 @@ c
         END DO
         END DO
         END DO
-        WRITE(*,*) "2"
+        IF(myrank.EQ.0) WRITE(*,*) "2"
         wight00 = 0.d0
         DO i = 1,sampled3
              wight00 = wight00 + wight0(i)
@@ -519,7 +519,7 @@ c
            Re(4,i) = Vx0*dcos(inc_ang)-Vy0*dsin(inc_ang)
            Re(5,i) = Vx0*dsin(inc_ang)+Vy0*dcos(inc_ang)
         END DO
-        WRITE(*,*) "3"
+        IF(myrank.EQ.0) WRITE(*,*) "3"
         itotal = INT(sampled3/DBLE(nprocs))
         ALLOCATE(Rh(11,itotal))
         ALLOCATE(wight(itotal))
@@ -540,9 +540,9 @@ c
         END DO
         Re = Rh
 c
-        WRITE(*,*) "4"
+        IF(myrank.EQ.0) WRITE(*,*) "4"
         CALL histogram
-        WRITE(*,*) "5"
+        IF(myrank.EQ.0) WRITE(*,*) "5"
         CALL histogram2d
 c----------
       ELSE
@@ -570,7 +570,7 @@ c
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 c
-        WRITE(*,*) "6"
+      IF(myrank.EQ.0) WRITE(*,*) "6"
       if(OutRad.EQ.1) THEN
          ALLOCATE(phtn(6,ksmax,itotal))
          phtn = 0.d0
