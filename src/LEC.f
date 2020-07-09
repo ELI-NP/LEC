@@ -968,7 +968,7 @@ c
          qmitT3(i)=ff
       END DO
 c
-c END convert to the positron track data using materical filter
+c END convert to the positron track data using material filter
 c
 c summation in MPI processes
 c
