@@ -466,12 +466,12 @@ c---------------------------
 c
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
-           kk = (k - 1)*(sampled - 1) + i
+           kk = (j - 1)*(sampled - 1) + i
            CALL random_number(rand)
            CALL random_number(rand1)
            phaseX  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
            phaseY  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
-           Re(1,kk) = wp*xinit + phaseX*wb
+           Re(1,kk) = wp*xinit
            Re(2,kk) = phaseX*wb
            Re(3,kk) = phaseY*wb
            wight0(kk) = dexp(-phaseX**2 - phaseY**2)
