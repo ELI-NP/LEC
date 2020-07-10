@@ -68,15 +68,15 @@ c
       INTEGER      :: Lall,LP,IPTSS,IPTFF,jj
       INTEGER,DIMENSION(7) :: Ne7
       REAL(kind=8) :: wight00,const
-      REAL(kind=8),DIMENSION(:), ALLOCATABLE :: wight0
-      REAL(kind=8),DIMENSION(:), ALLOCATABLE :: wight
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wight0
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wight
       REAL(kind=8) :: TmY,TmZ
       REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
-      REAL(kind = 8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
-      REAL(kind=8),ALLOCATABLE,DIMENSION(:):: wmit3,vmit3
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3
-      REAL(kind=8),DIMENSION(: ),ALLOCATABLE :: emitT3,fmitT3
-      REAL(kind=8),DIMENSION(: ),ALLOCATABLE :: emitTT,fmitTT
+      REAL(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wmit3,vmit3
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitT3,fmitT3,qmitT3
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitTT,fmitTT,qmitTT
       END MODULE R_common
 c
       program main
@@ -197,22 +197,22 @@ c
         IF(iconR.EQ.1) CALL Sokolov
         IF(iconR.EQ.2) CALL Landau_Lifshitz
         IF(iconR.EQ.3) CALL qedemmit	  !particle loop
-        CALL out_orbit 				  !output extracted electron orbit
+        CALL outorbit 				  !output extracted electron orbit
         CALL system_clock(tmove1)
         tmove = tmove + (tmove1 - tmove0)
 c
-        IF(OutRad.EQ.1) CALL store_orbit    !calculate emission
+        IF(OutRad.EQ.1) CALL outphtn    !calculate emission
         IF((MOD(kstep,ksout).EQ.0)
-     &     .and.(alpha.GT.0.d0)  ) CALL average_energy !calculate average energy
+     &     .AND.(alpha.GT.0.d0)  ) CALL avgene !calculate average energy
 c
         IF((MOD(kstep,ksmax).EQ.0)
-     &     .and.(alpha.GT.0.d0)  ) CALL histogram
+     &     .AND.(alpha.GT.0.d0)  ) CALL histogram
 c
         IF((MOD(kstep,ksmax).EQ.0)
-     &     .and.(alpha.GT.0.d0)  ) CALL histogram2d
+     &     .AND.(alpha.GT.0.d0)  ) CALL histogram2d
 c
         IF((MOD(kstep,1000).EQ.0)
-     &     .and.(myrank.EQ.0))
+     &     .AND.(myrank.EQ.0))
      &	WRITE(*,*) "Iteration =", kstep,"; Time step =", Rt*kstep
 c---------------------------------------------------------
       IF(kstep.GE.ksmax) GO TO 2500
@@ -223,6 +223,7 @@ c
       CLOSE(16) ;	CLOSE(20)
 c
 2500  CONTINUE
+      DEALLOCATE(RE,RH)
       IF(OutRad.EQ.1) THEN
          IF(iconR.EQ.3) THEN
             CALL photon_his
@@ -230,9 +231,8 @@ c
             CALL radiation
          END IF
       END IF
-      IF(OutPairs.EQ.1) CALL Bethe_Heitler
 c
-      DEALLOCATE(RE,RH)
+      IF(OutRad.EQ.1) DEALLOCATE(phtn)
       DEALLOCATE(wight0,wight)
 c
 333   FORMAT(A,I2.2,'_',I2.2,'.dat')
@@ -373,7 +373,7 @@ c
         WRITE(9,*) " "
       ELSE IF(iconR.EQ.2) THEN
         WRITE(9,*) " "
-        WRITE(9,*) "Particle pusher: reduced Landau LIFshitz"
+        WRITE(9,*) "Particle pusher: reduced Landau Lifshitz"
         WRITE(9,*) " "
       ELSE IF(iconR.EQ.3) THEN
         WRITE(9,*) " "
@@ -416,7 +416,7 @@ c     diffR ;   quantum differential cross section
 c
       CALL getcwd(cwd)
       table_location = TRIM(cwd)//'/TABLE/'//TRIM(ADJUSTL(qed_file))
-      IF (myrank.EQ.0) THEN
+      IF(myrank.EQ.0) THEN
       INQUIRE(file=TRIM(table_location), exist=exists)
       IF (.NOT.exists) THEN
          WRITE(*,*) '*** ERROR ***'
@@ -453,8 +453,8 @@ c generate initial electron conditions for incident beam
 c---------------------------
       IF(alpha.NE.0.d0) THEN
 c---------------------------
-        sampled = 19 ; sampled2 = sampled/2
-        sampled3 = (sampled - 1)**3
+        sampled = 39 ; sampled2 = sampled/2
+        sampled3 = (sampled - 1)**2
 
         ALLOCATE(Re(11,sampled3))
         ALLOCATE(wight0(sampled3))
@@ -463,21 +463,18 @@ c---------------------------
         WRITE(9,*) "electron number per shot  ", enum
         WRITE(9,*) "incident angle    [degree]", inc_ang
         inc_ang = inc_ang/180.d0*pi
-
-        DO k = 1,sampled - 1
+c
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
-           kk = (k - 1)*(sampled - 1)*(sampled - 1)
-     &          + (j - 1)*(sampled - 1) + i
+           kk = (j - 1)*(sampled - 1) + i
            CALL random_number(rand)
            CALL random_number(rand1)
-           phaseX  = (DBLE(k - sampled2))/(sampled2 - 1)*0.707d0
-           phaseY  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
-           phaseZ  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
-           Re(1,kk) = wp*xinit + phaseX*wb
-           Re(2,kk) = phaseY*wb
-           Re(3,kk) = phaseZ*wb
-           wight0(kk) = dexp(-phaseX**2 - phaseY**2 - phaseZ**2)
+           phaseX  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
+           phaseY  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
+           Re(1,kk) = wp*xinit
+           Re(2,kk) = phaseX*wb
+           Re(3,kk) = phaseY*wb
+           wight0(kk) = dexp(-phaseX**2 - phaseY**2)
 c
            IF(load_particle) CALL manual_load
 c
@@ -489,10 +486,10 @@ c
      &	          	  *dsqrt(-2.d0*log(rand))
         END DO
         END DO
-        END DO
+c
         wight00 = 0.d0
         DO i = 1,sampled3
-            wight00 = wight00 + wight0(i)
+             wight00 = wight00 + wight0(i)
         END DO
         wight0 = wight0/wight00
 c
@@ -511,7 +508,7 @@ c
            Re(4,i) = Vx0*dcos(inc_ang)-Vy0*dsin(inc_ang)
            Re(5,i) = Vx0*dsin(inc_ang)+Vy0*dcos(inc_ang)
         END DO
-
+c
         itotal = INT(sampled3/DBLE(nprocs))
         ALLOCATE(Rh(11,itotal))
         ALLOCATE(wight(itotal))
@@ -559,14 +556,27 @@ c
          Ne7(i)=(itotal/8)*i + 1
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
+
+      i = sampled3/2+1
+      j = i/itotal+1
+      WRITE(9,*) "rank number with head-on collision", j-1
+      IF((jj+1.LE.i).and.(jj+itotal.GE.i)) THEN
+         WRITE(9,*) "head-on collision case myrank=", myrank
+         WRITE(9,*) "adjust head-on collision case to Ne7(1)"
+         Ne7(1) = i - jj
+      END IF
 c
-      if(OutRad.EQ.1) ALLOCATE(phtn(6,ksmax,itotal))
+      if(OutRad.EQ.1) THEN
+         ALLOCATE(phtn(6,ksmax,itotal))
+         phtn = 0.d0
+      END IF
+
 444   FORMAT(A,I4.4,'.dat')
 666   FORMAT(3(E14.4,1X))
       RETURN
       END
 !--------------------------------------
-      SUBROUTINE store_orbit
+      SUBROUTINE outphtn
 !-------------------------------------
       USE random_common
       USE sim_common
@@ -605,7 +615,7 @@ c
       RETURN
       END
 !--------------------------------------
-      SUBROUTINE out_orbit
+      SUBROUTINE outorbit
 !--------------------------------------
       USE random_common
       USE sim_common
@@ -630,7 +640,7 @@ c
       RETURN
       END
 !------------------------------
-      SUBROUTINE average_energy
+      SUBROUTINE avgene
 !------------------------------
       USE random_common
       USE sim_common
@@ -656,32 +666,32 @@ c
             Vy  = Re(5,L)
             Vz  = Re(6,L)
             GAMM = sqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
-            SE(LP) = SE(LP)  +GAMM
+            SE(LP) = SE(LP) + GAMM
          END DO
       END DO
 c
       GAMM = 0.d0
       DO LP=1,icpu,4
-         GAMM = GAMM + SE(LP)  + SE(LP + 1)
+         GAMM = GAMM + SE(LP) + SE(LP + 1)
      &          + SE(LP + 2) + SE(LP + 3)
       END DO
 
       EKK = 0.d0
 c---------------------------------------------------------
       CALL mpi_allreduce(GAMM,EKK,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world ,ierr)
 c
       EKK = EKK/(itotal*nprocs)
       SE_neg = 0.d0 ; SE_pos = 0.d0
       num_pos=0 ; num_neg = 0
       DO LP = 1, icpu
-         IPTSS  = itotal0*(LP - 1)+1
-         IPTFF  = MIN(itotal0* LP, itotal)
-         DO L  = IPTSS,IPTFF
+         IPTSS = itotal0*(LP - 1) + 1
+         IPTFF = MIN(itotal0*LP, itotal)
+         DO L = IPTSS,IPTFF
             Vx  = Re(4,L)
             Vy  = Re(5,L)
             Vz  = Re(6,L)
-            GAMM = sqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
+            GAMM = dsqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
             sss = GAMM - EKK
             IF(sss.LT.0.d0) THEN
               SE_neg(LP) = SE_neg(LP) + abs(sss)
@@ -699,33 +709,33 @@ c
          SIG_pos = SIG_pos + SE_pos(LP)  + SE_pos(LP + 1)
      &		 + SE_pos(LP + 2) + SE_pos(LP + 3)
          SIG_neg = SIG_neg + SE_neg(LP)  + SE_neg(LP + 1)
-     &		 + SE_neg(LP + 2)+ SE_neg(LP + 3)
+     &		 + SE_neg(LP + 2) + SE_neg(LP + 3)
           num_p = num_p   + num_pos(LP) + num_pos(LP + 1)
-     &            + num_pos(LP + 2)+num_pos(LP + 3)
+     &            + num_pos(LP + 2) + num_pos(LP + 3)
           num_n = num_n  + num_neg(LP) + num_neg(LP + 1)
-     &            + num_neg(LP + 2)+num_neg(LP + 3)
+     &            + num_neg(LP + 2) + num_neg(LP + 3)
       END DO
 c
       SIGE_pos = 0.d0 ; SIGE_neg = 0.d0
       num_pp = 0 ; num_nn = 0
       CALL mpi_allreduce(SIG_pos,SIGE_pos,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
       CALL mpi_allreduce(SIG_neg,SIGE_neg,1,MPI_REAL8,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
       CALL mpi_allreduce(num_p,num_pp,1,MPI_INTEGER,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
       CALL mpi_allreduce(num_n,num_nn,1,MPI_INTEGER,MPI_SUM
-     &                                ,mpi_comm_world ,ierr)
+     &                   ,mpi_comm_world,ierr)
 c
-      SIGE_pos=SIGE_pos/num_pp
+      SIGE_pos = SIGE_pos/num_pp
       SIGE_neg = SIGE_neg/num_nn
 c
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'AveEne',jobno
         OPEN (20,file=fo_name2,form='formatted',status='unknown')
-        WRITE(20,666) t*Rt2,EKK*0.511d6
-     &		 ,(EKK + SIGE_pos)*0.511d6
-     &		 ,(EKK - SIGE_neg)*0.511d6
+        WRITE(20,666) t*Rt2, EKK*0.511d6
+     &		 , (EKK + SIGE_pos)*0.511d6
+     &		 , (EKK - SIGE_neg)*0.511d6
       END IF
 444   FORMAT(A,I3.3,'.dat')
 666   FORMAT(11(E16.6,1X))
@@ -847,7 +857,9 @@ c
 !$omp end parallel do
       CALL system_clock(tcurr1)
       tcurr = tcurr + tcurr1 - tcurr0
+c
 c summation in MPI processes
+c
       IF(kstep.NE.ksmax) RETURN
 c
       CALL system_clock(trdct0)
@@ -893,30 +905,8 @@ c
 c
       WRITE(9,*) "total reduction energy [J]", ff*0.511d6*1.6d-19
 
-      DEALLOCATE(wmit3,vmit3)
-      DEALLOCATE(emit3,fmit3)
-      DEALLOCATE(fmitT3)
-      DEALLOCATE(emitTT,fmitTT)
-      DEALLOCATE(total,diff1,diff2)
-444   FORMAT(A,I3.3,'.dat')
-      RETURN
-      END
-!-----------------------------
-      SUBROUTINE Bethe_Heitler
-!-----------------------------
-      USE random_common
-      USE sim_common
-      USE mpi_common
-      USE R_common
-      USE out_common
-      USE omp_lib
-      IMPLICIT NONE
-      INCLUDE "mpif.h"
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE:: qmit3
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE:: qmitT3
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE:: qmitTT
-c
-      IF(OutRad.EQ.0) RETURN
+      IF(OutPairs.EQ.0) RETURN
+
 c     setup for theoretical cross sections
       CALL pair_init
 c
@@ -990,7 +980,13 @@ c
 c
       CLOSE(34)
 c
-      DEALLOCATE(qmit3,qmitT3,qmitTT,emitT3)
+
+      DEALLOCATE(wmit3,vmit3)
+      DEALLOCATE(emit3,fmit3)
+      DEALLOCATE(emitT3,fmitT3)
+      DEALLOCATE(emitTT,fmitTT)
+      DEALLOCATE(total,diff1,diff2)
+      DEALLOCATE(qmit3,qmitT3,qmitTT)
 444   FORMAT(A,I3.3,'.dat')
       RETURN
       END
@@ -1695,7 +1691,7 @@ c
 
 444   FORMAT(A,I4.4,I4.4,'.dat')
 666   FORMAT(2(E14.4,1X))
-	RETURN
+      RETURN
       END
 !-------------------------------------
       SUBROUTINE photon_his
