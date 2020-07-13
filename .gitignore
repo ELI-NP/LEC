@@ -44,3 +44,4 @@ docs/build/
 docs/source/_templates/
 bin
 examples/Data_test
+src/linkedlist.f

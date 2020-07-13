@@ -1,17 +1,16 @@
       MODULE random_common
       INTEGER,PARAMETER :: icpu = 4
-      INTEGER,PARAMETER      :: LE0 = 1000   ,LE1=1000
-      REAL(kind=8),PARAMETER :: Zcom = 79.d0   ! Z component for nucl
-      REAL(kind=8),PARAMETER :: Zcm3 = 4.3d0   ! zcm3 = zcom**(1/3)
+      INTEGER,PARAMETER :: LE0 = 1000, LE1=1000
+      INTEGER,PARAMETER :: LPx = 200
+      REAL(kind=8) :: dp1
+      REAL(kind=8),PARAMETER :: Zcom = 79.d0  ! Z component for nucl
+      REAL(kind=8),PARAMETER :: Zcm3 = 4.3d0  ! zcm3 = zcom**(1/3)
 c     REAL(kind=8),PARAMETER :: Zcom = 13.d0  ! Z component for nucl
 c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
-      INTEGER,PARAMETER      :: LPx = 200
       REAL(kind=8),PARAMETER :: BPx = 200.d0
       REAL(kind=8),PARAMETER :: Emax = 10000.d0
-c
-      REAL(kind=8) :: dp1
-      REAL(kind=8),SAVE,DIMENSION(LE0,LPx) :: resultL
       REAL(kind=8),SAVE,DIMENSION(LPx) :: totalH,totalH2
+      REAL(kind=8),SAVE,DIMENSION(LE0,LPx) :: resultL
       END MODULE random_common
 c
       MODULE sim_common
@@ -20,7 +19,8 @@ c
      &               ,itotal,ksoutP,iconR,SKL,LL,polar,shape
      &               ,photon,species,shot,itotal0,L,OutRad,OutPairs
      &		   ,QED,sampled,sampled2,sampled3,sampled4,load
-      LOGICAL      :: emmits,exists,load_particle
+      LOGICAL      :: emmits,exists
+      REAL(kind=8) :: PQM     ! charge/mass ; rmass=-1.d0 for electron
       REAL(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
       REAL(kind=8) :: PXS,PYS,PZS,BXT,BYT,BZT
@@ -37,9 +37,8 @@ c
       REAL(kind=8) :: we0i,wpi,wsi,Pksout,wmin,www,Tm,Um,FF1,ENEd
       REAL(kind=8) :: ENEh,ENEv,ENE0,ENE,EmaxV,we0,XI,ENN,p_x,ENEA
       REAL(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
-      REAL(kind=8) :: PQM       ! charge/mass ; rmass=-1.d0 for electron
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE   :: RE,RH
       REAL(kind=8) :: ERD,EKE,EKK,ERK
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: RE,RH
       REAL(kind=8),DIMENSION(0:3000 + 1,200):: diffC,diffQ,diffD,diffR
       REAL(kind=8),DIMENSION(200) :: totalR,totalC,totalP,totalRC
      &                              ,totalS,totalT
@@ -65,18 +64,18 @@ c
       END MODULE out_common
 
       MODULE R_common
-      INTEGER      :: Lall,LP,IPTSS,IPTFF,jj
+      INTEGER :: Lall,LP,IPTSS,IPTFF,jj
       INTEGER,DIMENSION(7) :: Ne7
       REAL(kind=8) :: wight00,const
+      REAL(kind=8) :: TmY,TmZ
+      REAL(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wight0
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wight
-      REAL(kind=8) :: TmY,TmZ
-      REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
-      REAL(kind=8) :: wmitT3,vmitT3,wmitTT,vmitTT,hh
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: wmit3,vmit3
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitT3,fmitT3,qmitT3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitTT,fmitTT,qmitTT
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
+      REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
       END MODULE R_common
 c
       program main
@@ -108,31 +107,31 @@ c
 c
       CALL getcwd(cwd)
       IF (myrank.EQ.0) THEN
-         OPEN(unit=41, status='OLD', file = TRIM(data_dir_file)
-     &	, iostat=ierr)
+         OPEN(unit=41, status='OLD',file = TRIM(data_dir_file)
+     &	  ,iostat=ierr)
          IF (ierr.EQ.0) THEN
-      	    READ(41,'(A)') data_dir
+      	READ(41,'(A)') data_dir
             CLOSE(41)
-      	    PRINT*, 'Using data directory "'
-     &	          // TRIM(data_dir) // '"'
+      	WRITE(*,*) 'Using data directory "'
+     &	           // TRIM(data_dir) // '"'
          ELSE
-     	    PRINT*, 'SpecIFy output directory'
-      	    READ(*,'(A)') data_dir
+     	      WRITE(*,*) 'SpecIFy output directory'
+      	READ(*,'(A)') data_dir
          END IF
       END IF
       CALL MPI_BCAST(data_dir,100, MPI_CHARACTER, 0,MPI_COMM_WORLD,ierr)
-
+c
       input_file = TRIM(ADJUSTL(data_dir))//'/'
      &	    // TRIM(ADJUSTL(filename))
-
-      data_file =  TRIM(ADJUSTL(data_dir))//'/'
+c
+      data_file = TRIM(ADJUSTL(data_dir))//'/'
 c
       INQUIRE(file=input_file, exist=exists)
-      IF (.NOT. exists .AND. myrank == 0) THEN
-        PRINT *, '*** ERROR ***'
-        PRINT *, 'Input deck file "' // TRIM(input_file)
+      IF(.NOT. exists .AND. myrank == 0) THEN
+        WRITE(*,*) '*** ERROR ***'
+        WRITE(*,*) 'Input deck file "' // TRIM(input_file)
      &            // '" DOes not exist.'
-        PRINT *, 'Create the file and rerun the code.'
+        WRITE(*,*) 'Create the file and rerun the code.'
       END IF
 c
       IF(myrank.EQ.0) THEN
@@ -159,8 +158,8 @@ c
 !$omp END parallel
       WRITE(9,*) "total number of thREADs=",thREADs
 c
-      CALL setprm  						!PARAMETER setup
       CALL welcome
+      CALL setprm  						!PARAMETER setup
 c
       CALL system_clock(tinit0)
       CALL setbeam
@@ -201,7 +200,7 @@ c
         CALL system_clock(tmove1)
         tmove = tmove + (tmove1 - tmove0)
 c
-        IF(OutRad.EQ.1) CALL outphtn    !calculate emission
+        IF(OutRad.EQ.1) CALL outphtn        !store data for emission calculation
         IF((MOD(kstep,ksout).EQ.0)
      &     .AND.(alpha.GT.0.d0)  ) CALL avgene !calculate average energy
 c
@@ -269,8 +268,8 @@ c
       USE out_common
       USE omp_lib
       IMPLICIT NONE
-      CHARACTER(LEN=8)  :: qed_file = 'vac4.dat'
-      CHARACTER(LEN=100):: table_location
+      CHARACTER(LEN=8) :: qed_file = 'vac4.dat'
+      CHARACTER(LEN=100) :: table_location
 
       VL = 3.d0*1.0d8              ! light speed           [m/s]
       EL = 2.74d0*1.0d3 *dsqrt(SL) ! peak electric field   [V/m]
@@ -325,14 +324,9 @@ c
       WRITE(9,*) "pulse duration (FWHM)         [s]", ppt*1.1774d0
       WRITE(9,*) "waist radius (1/e2)           [m]", sp
 c
-      WRITE(9,*) " "
-      WRITE(9,*) "PARAMETERs for electron beam"
-      WRITE(9,*) " "
       IF(load.EQ.1) THEN
-        load_particle=.TRUE.
         WRITE(9,*) "Load particles from: f_E_smoothed_new_final.txt"
-      ELSE
-        load_particle=.FALSE.
+        GO TO 5555
       END IF
       WRITE(9,*) " "
       WRITE(9,*) "PARAMETERs for electron beam"
@@ -345,7 +339,7 @@ c
         WRITE(9,*) "momentum spREAD z [%]", sigmaz*100
       END IF
       WRITE(9,*) "number of shot",shot
-c
+5555  CONTINUE
       WRITE(9,*) " "
       WRITE(9,*) "PARAMETERs for computation"
       WRITE(9,*) " "
@@ -371,10 +365,12 @@ c
         WRITE(9,*) " "
         WRITE(9,*) "Particle pusher: Sokolov"
         WRITE(9,*) " "
+        IF(QED.EQ.1) WRITE(9,*) "QED_assisted"
       ELSE IF(iconR.EQ.2) THEN
         WRITE(9,*) " "
         WRITE(9,*) "Particle pusher: reduced Landau Lifshitz"
         WRITE(9,*) " "
+        IF(QED.EQ.1) WRITE(9,*) "QED_assisted"
       ELSE IF(iconR.EQ.3) THEN
         WRITE(9,*) " "
         WRITE(9,*) "Particle pusher: Lorentz"
@@ -382,20 +378,15 @@ c
         WRITE(9,*) " "
       END IF
 c
-      IF(QED.EQ.0) THEN
-        WRITE(9,*) "USE QED: No, Classical"
-        WRITE(9,*) " "
-      ELSE
-        WRITE(9,*) "USE QED: QED_assisted"
-        WRITE(9,*) " "
-      END IF
+      IF(QED.EQ.0)  WRITE(9,*) "Classical"
+      WRITE(9,*) " "
 c
       WRITE(9,*) "max time step",ksmax
       ksout = 1
       ksoutP = 1
       IF(ksmax.GE.10000) ksout = ksmax/10000
       IF(ksmax.GE.1000000) ksoutP = ksmax/1000000
-      Pksout= DBLE(ksoutP)
+      Pksout = DBLE(ksoutP)
 c setup for theoretical cross sections
 c
       EmaxV= 1000.d0
@@ -433,9 +424,13 @@ c
       IF(QED.EQ.1) THEN
         totalRC = totalR/totalC
       ELSE
-        totalRC=1.d0
+        totalRC = 1.d0
       END IF
 c
+      IF(load.EQ.1)
+     &	WRITE(*,*) "Load particles from: f_E_smoothed_new_final.txt"
+      IF(OutRad.EQ.1) WRITE(*,*) 'Produce radiation'
+      IF(OutPairs.EQ.1) WRITE(*,*) 'Produce pairs'
       RETURN
       END
 !--------------------------------------
@@ -476,14 +471,14 @@ c
            Re(3,kk) = phaseY*wb
            wight0(kk) = dexp(-phaseX**2 - phaseY**2)
 c
-           IF(load_particle) CALL manual_load
+           IF(load.EQ.1) CALL manual_load
 c
            Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
-     &		            *Vx*dsqrt(-2.d0*log(rand))
+     &		    *Vx*dsqrt(-2.d0*log(rand))
            Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*rand1)
-     &		            *dsqrt(-2.d0*log(rand))
+     &		    *dsqrt(-2.d0*log(rand))
            Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
-     &	          	  *dsqrt(-2.d0*log(rand))
+     &	          *dsqrt(-2.d0*log(rand))
         END DO
         END DO
 c
@@ -534,11 +529,14 @@ c
 c----------
       ELSE
 c----------
+        sampled3 = 0
+        enum = 1.d0
         WRITE(9,*) "single electron"
         WRITE(9,*) "electron number per shot = 1  "
         ALLOCATE(Re(11,1),Rh(11,1))
         ALLOCATE(wight0(1),wight(1))
         itotal = 1
+        jj = 0
         Xe = wp*xinit
         Ye = 0.d0
         Ze = 0.d0
@@ -557,10 +555,10 @@ c
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 
-      i = sampled3/2+1
-      j = i/itotal+1
+      i = INT(sampled3/2) + 1
+      j = i/itotal + 1
       WRITE(9,*) "rank number with head-on collision", j-1
-      IF((jj+1.LE.i).and.(jj+itotal.GE.i)) THEN
+      IF((jj + 1.LE.i).and.(jj + itotal.GE.i)) THEN
          WRITE(9,*) "head-on collision case myrank=", myrank
          WRITE(9,*) "adjust head-on collision case to Ne7(1)"
          Ne7(1) = i - jj
@@ -570,7 +568,12 @@ c
          ALLOCATE(phtn(6,ksmax,itotal))
          phtn = 0.d0
       END IF
-
+c
+      IF(myrank.EQ.0) THEN
+        WRITE(*,*) "Set beam OK"
+        WRITE(*,*) "Total particle", itotal*nprocs
+      END IF
+c
 444   FORMAT(A,I4.4,'.dat')
 666   FORMAT(3(E14.4,1X))
       RETURN
@@ -621,7 +624,6 @@ c
       USE sim_common
       USE mpi_common
       USE R_common
-      USE omp_lib
       IMPLICIT NONE
 
       IF(MOD(kstep,ksout).EQ.0) THEN
@@ -633,7 +635,7 @@ c
          ENE = dsqrt(1.d0 + Vx**2 + Vy**2 + Vz**2)
          WRITE(9 + i,666) t*Rt2, Re(1,k)*Rx, Re(2,k)*Rx	!t, x, y
      &             ,Re(4,k), Re(5,k), (ENE)*0.511d6	      !px, py, K.E
-     &	       ,abs(TTT)*0.511d6, RAD*0.511d6, Xi	      !Wem,Wrad,chi_e
+     &	       ,Re(7,k)*0.511d6, Re(9,k)*0.511d6, Xi	!Wem,Wrad,chi_e
       END DO
       END IF
  666  FORMAT(11(E16.6,1X))
@@ -649,10 +651,10 @@ c
       USE out_common
       USE omp_lib
       IMPLICIT NONE
+      INTEGER :: num_p,num_n,num_pp,num_nn
+      INTEGER,DIMENSION(icpu) :: num_pos, num_neg
       REAL(kind=8) :: SIG_neg,SIG_pos
      &		   ,SIGE_pos,SIGE_neg,sss
-      INTEGER      :: num_p,num_n,num_pp,num_nn
-      INTEGER,DIMENSION(icpu)      :: num_pos, num_neg
       REAL(kind=8),DIMENSION(icpu) :: SE,SE_pos,SE_neg
       INCLUDE "mpif.h"
 
@@ -980,7 +982,6 @@ c
 c
       CLOSE(34)
 c
-
       DEALLOCATE(wmit3,vmit3)
       DEALLOCATE(emit3,fmit3)
       DEALLOCATE(emitT3,fmitT3)
@@ -1003,8 +1004,8 @@ c
       INCLUDE "mpif.h"
       INTEGER,PARAMETER :: ang = 1024
       REAL(kind=8) :: thetay,thetaz,ang2
-      REAL(kind=8),DIMENSION(:,:,:),ALLOCATABLE:: emit2
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE:: emitT2,emitTT2
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emitT2,emitTT2
+      REAL(kind=8),DIMENSION(:,:,:),ALLOCATABLE :: emit2
 c
       ang2 = DBLE(ang/2)
       ALLOCATE(emit2(ang,ang,icpu))
@@ -1159,7 +1160,6 @@ c
          PYS = (BYT - Wy0*gg)*Alf
          PZS = (BZT - Wz0*gg)*Alf
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         RAD = RAD + RRR
          TTT = AVEX*(Vx*GAMMI)*dt
      &         + AVEY*(Vy*GAMMI)*dt
      &         + AVEZ*(Vz*GAMMI)*dt
@@ -1171,8 +1171,7 @@ c
          Re(6,i) = Vz
          Re(7,i) = TTT
          Re(8,i) = (ENE00 - ENE)-TTT
-         Re(9,i) = RRR !ENE0 - ENE - TTT
-c
+         Re(9,i) = RRR
          Re(10,i) = Xi
          Re(11,i) = ENE0
          END DO
@@ -1273,8 +1272,6 @@ c
      &         + AVEY*(Vy*GAMMI + PYS)*dt
      &         + AVEZ*(Vz*GAMMI + PZS)*dt
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         TT1 = TT1 + TTT
-         RAD = RAD + RRR
          Re(1,i) = Xe + Vx*GAMMI*dt + PXS*dt
          Re(2,i) = Ye + Vy*GAMMI*dt + PYS*dt
          Re(3,i) = Ze + Vz*GAMMI*dt + PZS*dt
@@ -1301,8 +1298,8 @@ c
       USE R_common
       USE omp_lib
       IMPLICIT NONE
-      REAL(kind=8) :: LLT2X,LLT2Y,LLT2Z,LL3TX,LL3TY,LL3TZ
       REAL(kind=8) :: BXK,BYK,BZK
+      REAL(kind=8) :: LLT2X,LLT2Y,LLT2Z,LL3TX,LL3TY,LL3TZ
 c
       itotal0 = INT(itotal/icpu + 1)
 !$omp do
@@ -1397,8 +1394,6 @@ c
          Wz = Vz*GAMMI
          TTT = AVEX*Wx + AVEY*Wy + AVEZ*Wz
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         TT1 = TT1 + TTT
-         RAD = RAD + RRR
          Re(1,i) = Xe + Wx*dt
          Re(2,i) = Ye + Wy*dt
          Re(3,i) = Ze + Wz*dt
@@ -1421,8 +1416,8 @@ c
       USE random_common
       USE sim_common
       IMPLICIT NONE
-      INTEGER, PARAMETER :: values = 245
       INTEGER :: d
+      INTEGER, PARAMETER :: values = 245
       INTEGER, DIMENSION(:), ALLOCATABLE :: seed
 c
 c-----Dynamic RanDOm Number Generator------
@@ -1449,7 +1444,7 @@ c
       ff = totalS(kk)*3000
       ss = totalS(kk)*det1*det2*Rt*VL*1.d0/ENE0 !
 c
-      IF(ss.GE.1.d - 3) THEN
+      IF(ss.GE.1.d-3) THEN
         WRITE(*,*) " W*dt > 1 --- Probability of emission > 1"
         WRITE(*,*) " Please reduce time step, "
         WRITE(*,*) " i.e. increase div in SLAC.dat"
@@ -1459,7 +1454,7 @@ c
 c      WRITE(*,*) ss
 c
       CALL random_number(rand)
-c      WRITE(*,*) rand
+c
       IF(rand.LT.ss) THEN
 	  emmits = .TRUE.
       ELSE
@@ -1474,17 +1469,17 @@ c
       USE random_common
       USE sim_common
       IMPLICIT NONE
-      REAL(kind=8),DIMENSION(6000) :: W
       REAL(kind=8) :: gg1,ss
+      REAL(kind=8),DIMENSION(6000) :: W
 c
       CALL random_number(rand)
-c      WRITE(*,*) rand
 c
       DO k = 1,6000
          ii = IDNINT((k - 0.5d0)*0.5d0 + 0.5d0)
-         IF(ii.GT.2999) exit
          ss = (k - 0.5d0)*0.5d0 + 0.5d0 - DBLE(ii)
-         TTT= diffR(ii,kk) + ss*(diffR(ii + 1,kk) - diffR(ii,kk))
+         IF(ii.GT.2999) exit
+         TTT = diffR(ii,kk) +
+     $         ss*(diffR(ii + 1,kk) - diffR(ii,kk))
          W(k + 1) = W(k) + TTT*0.5d0/ff
          gg1 = W(k + 1)
          IF(gg1.GE.rand) THEN
@@ -1505,8 +1500,8 @@ c
 c
       IF(QED.EQ.0) THEN
         WRITE(*,*) "QED must be turned on"
-        WRITE(*,*) "set QED = 1 in SLAC.dat"
-        stop
+        WRITE(*,*) "set QED = 1 in input.dat"
+        STOP
 	END IF
 c
       itotal0 = INT(itotal/icpu + 1)
@@ -1566,25 +1561,29 @@ c------------------------------------------------------------------
          ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
+         PXS = (BXT - Wx0*gg)*Alf
+         PYS = (BYT - Wy0*gg)*Alf
+         PZS = (BZT - Wz0*gg)*Alf
+c
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
          IF(XI.GT.0.001d0) THEN
             kk = MIN(IDNINT(log(XI*1000.d0)*we0i + 1.5d0),200)
             ENEh = Alf*totalRC(kk)
 c        calculates whether emission should occur or not
             CALL phemit
-         IF(emmits) THEN
-            CALL qmemit
-            ENN = ENN/6000
-            WRITE(*,*) "Photon Energy [MeV] =", ENN*ENE0*0.511
+            IF(emmits) THEN
+              CALL qmemit
+              ENN = ENN/6000
+              WRITE(*,*) "Photon Energy [MeV] =", ENN*ENE0*0.511
 c  ******* Update electron momentum due to recoil *******
-            Vx = Vx0*(1.d0 - ENN)
-            Vy = Vy0*(1.d0 - ENN)
-            Vz = Vz0*(1.d0 - ENN)
+              Vx = Vx0*(1.d0 - ENN)
+              Vy = Vy0*(1.d0 - ENN)
+              Vz = Vz0*(1.d0 - ENN)
             ELSE
-            ENEh = Alf
-            Vx = Vx0
-            Vy = Vy0
-            Vz = Vz0
+              ENEh = Alf
+              Vx = Vx0
+              Vy = Vy0
+              Vz = Vz0
             END IF
          ELSE
             ENEh = Alf
@@ -1593,19 +1592,12 @@ c  ******* Update electron momentum due to recoil *******
             Vz = Vz0
          END IF
 c
-         GAMMI = ENEh
-         PXS = (BXT - Wx0*gg)*GAMMI
-         PYS = (BYT - Wy0*gg)*GAMMI
-         PZS = (BZT - Wz0*gg)*GAMMI
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE
 c
          TTT = AVEX*(Vx*GAMMI)*dt
      &          + AVEY*(Vy*GAMMI)*dt
      &          + AVEZ*(Vz*GAMMI)*dt
-         RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         TT1 = TT1 + TTT
-         RAD = RAD + RRR
          Re(1,i) = Xe + Vx*GAMMI*dt
          Re(2,i) = Ye + Vy*GAMMI*dt
          Re(3,i) = Ze + Vz*GAMMI*dt
@@ -1633,8 +1625,8 @@ c
       IMPLICIT NONE
       INCLUDE "mpif.h"
       INTEGER :: enegrid
-      REAL(kind = 8) :: b4,b5,b6,enediv,aa,sigma,ffsum
-      REAL(kind=8),DIMENSION(:), ALLOCATABLE:: his,his_sum
+      REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: his,his_sum
 c
       enegrid = 512
       ALLOCATE(his(enegrid))
@@ -1705,9 +1697,9 @@ c
       INCLUDE "mpif.h"
       INTEGER :: enegrid
       REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
-      REAL(kind=8),DIMENSION(:), ALLOCATABLE:: his,his_sum
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: his,his_sum
 c
-      enegrid = 512
+      enegrid = 6000
       ALLOCATE(his(enegrid))
       ALLOCATE(his_sum(enegrid))
 
@@ -1716,18 +1708,20 @@ c
       Lall = int(ksmax/icpu)
       his = 0.d0
       his_sum = 0.d0
+      ENEh = 1.d0*Em
+      ENEd = ENEh/6000.d0
 !$omp end workshare
 c
 !$omp do
       DO LP = 1,icpu                 ! parallelization loop
          IPTSS = (LP-1)*Lall + 1
          IPTFF = LP*Lall
-      DO j=IPTSS,IPTFF           ! timestep loop
+      DO j=IPTSS,IPTFF             ! timestep loop
       DO L = 1,itotal              ! particle loop
-         ENE = phtn(4,j,L)*Pksout*wight(L)
-         i = MAX(IDNINT(ENE*enediv*enegrid),1)
+         ENE = phtn(4,j,L)*Pksout
+         i = MAX(IDNINT(ENE/ENEd + 0.5d0),1)
          i = MIN(enegrid,i)
-         his(i) = his(i) + 1
+         his(i) = his(i) + wight(L)
       END DO
       END DO
       END DO
@@ -1742,14 +1736,13 @@ c
      &                   ,mpi_sum,mpi_comm_world,ierr)
       CALL mpi_allreduce(ff,ffsum,1,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
-      const = pin/(Em/enegrid)*enum
+      const = pin/rin*enum
       IF(myrank.EQ.0) THEN
-        WRITE(*,*) const
         WRITE(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
         OPEN (34,file = fo_name2,form='formatted',status='unknown')
         DO i=1,enegrid
-           ENE0 = i*Em/enegrid
-           WRITE(34,666) ENE0*0.511d6, his_sum(i)*const
+           ENE0 = (i - 0.5d0)*ENEd
+           WRITE(34,*) ENE0*0.511d6, his_sum(i)*const
         END DO
         CLOSE(34)
       END IF
@@ -1758,7 +1751,6 @@ c
       DEALLOCATE(his,his_sum)
 
 444   FORMAT(A,I4.4,'.dat')
-666   FORMAT(2(E14.4,1X))
       RETURN
       END
 !-------------------------------------
@@ -1773,7 +1765,7 @@ c
       INCLUDE "mpif.h"
       INTEGER :: grid1, grid2
       REAL(kind=8) :: b1,b4,b5,b6,momdiv1,momdiv2,aa
-      REAL(kind=8),DIMENSION(:,:), ALLOCATABLE:: his,his_sum
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: his,his_sum
 c
       grid1 = 64
       grid2 = 64
@@ -1835,11 +1827,11 @@ c
       USE random_common
       USE sim_common
       IMPLICIT NONE
-      REAL(kind=8),DIMENSION(6000) :: W
-      REAL(kind=8) :: gg1,ss,energy
-      INTEGER, PARAMETER :: np_local = 116
       INTEGER :: ip
-      REAL(kind=8), DIMENSION(np_local) :: Ex_axis, dist_fn
+      INTEGER,PARAMETER :: np_local = 116
+      REAL(kind=8) :: gg1,ss,energy
+      REAL(kind=8),DIMENSION(6000) :: W
+      REAL(kind=8),DIMENSION(np_local) :: Ex_axis, dist_fn
 
       OPEN(33,file='f_E_smoothed_new_final.txt',status='OLD')
 
@@ -1848,7 +1840,7 @@ c
         READ(33,*) Ex_axis(ip), dist_fn(ip)
 
         Ex_axis(ip) = Ex_axis(ip)/0.511
-        dist_fn(ip) = dist_fn(ip)*5
+        dist_fn(ip) = dist_fn(ip)*3000/512
 
       ENDDO
 
@@ -1872,7 +1864,7 @@ c
 
       energy = ENN*2300/0.511/3000
       p_x = dsqrt((energy + 1.d0)**2 - 1.d0)
-      Vx  = p_x
+      Vx = p_x
       RETURN
       END
 C------------------------------------------------------------------
@@ -1897,8 +1889,6 @@ c
 c
       PI  = 4.D0*DATAN(1.D0)
       PI2 = PI*2.D0
-c
-      IF(myrank.EQ.0) WRITE(*,*) "Bethe - Heitler"
 c
       totalmin = log(183.d0/Zcm3)
       totalmin2 = 0.925d0*(Zcom/137.d0)**2 ! for high Z
@@ -2043,25 +2033,21 @@ C-----------------------------------------------------------------
       IF(myrank.NE.0) RETURN
       WRITE(*,*) ' '//achar(27)//'[34m'
       WRITE(*,*) ' '//achar(27)//'[1m'
-      WRITE(*,*) '	###L      ########E    #######C      '
-      WRITE(*,*) '	###L      ########E   ##########C  	 '
-      WRITE(*,*) '	###L      ###E       ###C    ###C    '
-      WRITE(*,*) '	###L      ########E  ###C            '
-      WRITE(*,*) '	###L      ########E  ###C            '
-      WRITE(*,*) '	###L      ###E       ###C    ###C    '
-      WRITE(*,*) '	#######L  ########E   ##########C    '
-      WRITE(*,*) '	#LASER##  ELECTRON#    COLLISION     '
+      WRITE(*,*) '	 ###L      ########E    #######C      '
+      WRITE(*,*) '      ###L      ########E   ##########C  	 '
+      WRITE(*,*) '     ###L      ###E       ###C    ###C    '
+      WRITE(*,*) '    ###L      ########E  ###C            '
+      WRITE(*,*) '   ###L      ########E  ###C            '
+      WRITE(*,*) '  ###L      ###E       ###C    ###C    '
+      WRITE(*,*) ' #######L  ########E   ##########C    '
+      WRITE(*,*) '#LASER##  ELECTRON#    COLLISION     '
       WRITE(*,*) ' '//achar(27)//'[32m'
-      WRITE(*,*) 'Welcome to Laser Electron Collision code (v - 1.3.0)'
+      WRITE(*,*) 'Welcome to Laser Electron Collision code (v-1.3.0)'
       WRITE(*,*) ' '//achar(27)//'[0m'
       WRITE(*,*) '*****************************************************'
       WRITE(*,*) "The code is running on", NPROCS, " processors"
       WRITE(*,*) "                      ", threads, " threads"
       WRITE(*,*) '*****************************************************'
-      IF(load.EQ.1)
-     &	WRITE(*,*) "Load particles from: f_E_smoothed_new_final.txt"
-      IF(OutRad.EQ.1 ) WRITE(*,*)  'Produce radiation'
-      IF(OutPairs.EQ.1) WRITE(*,*) 'Produce pairs'
       WRITE(*,*)
       RETURN
       END
