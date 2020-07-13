@@ -154,9 +154,9 @@ c
 c
       WRITE(9,*) "Check OPENMP"
 !$omp parallel
-      thREADs = omp_get_num_thREADs()
+      thREADs = omp_get_num_threads()
 !$omp END parallel
-      WRITE(9,*) "total number of thREADs=",thREADs
+      WRITE(9,*) "total number of threads=",threads
 c
       CALL welcome
       CALL setprm  						!PARAMETER setup
@@ -341,7 +341,7 @@ c
       WRITE(9,*) "number of shot",shot
 5555  CONTINUE
       WRITE(9,*) " "
-      WRITE(9,*) "PARAMETERs for computation"
+      WRITE(9,*) "Parameters for computation"
       WRITE(9,*) " "
       WRITE(9,*) "Larmor radius/grid separation      ", div
       WRITE(9,*) "Laser wavelength/grid separation   ", div2
@@ -364,18 +364,15 @@ c
       ELSE IF(iconR.EQ.1) THEN
         WRITE(9,*) " "
         WRITE(9,*) "Particle pusher: Sokolov"
-        WRITE(9,*) " "
         IF(QED.EQ.1) WRITE(9,*) "QED_assisted"
       ELSE IF(iconR.EQ.2) THEN
         WRITE(9,*) " "
         WRITE(9,*) "Particle pusher: reduced Landau Lifshitz"
-        WRITE(9,*) " "
         IF(QED.EQ.1) WRITE(9,*) "QED_assisted"
       ELSE IF(iconR.EQ.3) THEN
         WRITE(9,*) " "
         WRITE(9,*) "Particle pusher: Lorentz"
         WRITE(9,*) "        USE QED: Stochastic"
-        WRITE(9,*) " "
       END IF
 c
       IF(QED.EQ.0)  WRITE(9,*) "Classical"
@@ -429,8 +426,10 @@ c
 c
       IF(load.EQ.1)
      &	WRITE(*,*) "Load particles from: f_E_smoothed_new_final.txt"
-      IF(OutRad.EQ.1) WRITE(*,*) 'Produce radiation'
-      IF(OutPairs.EQ.1) WRITE(*,*) 'Produce pairs'
+      IF((myrank.EQ.0).AND.(OutRad.EQ.1))
+     &   WRITE(*,*) 'Produce radiation'
+      IF((myrank.EQ.0).AND.(OutPairs.EQ.1))
+     &   WRITE(*,*) 'Produce pairs'
       RETURN
       END
 !--------------------------------------
@@ -1173,7 +1172,7 @@ c
          Re(8,i) = (ENE00 - ENE)-TTT
          Re(9,i) = RRR
          Re(10,i) = Xi
-         Re(11,i) = ENE0
+         Re(11,i) = ENE
          END DO
       END DO     ! END particle loop
 !$omp end do
@@ -1283,7 +1282,7 @@ c
          Re(9,i) = RRR
 c
          Re(10,i) = Xi
-         Re(11,i) = ENE0
+         Re(11,i) = ENE
          END DO
       END DO
 !$omp end do
@@ -1404,7 +1403,7 @@ c
          Re(8,i) = (ENE00 - ENE) - TTT
          Re(9,i) = RRR
          Re(10,i) = Xi
-         Re(11,i) = ENE0
+         Re(11,i) = ENE
       END DO
       END DO
 !$omp end do
@@ -1441,13 +1440,13 @@ c
       det1 = 1.d0/(PI*dsqrt(3.d0))
       det2 = 1.d0/(137.d0*redcomp) ! probability coefficient
 c
-      ff = totalS(kk)*3000
+      ff = totalR(kk)*3000
       ss = totalS(kk)*det1*det2*Rt*VL*1.d0/ENE0 !
 c
       IF(ss.GE.1.d-3) THEN
         WRITE(*,*) " W*dt > 1 --- Probability of emission > 1"
         WRITE(*,*) " Please reduce time step, "
-        WRITE(*,*) " i.e. increase div in SLAC.dat"
+        WRITE(*,*) " i.e. increase div in input.dat"
         photon = -1
         stop
       END IF
@@ -1478,12 +1477,12 @@ c
          ii = IDNINT((k - 0.5d0)*0.5d0 + 0.5d0)
          ss = (k - 0.5d0)*0.5d0 + 0.5d0 - DBLE(ii)
          IF(ii.GT.2999) exit
-         TTT = diffR(ii,kk) +
-     $         ss*(diffR(ii + 1,kk) - diffR(ii,kk))
+         TTT = diffQ(ii,kk) +
+     $         ss*(diffQ(ii + 1,kk) - diffQ(ii,kk))
          W(k + 1) = W(k) + TTT*0.5d0/ff
          gg1 = W(k + 1)
          IF(gg1.GE.rand) THEN
-           ENN = k + (rand - W(k))/(W(k + 1)-W(k))
+           ENN = k + (rand - W(k))/(W(k + 1) - W(k))
          exit
          END IF
       END DO
@@ -1561,21 +1560,17 @@ c------------------------------------------------------------------
          ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
-         PXS = (BXT - Wx0*gg)*Alf
-         PYS = (BYT - Wy0*gg)*Alf
-         PZS = (BZT - Wz0*gg)*Alf
-c
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
          IF(XI.GT.0.001d0) THEN
             kk = MIN(IDNINT(log(XI*1000.d0)*we0i + 1.5d0),200)
             ENEh = Alf*totalRC(kk)
-c        calculates whether emission should occur or not
+            ! calculates whether emission should occur or not
             CALL phemit
             IF(emmits) THEN
               CALL qmemit
               ENN = ENN/6000
-              WRITE(*,*) "Photon Energy [MeV] =", ENN*ENE0*0.511
-c  ******* Update electron momentum due to recoil *******
+c              WRITE(*,*) "Photon Energy [MeV] =", ENN*ENE0*0.511
+              ! Update electron momentum due to recoil
               Vx = Vx0*(1.d0 - ENN)
               Vy = Vy0*(1.d0 - ENN)
               Vz = Vz0*(1.d0 - ENN)
@@ -1606,9 +1601,9 @@ c
          Re(6,i) = Vz
          Re(7,i) = TTT
          Re(8,i) = (ENE00 - ENE) - TTT
-         Re(9,i) = ENN*ENE0
+         Re(9,i) = ENE00 - ENE
          Re(10,i) = Xi
-         Re(11,i) = ENE0
+         Re(11,i) = ENE
          END DO
       END DO
 !$omp end do
@@ -1647,7 +1642,7 @@ c
       DO k = IPTSS,IPTFF      ! particle loop
          b4 = Re(4,k) ; b5 = Re(5,k) ; b6 = Re(6,k)
          ENE = dsqrt(1.d0 + b4**2 + b5**2 + b6**2) - 1.d0
-         i = max(IDNINT(ENE*enediv*enegrid),1)
+         i = MAX(IDNINT(ENE*enediv*enegrid),1)
          i = MIN(enegrid,i)
          his(i) = his(i) + wight(k)
       END DO
@@ -1697,19 +1692,20 @@ c
       INCLUDE "mpif.h"
       INTEGER :: enegrid
       REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE :: his,his_sum
+      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: his
+      REAL(kind=8),DIMENSION(:),ALLOCATABLE ::hiss,his_sum
 c
-      enegrid = 6000
-      ALLOCATE(his(enegrid))
-      ALLOCATE(his_sum(enegrid))
+      enegrid = 512
+      ALLOCATE(his(enegrid,icpu))
+      ALLOCATE(hiss(enegrid), his_sum(enegrid))
 
 !$omp workshare
-      enediv  = 1/Em
       Lall = int(ksmax/icpu)
       his = 0.d0
+      hiss = 0.d0
       his_sum = 0.d0
       ENEh = 1.d0*Em
-      ENEd = ENEh/6000.d0
+      ENEd = ENEh/enegrid
 !$omp end workshare
 c
 !$omp do
@@ -1718,25 +1714,28 @@ c
          IPTFF = LP*Lall
       DO j=IPTSS,IPTFF             ! timestep loop
       DO L = 1,itotal              ! particle loop
-         ENE = phtn(4,j,L)*Pksout
+         ENE = phtn(4,j,L)
          i = MAX(IDNINT(ENE/ENEd + 0.5d0),1)
          i = MIN(enegrid,i)
-         his(i) = his(i) + wight(L)
+         his(i,LP) = his(i,LP) + wight(L)
       END DO
       END DO
       END DO
 !$omp end do
 c
-      ff = 0.d0
       DO i = 1,enegrid
-         ff = ff + his(i)
+         ff = 0.d0
+         DO k = 1,icpu
+            ff = ff + his(i,k)
+         END DO
+         hiss(i) = ff
       END DO
 
-      CALL mpi_allreduce(his,his_sum,enegrid,mpi_real8
+      CALL mpi_allreduce(hiss,his_sum,enegrid,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
-      CALL mpi_allreduce(ff,ffsum,1,mpi_real8
-     &                   ,mpi_sum,mpi_comm_world,ierr)
-      const = pin/rin*enum
+c      CALL mpi_allreduce(ff,ffsum,1,mpi_real8
+c     &                   ,mpi_sum,mpi_comm_world,ierr)
+      const = pin/(ENEd)*enum
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
         OPEN (34,file = fo_name2,form='formatted',status='unknown')
@@ -1747,8 +1746,8 @@ c
         CLOSE(34)
       END IF
 c
-      IF(kstep.EQ.ksmax) WRITE(9,*) 'Total photon', ffsum
-      DEALLOCATE(his,his_sum)
+c      IF(kstep.EQ.ksmax) WRITE(9,*) 'Total photon', ffsum
+      DEALLOCATE(his,hiss,his_sum)
 
 444   FORMAT(A,I4.4,'.dat')
       RETURN
@@ -1787,8 +1786,8 @@ c
       DO k = IPTSS,IPTFF      ! particle loop
          b4 = Re(4,k) ; b5=Re(5,k) ; b6 = Re(6,k)
          b5 = -1.d0*b4*dsin(inc_ang) + b5*dcos(inc_ang)
-         i = max(IDNINT(b5*momdiv1*32.d0)+32,1)
-         j = max(IDNINT(b6*momdiv2*32.d0)+32,1)
+         i = MAX(IDNINT(b5*momdiv1*32.d0)+32,1)
+         j = MAX(IDNINT(b6*momdiv2*32.d0)+32,1)
          i = MIN(grid1,i)
          j = MIN(grid2,j)
          his(i,j) = his(i,j) + wight(k)
