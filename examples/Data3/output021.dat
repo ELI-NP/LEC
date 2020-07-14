@@ -21,27 +21,27 @@
 &PARAM4
  XINIT=  2.0000000000000000     ,
  RMASS=  1.0000000000000000     ,
- SIGMAX=  1.0000000000000000E-002,
+ SIGMAX= 0.10000000000000001     ,
  SIGMAY=  1.0000000000000000E-002,
  SIGMAZ=  1.0000000000000000E-002,
  /
 &PARAM5
- ICONR=          2,
+ ICONR=          1,
  QED=          0,
  IPL=          0,
- SHAPE=          1,
+ SHAPE=          0,
  LOAD=          0,
  OUTRAD=          1,
  OUTPAIRS=          0,
  /
  Check OPENMP
- total number of thREADs=          64
+ total number of threads=           8
   
  Parameters for pulse laser
   
  Laser polarization: linear
   
- 5th order Paraxial approximation
+ 0th order Gaussian beam
   
  Laser Intensity           [W/cm2]   1.0000000000000000E+022
  Peak electric field         [V/m]   274000000000000.00     
@@ -54,15 +54,12 @@
  waist radius (1/e2)           [m]   5.4999999999999999E-006
   
  PARAMETERs for electron beam
-  
-  
- PARAMETERs for electron beam
  initial kinetic energy [eV]   600000000.00000000     
  initital momentum    [p/mc]   1175.1678719849178     
  initital 3 - velocity [v/c]  0.99999963794883517     
  number of shot           1
   
- PARAMETERs for computation
+ Parameters for computation
   
  Larmor radius/grid separation         60.000000000000000     
  Laser wavelength/grid separation      40.000000000000000     
@@ -74,9 +71,8 @@
  coefficient for radiation [s]   6.2000000000000001E-024
  Compton wavelength        [m]   2.4016219199632531E-012
   
- Particle pusher: reduced Landau Lifshitz
-  
- USE QED: No, Classical
+ Particle pusher: Sokolov
+ Classical
   
  max time step     1000000
  transverse beam size   [m]   9.9999999999999995E-007
@@ -96,12 +92,12 @@
  sampling electron number           7          36
  rank number with head-on collision          16
  Total final. particle  0.99860281184914501     
- energy reduction(EM work) [J]   7.5157251398285741E-003
- energy reduction (radiation) [J]   7.7563584555238319E-002
- total reduction energy [J]   7.7561321083282980E-002
- all      :   1777.7280000000001     
- initc    :   1.0900000000000001     
- pmove    :   46.201000000000001     
- rad      :   1707.3280000000000     
- reduction(rad):   13.808000000000000     
- others   :   9.3010000000000002     
+ energy reduction(EM work) [J]   4.1360839345175127E-005
+ energy reduction (radiation) [J]   6.9736434738936412E-002
+ total reduction energy [J]   6.9706189873769406E-002
+ all      :   1118.9730000000000     
+ initc    :   1.1190000000000000     
+ pmove    :   8.3789999999999996     
+ rad      :   1085.8430000000001     
+ reduction(rad):   16.422000000000001     
+ others   :   7.2100000000000000     

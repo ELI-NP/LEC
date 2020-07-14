@@ -229,9 +229,10 @@ c
          ELSE
             CALL radiation
          END IF
+         DEALLOCATE(phtn)
       END IF
+      if(OutPairs.EQ.1) CALL pairs
 c
-      IF(OutRad.EQ.1) DEALLOCATE(phtn)
       DEALLOCATE(wight0,wight)
 c
 333   FORMAT(A,I2.2,'_',I2.2,'.dat')
@@ -633,8 +634,7 @@ c
          Vz = Re(6,k)
          ENE = dsqrt(1.d0 + Vx**2 + Vy**2 + Vz**2)
          WRITE(9 + i,666) t*Rt2, Re(1,k)*Rx, Re(2,k)*Rx	!t, x, y
-     &             ,Re(4,k), Re(5,k), (ENE)*0.511d6	      !px, py, K.E
-     &	       ,Re(7,k)*0.511d6, Re(9,k)*0.511d6, Xi	!Wem,Wrad,chi_e
+     &             ,Re(4,k), Re(5,k), (ENE)*0.511d6, Xi	!px, py, K.E, Xi
       END DO
       END IF
  666  FORMAT(11(E16.6,1X))
@@ -906,7 +906,26 @@ c
 c
       WRITE(9,*) "total reduction energy [J]", ff*0.511d6*1.6d-19
 
-      IF(OutPairs.EQ.0) RETURN
+      DEALLOCATE(wmit3,vmit3)
+      DEALLOCATE(emitTT,fmitTT)
+      DEALLOCATE(emit3,fmit3,fmitT3)
+      DEALLOCATE(total,diff1,diff2)
+444   FORMAT(A,I3.3,'.dat')
+      RETURN
+      END
+!-------------------------
+      SUBROUTINE pairs
+!-------------------------
+      USE random_common
+      USE sim_common
+      USE mpi_common
+      USE R_common
+      USE out_common
+      USE omp_lib
+      IMPLICIT NONE
+      INCLUDE "mpif.h"
+
+      IF(OutRad.EQ.0) RETURN
 
 c     setup for theoretical cross sections
       CALL pair_init
@@ -981,12 +1000,7 @@ c
 c
       CLOSE(34)
 c
-      DEALLOCATE(wmit3,vmit3)
-      DEALLOCATE(emit3,fmit3)
-      DEALLOCATE(emitT3,fmitT3)
-      DEALLOCATE(emitTT,fmitTT)
-      DEALLOCATE(total,diff1,diff2)
-      DEALLOCATE(qmit3,qmitT3,qmitTT)
+      DEALLOCATE(emitT3,qmit3,qmitT3,qmitTT)
 444   FORMAT(A,I3.3,'.dat')
       RETURN
       END
@@ -1110,7 +1124,7 @@ c
          Vz0 = Re(6,i)
          ENE00 = dsqrt(1.d0 + Vx0**2 + Vy0**2 + Vz0**2)
 c
-         IF(shape.EQ.1)THEN
+         IF(shape.EQ.0)THEN
             CALL gaussian
          ELSE
             CALL parax
@@ -1145,12 +1159,6 @@ c
          BYT = (Vy - Vy0)*DTI ! fVy
          BZT = (Vz - Vz0)*DTI ! fVz
 c
-         Vx0 = Vx
-         Vy0 = Vy
-         Vz0 = Vz
-c
-c------------------------------------------------------------------
-c
          ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
@@ -1169,10 +1177,10 @@ c
          Re(5,i) = Vy
          Re(6,i) = Vz
          Re(7,i) = TTT
-         Re(8,i) = (ENE00 - ENE)-TTT
+         Re(8,i) = (ENE00 - ENE) - TTT
          Re(9,i) = RRR
          Re(10,i) = Xi
-         Re(11,i) = ENE
+         Re(11,i) = ENE0
          END DO
       END DO     ! END particle loop
 !$omp end do
@@ -1203,7 +1211,7 @@ c
          Vz0 = Re(6,i)
          ENE00 = dsqrt(1.d0 + Vx0**2 + Vy0**2 + Vz0**2)
 c
-         IF(shape.EQ.1) THEN
+         IF(shape.EQ.0) THEN
            CALL gaussian
          ELSE
            CALL parax
@@ -1271,6 +1279,7 @@ c
      &         + AVEY*(Vy*GAMMI + PYS)*dt
      &         + AVEZ*(Vz*GAMMI + PZS)*dt
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
+         RAD = RAD + RRR
          Re(1,i) = Xe + Vx*GAMMI*dt + PXS*dt
          Re(2,i) = Ye + Vy*GAMMI*dt + PYS*dt
          Re(3,i) = Ze + Vz*GAMMI*dt + PZS*dt
@@ -1388,14 +1397,14 @@ c
 c
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE
-         Wx = Vx*GAMMI
-         Wy = Vy*GAMMI
-         Wz = Vz*GAMMI
-         TTT = AVEX*Wx + AVEY*Wy + AVEZ*Wz
+         TTT = AVEX*(Vx*GAMMI)*dt
+     &         + AVEY*(Vy*GAMMI)*dt
+     &         + AVEZ*(Vz*GAMMI)*dt
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         Re(1,i) = Xe + Wx*dt
-         Re(2,i) = Ye + Wy*dt
-         Re(3,i) = Ze + Wz*dt
+         RAD = RAD + RRR
+         Re(1,i) = Xe + Vx*GAMMI*dt
+         Re(2,i) = Ye + Vy*GAMMI*dt
+         Re(3,i) = Ze + Vz*GAMMI*dt
          Re(4,i) = Vx
          Re(5,i) = Vy
          Re(6,i) = Vz
@@ -1440,7 +1449,7 @@ c
       det1 = 1.d0/(PI*dsqrt(3.d0))
       det2 = 1.d0/(137.d0*redcomp) ! probability coefficient
 c
-      ff = totalR(kk)*3000
+      ff = totalS(kk)*3000
       ss = totalS(kk)*det1*det2*Rt*VL*1.d0/ENE0 !
 c
       IF(ss.GE.1.d-3) THEN
@@ -1477,8 +1486,8 @@ c
          ii = IDNINT((k - 0.5d0)*0.5d0 + 0.5d0)
          ss = (k - 0.5d0)*0.5d0 + 0.5d0 - DBLE(ii)
          IF(ii.GT.2999) exit
-         TTT = diffQ(ii,kk) +
-     $         ss*(diffQ(ii + 1,kk) - diffQ(ii,kk))
+         TTT = diffR(ii,kk) +
+     $         ss*(diffR(ii + 1,kk) - diffR(ii,kk))
          W(k + 1) = W(k) + TTT*0.5d0/ff
          gg1 = W(k + 1)
          IF(gg1.GE.rand) THEN
@@ -1518,7 +1527,7 @@ c
          Vz0 = Re(6,i)
          ENE00 = dsqrt(1.d0 + Vx0**2 + Vy0**2 + Vz0**2)
 c
-         IF(shape.EQ.1)THEN
+         IF(shape.EQ.0)THEN
            CALL gaussian
          ELSE
            CALL parax
@@ -1690,26 +1699,25 @@ c
       USE omp_lib
       IMPLICIT NONE
       INCLUDE "mpif.h"
-      INTEGER :: enegrid
-      REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
-      REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: his
-      REAL(kind=8),DIMENSION(:),ALLOCATABLE ::hiss,his_sum
-c
-      enegrid = 512
-      ALLOCATE(his(enegrid,icpu))
-      ALLOCATE(hiss(enegrid), his_sum(enegrid))
+      INTEGER,PARAMETER :: enegrid = 6000
+      REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma
 
+      ALLOCATE(emit3(enegrid,icpu))
+      ALLOCATE(emitT3(enegrid))
+      ALLOCATE(emitTT(enegrid))
+c
+      CALL system_clock(tcurr0)
+c
 !$omp workshare
       Lall = int(ksmax/icpu)
-      his = 0.d0
-      hiss = 0.d0
-      his_sum = 0.d0
+      emit3 = 0.d0
+      emitT3 = 0.d0
       ENEh = 1.d0*Em
       ENEd = ENEh/enegrid
 !$omp end workshare
 c
 !$omp do
-      DO LP = 1,icpu                 ! parallelization loop
+      DO LP = 1,icpu               ! parallelization loop
          IPTSS = (LP-1)*Lall + 1
          IPTFF = LP*Lall
       DO j=IPTSS,IPTFF             ! timestep loop
@@ -1717,7 +1725,7 @@ c
          ENE = phtn(4,j,L)
          i = MAX(IDNINT(ENE/ENEd + 0.5d0),1)
          i = MIN(enegrid,i)
-         his(i,LP) = his(i,LP) + wight(L)
+         emit3(i,LP) = emit3(i,LP) + wight(L)
       END DO
       END DO
       END DO
@@ -1726,29 +1734,34 @@ c
       DO i = 1,enegrid
          ff = 0.d0
          DO k = 1,icpu
-            ff = ff + his(i,k)
+            ff = ff + emit3(i,k)
          END DO
-         hiss(i) = ff
+         emitT3(i) = ff
       END DO
-
-      CALL mpi_allreduce(hiss,his_sum,enegrid,mpi_real8
+c
+      CALL system_clock(tcurr1)
+      tcurr = tcurr + tcurr1 - tcurr0
+c
+      CALL system_clock(trdct0)
+c
+      emitTT = 0.d0
+      CALL mpi_allreduce(emitT3,emitTT,enegrid,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
-c      CALL mpi_allreduce(ff,ffsum,1,mpi_real8
-c     &                   ,mpi_sum,mpi_comm_world,ierr)
+c
+      CALL system_clock(trdct1)
+      trdct = trdct + trdct1 - trdct0
+c
       const = pin/(ENEd)*enum
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
         OPEN (34,file = fo_name2,form='formatted',status='unknown')
         DO i=1,enegrid
            ENE0 = (i - 0.5d0)*ENEd
-           WRITE(34,*) ENE0*0.511d6, his_sum(i)*const
+           WRITE(34,*) ENE0*0.511d6, emitTT(i)*const
         END DO
         CLOSE(34)
       END IF
-c
-c      IF(kstep.EQ.ksmax) WRITE(9,*) 'Total photon', ffsum
-      DEALLOCATE(his,hiss,his_sum)
-
+      DEALLOCATE(emit3,emitTT)
 444   FORMAT(A,I4.4,'.dat')
       RETURN
       END
@@ -1807,7 +1820,7 @@ c
         DO i = 1,grid1
         DO j = 1,grid2
            WRITE(32,666) (i - 32)/(32*momdiv1)   !py
-     &			,(j-32)/(32*momdiv2)   !pz
+     &			,(j - 32)/(32*momdiv2)   !pz
      &			,his_sum(i,j)
         END DO
         END DO
