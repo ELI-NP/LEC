@@ -1610,7 +1610,7 @@ c
          Re(6,i) = Vz
          Re(7,i) = TTT
          Re(8,i) = (ENE00 - ENE) - TTT
-         Re(9,i) = ENE00 - ENE
+         Re(9,i) = ENE0 - ENE
          Re(10,i) = Xi
          Re(11,i) = ENE
          END DO
