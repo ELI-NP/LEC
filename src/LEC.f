@@ -1,5 +1,5 @@
       MODULE random_common
-      INTEGER,PARAMETER :: icpu = 4, emitgrid = 512
+      INTEGER,PARAMETER :: icpu = 4, emitgrid = 200
       INTEGER,PARAMETER :: LE0 = 1000, LE1=1000
       INTEGER,PARAMETER :: LPx = 200
       REAL(kind=8) :: dp1
@@ -1160,6 +1160,10 @@ c
          BYT = (Vy - Vy0)*DTI ! fVy
          BZT = (Vz - Vz0)*DTI ! fVz
 c
+         Vx0 = Vx
+         Vy0 = Vy
+         Vz0 = Vz
+c
          ff = BXT*BXT + BYT*BYT + BZT*BZT
          gg = BXT*Wx0 + BYT*Wy0 + BZT*Wz0
 c
@@ -1580,7 +1584,6 @@ c
             IF(emmits) THEN
               CALL qmemit
               ENN = ENN/emitgrid
-c              WRITE(*,*) "Photon Energy [MeV] =", ENN*ENE0*0.511
               ! Update electron momentum due to recoil
               Vx = Vx0*(1.d0 - ENN)
               Vy = Vy0*(1.d0 - ENN)
@@ -1602,8 +1605,8 @@ c
          GAMMI = 1.d0/ENE
 c
          TTT = AVEX*(Vx*GAMMI)*dt
-     &          + AVEY*(Vy*GAMMI)*dt
-     &          + AVEZ*(Vz*GAMMI)*dt
+     &         + AVEY*(Vy*GAMMI)*dt
+     &         + AVEZ*(Vz*GAMMI)*dt
          Re(1,i) = Xe + Vx*GAMMI*dt
          Re(2,i) = Ye + Vy*GAMMI*dt
          Re(3,i) = Ze + Vz*GAMMI*dt
