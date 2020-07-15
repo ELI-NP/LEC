@@ -1,5 +1,5 @@
       MODULE random_common
-      INTEGER,PARAMETER :: icpu = 4
+      INTEGER,PARAMETER :: icpu = 4, emitgrid = 512
       INTEGER,PARAMETER :: LE0 = 1000, LE1=1000
       INTEGER,PARAMETER :: LPx = 200
       REAL(kind=8) :: dp1
@@ -297,7 +297,7 @@ c
       wpi = 1.d0/wp
       wsi = 1.d0/ws
       pin = bin/(0.511d6*rmass)     ! normalized bin size
-      rin = Em/6000.d0              ! reference bin size
+      rin = Em/emitgrid              ! reference bin size
       wb = alpha/Rd*dx              ! normalized transverse beam size
       PQM =-1.d0/rmass
 c
@@ -758,10 +758,11 @@ c
 c
       IF(myrank.EQ.0) WRITE(*,*) "calculating radiation"
       ALLOCATE(wmit3(icpu),vmit3(icpu))
-      ALLOCATE(emit3(6000,icpu)) ; ALLOCATE(fmit3(6000,icpu))
-      ALLOCATE(emitT3(6000)) ; ALLOCATE(fmitT3(6000))
-      ALLOCATE(emitTT(6000)) ; ALLOCATE(fmitTT(6000))
-      ALLOCATE(total(6000))
+      ALLOCATE(emit3(emitgrid,icpu))
+      ALLOCATE(fmit3(emitgrid,icpu))
+      ALLOCATE(emitT3(emitgrid)) ; ALLOCATE(fmitT3(emitgrid))
+      ALLOCATE(emitTT(emitgrid)) ; ALLOCATE(fmitTT(emitgrid))
+      ALLOCATE(total(emitgrid))
       ALLOCATE(diff1(0:3000 + 1,200))
       ALLOCATE(diff2(0:3000 + 1,200))
 c
@@ -779,7 +780,7 @@ c distribute electron energy reduction onto emission energy spectum
       CALL system_clock(tcurr0)
 !$omp workshare
       ENEh = 1.0d0*Em
-      ENEd = ENEh/6000.d0
+      ENEd = ENEh/emitgrid
       Lall = int(ksmax/icpu)
       emit3 = 0.d0 ; fmit3 = 0.d0
       wmit3 = 0.d0 ; vmit3 = 0.d0
@@ -811,7 +812,7 @@ c coefficient
            FF1 = ENE/3000.d0
            gg = Um/ff*ENEd/FF1*wight(L)
 c
-           DO k = 1,6000
+           DO k = 1,emitgrid
               ENE0 = (DBLE(k) - 0.5d0)*ENEd
               ii = IDNINT(ENE0/ENE*3000.d0 + 0.5d0)
               Xe = ENE0/ENE*3000.d0 + 0.5d0 - DBLE(ii)
@@ -831,7 +832,7 @@ c
 c
 !$omp parallel do private(i,k,Tm,ff)
 !$omp&      shared(emit3,fmit3,emitT3,fmitT3)
-      DO i = 1,6000
+      DO i = 1,emitgrid
          Tm = 0.d0
          ff = 0.d0
          DO k = 1,icpu,4
@@ -865,9 +866,9 @@ c
 c
       CALL system_clock(trdct0)
       vmitT3  = ABS(vmitT3)
-      CALL mpi_allreduce(emitT3,emitTT,6000,mpi_real8
+      CALL mpi_allreduce(emitT3,emitTT,emitgrid,mpi_real8
      &                         ,mpi_sum,mpi_comm_world,ierr)
-      CALL mpi_allreduce(fmitT3,fmitTT,6000,mpi_real8
+      CALL mpi_allreduce(fmitT3,fmitTT,emitgrid,mpi_real8
      &                         ,mpi_sum,mpi_comm_world,ierr)
       CALL mpi_allreduce(wmitT3,wmitTT,1,mpi_real8
      &                         ,mpi_sum,mpi_comm_world,ierr)
@@ -890,7 +891,7 @@ c
         WRITE(fo_name2,444) TRIM(data_file)//'phtne',jobno
         OPEN (19,file=fo_name2,form='formatted',status='unknown')
 c
-        DO i = 1,6000
+        DO i = 1,emitgrid
           ENE0 = (DBLE(i)-0.5d0)*ENEd
           WRITE(19,*) ENE0*0.511d6, emitTT(i)*const, fmitTT(i)*const
         END DO
@@ -899,7 +900,7 @@ c
 c
       ff = 0.d0
 !$omp parallel do private(i) shared(fmit3) reduction(+:ff)
-      DO i = 1,6000
+      DO i = 1,emitgrid
          ff = ff + fmitTT(i)*enum
       END DO
 !$omp end parallel do
@@ -932,13 +933,13 @@ c     setup for theoretical cross sections
 c
       IF(myrank.EQ.0) WRITE(*,*) "Convert Pairs"
 c
-      ALLOCATE(qmit3(6000,30))
-      ALLOCATE(qmitT3(6000) )
-      ALLOCATE(qmitTT(6000) )
+      ALLOCATE(qmit3(emitgrid,30))
+      ALLOCATE(qmitT3(emitgrid) )
+      ALLOCATE(qmitTT(emitgrid) )
 c
       ENEh = 1.d0*Em
-      ENEd = ENEh/6000.d0
-      Lall = 6000/30
+      ENEd = ENEh/emitgrid
+      Lall = emitgrid/30
       qmit3 = 0.d0
       DO LP=1,30
          IPTSS = (LP - 1)*Lall + 1
@@ -955,7 +956,7 @@ c coefficient
            FF1 = ENE0/1000.d0
            gg = ENE/ff*ENEd/FF1
 c
-           DO k = 1,6000
+           DO k = 1,emitgrid
               ENEA = (DBLE(k)-0.5d0)*ENEd
               ii = IDNINT(ENEA/ENE0*1000.d0 + 0.5d0)
               Xe = ENEA/ENE0*1000.d0 + 0.5d0 - DBLE(ii)
@@ -970,7 +971,7 @@ c
       END DO
       END DO
 
-      DO i = 1,6000
+      DO i = 1,emitgrid
          ff = 0.d0
          DO k = 1,30
             ff = ff + qmit3(i,k)
@@ -982,7 +983,7 @@ c END convert to the positron track data using material filter
 c
 c summation in MPI processes
 c
-      CALL mpi_allreduce(qmitT3,qmitTT,6000,mpi_real8
+      CALL mpi_allreduce(qmitT3,qmitTT,emitgrid,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
 c
 c output positron spectrum data
@@ -992,7 +993,7 @@ c
         WRITE(fo_name2,444) TRIM(data_file)//'pairTT', jobno
         OPEN (34,file=fo_name2,form='formatted',status='unknown')
 c
-        DO i = 1,6000
+        DO i = 1,emitgrid
            ENE0 = (DBLE(i)-0.5d0)*ENEd
            WRITE(34,*) ENE0*0.511d6, qmitTT(i)*const
         END DO
@@ -1478,17 +1479,18 @@ c
       USE sim_common
       IMPLICIT NONE
       REAL(kind=8) :: gg1,ss
-      REAL(kind=8),DIMENSION(6000) :: W
+      REAL(kind=8),DIMENSION(emitgrid + 1) :: W
 c
       CALL random_number(rand)
 c
-      DO k = 1,6000
-         ii = IDNINT((k - 0.5d0)*0.5d0 + 0.5d0)
-         ss = (k - 0.5d0)*0.5d0 + 0.5d0 - DBLE(ii)
+      ENEd = 3000.d0/emitgrid
+      DO k = 1,emitgrid
+         ii = IDNINT((k - 0.5d0)*ENEd + 0.5d0)
+         ss = (k - 0.5d0)*ENEd + 0.5d0 - DBLE(ii)
          IF(ii.GT.2999) exit
          TTT = diffR(ii,kk) +
      $         ss*(diffR(ii + 1,kk) - diffR(ii,kk))
-         W(k + 1) = W(k) + TTT*0.5d0/ff
+         W(k + 1) = W(k) + TTT*ENEd/ff
          gg1 = W(k + 1)
          IF(gg1.GE.rand) THEN
            ENN = k + (rand - W(k))/(W(k + 1) - W(k))
@@ -1577,7 +1579,7 @@ c
             CALL phemit
             IF(emmits) THEN
               CALL qmemit
-              ENN = ENN/6000
+              ENN = ENN/emitgrid
 c              WRITE(*,*) "Photon Energy [MeV] =", ENN*ENE0*0.511
               ! Update electron momentum due to recoil
               Vx = Vx0*(1.d0 - ENN)
@@ -1699,12 +1701,11 @@ c
       USE omp_lib
       IMPLICIT NONE
       INCLUDE "mpif.h"
-      INTEGER,PARAMETER :: enegrid = 6000
       REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma
 
-      ALLOCATE(emit3(enegrid,icpu))
-      ALLOCATE(emitT3(enegrid))
-      ALLOCATE(emitTT(enegrid))
+      ALLOCATE(emit3(emitgrid,icpu))
+      ALLOCATE(emitT3(emitgrid))
+      ALLOCATE(emitTT(emitgrid))
 c
       CALL system_clock(tcurr0)
 c
@@ -1713,7 +1714,7 @@ c
       emit3 = 0.d0
       emitT3 = 0.d0
       ENEh = 1.d0*Em
-      ENEd = ENEh/enegrid
+      ENEd = ENEh/emitgrid
 !$omp end workshare
 c
 !$omp do
@@ -1724,14 +1725,14 @@ c
       DO L = 1,itotal              ! particle loop
          ENE = phtn(4,j,L)
          i = MAX(IDNINT(ENE/ENEd + 0.5d0),1)
-         i = MIN(enegrid,i)
+         i = MIN(emitgrid,i)
          emit3(i,LP) = emit3(i,LP) + wight(L)
       END DO
       END DO
       END DO
 !$omp end do
 c
-      DO i = 1,enegrid
+      DO i = 1,emitgrid
          ff = 0.d0
          DO k = 1,icpu
             ff = ff + emit3(i,k)
@@ -1745,7 +1746,7 @@ c
       CALL system_clock(trdct0)
 c
       emitTT = 0.d0
-      CALL mpi_allreduce(emitT3,emitTT,enegrid,mpi_real8
+      CALL mpi_allreduce(emitT3,emitTT,emitgrid,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
 c
       CALL system_clock(trdct1)
@@ -1755,7 +1756,7 @@ c
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
         OPEN (34,file = fo_name2,form='formatted',status='unknown')
-        DO i=1,enegrid
+        DO i=1,emitgrid
            ENE0 = (i - 0.5d0)*ENEd
            WRITE(34,*) ENE0*0.511d6, emitTT(i)*const
         END DO
