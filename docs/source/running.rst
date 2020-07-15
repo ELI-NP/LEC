@@ -27,7 +27,7 @@ This section describes the details of the input parameters, output files, and ex
 
 **sp** Laser waist radius (at :math:`1/e^2`) [meter].
 
-**alpha** Electron waist radius [meter]. Set to 0.0d-6 for a single electron. If set to a value larger than 0, electron energy distribution in 1D and 2D will be outputted.
+**alpha** Electron waist radius (at :math:`1/e^2`) [meter]. Set to 0.0d-6 for a single electron. If set to a value larger than 0, electron energy distribution in 1D and 2D will be outputted.
 
 **enum** Electron number in a bunch. Used for radiation calculation. For single electron, ``enum=1.d0``
 
@@ -119,18 +119,35 @@ The outputs are written in ASCII format. The file ``output001.dat`` records the 
 
 The file ``orbt1q001.dat`` records the trajectories, energy etc. of the particle. For a single electron, there are 7 files recoding the same output. For example:
 
++----------+-------+-------+--------------------------+--------------------------+---------------------+--------------------------------+
+|    0     |   1   |   2   |		3   	      |		    4  	 	 |	   5           |	      6			|
++==========+=======+=======+==========================+==========================+=====================+================================+
+| time [s] | x [m] | y [m] | :math:`p_x` [normalized] | :math:`p_y` [normalized] | kinetic energy [eV] | :math:`\chi_e` [dimensionless] |
++----------+-------+-------+--------------------------+--------------------------+---------------------+--------------------------------+
+
+
 .. code-block:: fortran
 
-   -0.466547E-13     0.279928E-04    -0.350081E-14    -0.196692E+03    -0.193187E-03     0.100511E+09     0.491296E-07     0.191798E-03     0.205673E-05
-   -0.466428E-13     0.279857E-04    -0.141161E-13    -0.196692E+03    -0.390705E-03     0.100511E+09     0.100948E-06     0.392282E-03     0.208935E-05
-   -0.466309E-13     0.279785E-04    -0.319586E-13    -0.196692E+03    -0.590080E-03     0.100511E+09     0.152945E-06     0.596550E-03     0.209571E-05
-   -0.466190E-13     0.279714E-04    -0.570502E-13    -0.196692E+03    -0.788800E-03     0.100511E+09     0.202518E-06     0.799480E-03     0.207561E-05
-   -0.466070E-13     0.279642E-04    -0.893211E-13    -0.196692E+03    -0.984349E-03     0.100511E+09     0.247101E-06     0.995990E-03     0.202914E-05
+   -0.466547E-13     0.279928E-04    -0.203395E-54    -0.196692E+03    -0.168832E-43     0.100511E+09     0.360270E-45
+   -0.466428E-13     0.279857E-04    -0.166512E-53    -0.196692E+03    -0.696642E-43     0.100511E+09     0.753717E-45
+   -0.466309E-13     0.279785E-04    -0.574687E-53    -0.196692E+03    -0.161358E-42     0.100511E+09     0.117740E-44
+   -0.466190E-13     0.279714E-04    -0.139148E-52    -0.196692E+03    -0.294680E-42     0.100511E+09     0.162775E-44
+   -0.466070E-13     0.279642E-04    -0.277271E-52    -0.196692E+03    -0.471967E-42     0.100511E+09     0.210042E-44
+   -0.465951E-13     0.279571E-04    -0.488190E-52    -0.196692E+03    -0.695102E-42     0.100511E+09     0.259021E-44
    ...
 
-The values of each column from the left to right are: time [s], x [m], y [m], :math:`p_x` [normalized], :math:`p_y` [normalized], kinetic energy [eV], work [eV], radiation energy [eV], :math:`\chi_e` [dimensionless]. 
+.. admonition:: Note!
 
+   The numbers **0**, **1**, **2**,...indicate the columns to extract the data by using **usecols=[0,1,2,...]** in :ref:`Python <python>`.
+   For :ref:`gnuplot <gnu>`, the columns number becomes **($1)**, **($2)**, **($3)**,...
+   
 The file ``phtne001.dat`` records the radiation output. For example:
+
++-------------+---------------+-------------------------------------+
+|    0        |   1           |   2   				    |		
++=============+===============+=====================================+
+| energy [eV] | photon number | photon number :math:`\times` energy |
++-------------+---------------+-------------------------------------+
 
 .. code-block:: fortran
 
@@ -142,9 +159,13 @@ The file ``phtne001.dat`` records the radiation output. For example:
    91666.666666666657        63.363841302196569        11.199199843048401 
    ... 
 
-The values in the column from the left to right are the energy [eV], photon number, photon number :math:`\times` energy.
-
 The file ``phtnTe001.dat`` records the radiation angular distribution. For example:
+
++------------------------+------------------------+-----------------------+
+|    0                   |   1                    |   2         	  |		
++========================+========================+=======================+
+| :math:`\theta_z` [rad] | :math:`\theta_y` [rad] | radiated energy [a.u] |
++------------------------+------------------------+-----------------------+
 
 .. code-block:: fortran
 
@@ -153,20 +174,61 @@ The file ``phtnTe001.dat`` records the radiation angular distribution. For examp
    -0.3126E+01    -0.3139E+01     0.0000E+00
    -0.3120E+01    -0.3139E+01     0.0000E+00
 
-The values in the column from the left to right are :math:`\theta_z` [rad], :math:`\theta_y` [rad], radiated energy [a.u].
-
 For an electron bunch, there are more than 7 outputs, depending on the number of MPI processes. Each output record a sample electron information. On the other hand, file such as ``AveEne(jobno).dat``, ``dist_fn(kstep)(jobno).dat``, ``dist_fn2d(kstep)(jobno).dat`` will be output. 
 
-The file ``AveENE`` record the time [s], average kinetic energy [eV], average radiation energy [eV], average + :math:`\sigma` [eV], average - :math:`\sigma` [eV], where :math:`\sigma` is the standard deviation of electron bunch energy. 
+The file ``AveENE`` records:
 
-The file ``dist_fn`` records energy [eV], electron number [a.u]. 
++----------+-----------------------------+--------------------------------+-------------------------------+
+|    0     |   1                         |   2       		          | 3				  |
++==========+=============================+================================+===============================+
+| time [s] | average kinetic energy [eV] |  average + :math:`\sigma` [eV] | average - :math:`\sigma` [eV] |
++----------+-----------------------------+--------------------------------+-------------------------------+
 
-The file ``dist_fn2d`` records :math:`p_y` [normalized], :math:`p_z` [normalized], electron number [a.u]. 
+The file ``dist_fn`` records:
+
++-------------+-----------------------+
+|    0        |   1                   | 	
++=============+=======================+
+| energy [eV] | electron number [a.u] | 
++-------------+-----------------------+
+
+The file ``dist_fn2d`` records:
+
++--------------------------+--------------------------+------------------------+
+|    0                     |   1                      |   2       	       | 
++==========================+==========================+========================+
+| :math:`p_y` [normalized] | :math:`p_z` [normalized] |  electron number [a.u] |
++--------------------------+--------------------------+------------------------+
+
+.. _python:
 
 Python
 ------
 
-In this examples, the visualisation is performed by using Python in `Jupyter notebook <https://jupyter.org>`_. The python codes can be found in ``/examples/**.ipynb``. The extension ``.ipynb`` stand for Jupiter notebook. In the Jupyter notebook, there is a python function ``import figformat``. This function output/display figures with selected parameters. The figure width, **fig_width** is set to 3.4 inches, represents a single column width of a double column journal. The figure width can be override to any number by writing ``fig.set_size_inches(fig_width*2,fig_width/1.618)`` at each plot. The number ``1.618`` is the Golden ratio. Multiplying or dividing the **fig_width** by the Golden ratio for figure height ensure the nice appearance of a figure. Other parameters such as font size, plot line width, ticks width and etc. can be changed in the file ``figformat.py``.
+In this examples, the visualisation is performed by using Python in `Jupyter notebook <https://jupyter.org>`_. The python codes can be found in ``/examples/**.ipynb``. The extension ``.ipynb`` stand for Jupiter notebook. The data can be read as follows:
+
+.. code-block:: python
+
+   #Time evolution of electron energy
+   T1,x1,y1,px1,py1,E1,Xi1 = np.loadtxt(rf"{run_dir}/examples/Data1/orbt1q"
+                                              +str(file1).zfill(3)+".dat",unpack=True,
+                                              usecols=[0,1,2,3,4,5,6],dtype=np.float)
+   T2,x2,y2,px2,py2,E2,Xi2 = np.loadtxt(rf"{run_dir}/examples/Data2/orbt1q"
+                                              +str(file2).zfill(3)+".dat",unpack=True,
+                                              usecols=[0,1,2,3,4,5,6],dtype=np.float)
+
+In the Jupyter notebook, there is a python function ``import figformat``. This function output/display figures with selected parameters. The figure width, **fig_width** is set to 3.4 inches, represents a single column width of a double column journal. 
+
+.. code-block:: python
+
+   import matplotlib as mpl
+   import figformat 
+   fig_width,fig_height,params=figformat.figure_format(fig_width=3.4,fig_height=2)
+   mpl.rcParams.update(params)
+
+The figure width can be override to any number by writing ``fig.set_size_inches(fig_width*2,fig_width/1.618)`` at each plot. The number ``1.618`` is the Golden ratio. Multiplying or dividing the **fig_width** by the Golden ratio for figure height ensure the nice appearance of a figure. Other parameters such as font size, plot line width, ticks width and etc. can be changed in the file ``figformat.py``.
+
+.. _gnu:
 
 Gnuplot
 -------
@@ -186,7 +248,7 @@ Examples
 Single electron
 ---------------
 
-In this example, we plot several outputs of a single electron. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub.
+In this example, we plot several outputs of a single electron. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub. We showed the output for Lorentz (without RR) and Sokolov (with RR) in classical regime.
 
 The electron trajectory 
 
@@ -211,7 +273,21 @@ The radiation angular distribution
 Electron bunch
 --------------
 
-.. todo:: To do
+In this examples, we show the results of :math:`10^9` electrons colliding with the laser with intensity :math:`10^{22}~\mathrm{W cm^{-2}}`. The input is:
+
+.. code-block:: fortran
+
+   &PARAM1  jobno=003,ksmax=1000000,div=60.d0,div2=40.d0	               ,&END
+   &PARAM2  SL=1.d22,Ev=600.d6,pw=0.82d-6,pp=3.3d-6,sp=5.5d-6                  ,&END
+   &PARAM3  alpha=1.d-6,enum=1.0d9,bin=1.d6,shot=1,inc_ang = 0.d0	       ,&END
+   &PARAM4  xinit=2.d0,rmass=1.d0,sigmax=0.1d0,sigmay=0.01d0,sigmaz=0.01d0     ,&END
+   &PARAM5  iconR=1,QED=0,ipl=0,shape=0,OutRad=1,OutPairs=0 	               ,&END
+
+The longitudinal momentum spread is :math:`10\%` of its initial kinetic energy, i.e. ``sigmax=0.1d0``. Other components are set to a very small value. The simulations were run for Sokolov (classical, ``iconR=1, QED=0``), Sokolov (QED-assisted, ``iconR=1, QED=1``), and Stochastic (``iconR=3, QED=1``). For Stochastic, ``QED=1`` is mandatory.
+
+.. figure:: /figures/energies_beam.png
+
+.. figure:: /figures/photonnumber_beam.png
 
 
 Models
