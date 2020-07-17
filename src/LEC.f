@@ -1,7 +1,7 @@
       MODULE random_common
       INTEGER,PARAMETER :: icpu = 4, emitgrid = 200
       INTEGER,PARAMETER :: LE0 = 1000, LE1=1000
-      INTEGER,PARAMETER :: LPx = 200
+      INTEGER,PARAMETER :: LPx = 200, seed = 123456
       REAL(kind=8) :: dp1
       REAL(kind=8),PARAMETER :: Zcom = 79.d0  ! Z component for nucl
       REAL(kind=8),PARAMETER :: Zcm3 = 4.3d0  ! zcm3 = zcom**(1/3)
@@ -431,6 +431,9 @@ c
      &   WRITE(*,*) 'Produce radiation'
       IF((myrank.EQ.0).AND.(OutPairs.EQ.1))
      &   WRITE(*,*) 'Produce pairs'
+c
+      CALL rand_init(seed)
+c
       RETURN
       END
 !--------------------------------------
@@ -443,7 +446,7 @@ c
       USE omp_lib
       USE out_common
       IMPLICIT NONE
-      REAL(kind=8) :: aa
+      REAL(kind=8) :: aa,random
 c generate initial electron conditions for incident beam
 c---------------------------
       IF(alpha.NE.0.d0) THEN
@@ -462,8 +465,8 @@ c
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
            kk = (j - 1)*(sampled - 1) + i
-           CALL random_number(rand)
-           CALL random_number(rand1)
+           rand = random()
+           rand1 = random()
            phaseX  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
            phaseY  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
            Re(1,kk) = wp*xinit
@@ -1424,31 +1427,12 @@ c
       RETURN
       END
 !-------------------------------------
-      SUBROUTINE random
-!-------------------------------------
-      USE random_common
-      USE sim_common
-      IMPLICIT NONE
-      INTEGER :: d
-      INTEGER, PARAMETER :: values = 245
-      INTEGER, DIMENSION(:), ALLOCATABLE :: seed
-c
-c-----Dynamic RanDOm Number Generator------
-c      CALL date_and_time(values=values)
-      CALL random_seed(size = d)
-      ALLOCATE(seed(1:d))
-      seed = values
-      CALL random_seed(put=seed)
-c
-      RETURN
-      END
-!-------------------------------------
       SUBROUTINE phemit
 !-------------------------------------
       USE random_common
       USE sim_common
       IMPLICIT NONE
-      REAL(kind=8) :: det1,det2,redcomp,ss
+      REAL(kind=8) :: det1,det2,redcomp,ss,random
 c
       redcomp = comp/(2.d0*PI)
       det1 = 1.d0/(PI*dsqrt(3.d0))
@@ -1464,9 +1448,8 @@ c
         photon = -1
         stop
       END IF
-c      WRITE(*,*) ss
 c
-      CALL random_number(rand)
+      rand = random()
 c
       IF(rand.LT.ss) THEN
 	  emmits = .TRUE.
@@ -1481,11 +1464,13 @@ c
 !-------------------------------------
       USE random_common
       USE sim_common
+      USE mpi_common
       IMPLICIT NONE
-      REAL(kind=8) :: gg1,ss
+      INCLUDE "mpif.h"
+      REAL(kind=8) :: gg1,ss,random
       REAL(kind=8),DIMENSION(emitgrid + 1) :: W
 c
-      CALL random_number(rand)
+      rand = random()
 c
       ENEd = 3000.d0/emitgrid
       DO k = 1,emitgrid
@@ -1845,7 +1830,7 @@ c
       IMPLICIT NONE
       INTEGER :: ip
       INTEGER,PARAMETER :: np_local = 116
-      REAL(kind=8) :: gg1,ss,energy
+      REAL(kind=8) :: gg1,ss,energy,random
       REAL(kind=8),DIMENSION(6000) :: W
       REAL(kind=8),DIMENSION(np_local) :: Ex_axis, dist_fn
 
@@ -1862,7 +1847,8 @@ c
 
       CLOSE(33)
 c
-      CALL random_number(rand)
+c      CALL random_number(rand)
+      rand = random()
 c
       W = 0.d0
       DO k = 1,3000
