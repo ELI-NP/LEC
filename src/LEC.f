@@ -345,9 +345,9 @@ c----------------------
       WRITE(9,*) "initital momentum    [p/mc]", Vx
       WRITE(9,*) "initital 3 - velocity [v/c]", Wx
       IF(alpha.GT.0) THEN
-        WRITE(9,*) "momentum spREAD x [%]", sigmax*100
-        WRITE(9,*) "momentum spREAD y [%]", sigmay*100
-        WRITE(9,*) "momentum spREAD z [%]", sigmaz*100
+        WRITE(9,*) "momentum spread x [%]", sigmax*100
+        WRITE(9,*) "momentum spread y [%]", sigmay*100
+        WRITE(9,*) "momentum spread z [%]", sigmaz*100
       END IF
       WRITE(9,*) "number of shot",shot
 5555  CONTINUE
