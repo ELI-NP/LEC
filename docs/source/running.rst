@@ -39,7 +39,7 @@ This section describes the details of the input parameters, output files, and ex
 
 **xinit** Initial position of the electron from the collision point. The collision happens at :math:`t=0`. The laser is one pulse length away from :math:`t=0`.
 
-**rmass** The charge to mass ratio of the colliding particle. Setting to ``rmass=-1`` represents positron, ``rmass=-1836`` represents proton.
+**rmass** The charge to mass ratio of the colliding particle. Setting to ``rmass=206`` represents muon.
 
 **sigma_{x,y,z}** Electron momentum energy spreads in three directions. This input is ignored for a single electron
 
