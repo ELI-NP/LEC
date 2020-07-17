@@ -30,6 +30,7 @@ C
       INTEGER,PARAMETER :: init_z = 521288629
       INTEGER,PARAMETER :: init_w = 916191069
       REAL(kind=4) :: x,y,z,w
+	COMMON /kisscom/x,y,z,w
 c
       x = init_x + seed
       y = init_y + seed
@@ -38,18 +39,18 @@ c
 
       END SUBROUTINE
 c
-      ! Uncomment the following section to test the random number generator
-      ! gfortran random.f
-      ! ./a.out
-c     PROGRAM main
+c     Uncomment the following section to test the random number generator
+c     gfortran random.f
+c     ./a.out
+c      PROGRAM main
 c	IMPLICIT NONE
 c	INTEGER :: i
 c	REAL(kind=8) :: rand,rand2,random
-c	CALL rand_init(94561)
+c	CALL rand_init(756891013)
 c
 c	DO i = 1,10
 c        rand = random()
-c	   WRITE(*,*) rand
+c	  WRITE(*,*) rand
 c	END DO
 c	STOP
-c     END
+c      END
