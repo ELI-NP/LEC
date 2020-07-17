@@ -1,7 +1,7 @@
       MODULE random_common
       INTEGER,PARAMETER :: icpu = 4, emitgrid = 144
       INTEGER,PARAMETER :: LE0 = 1000, LE1 = 1000
-      INTEGER,PARAMETER :: LPx = 200, seed = 99968826
+      INTEGER,PARAMETER :: LPx = 200, seed = 68826
       REAL(kind=8) :: dp1
       REAL(kind=8),PARAMETER :: Zcom = 79.d0  ! Z component for nucl
       REAL(kind=8),PARAMETER :: Zcm3 = 4.3d0  ! zcm3 = zcom**(1/3)
@@ -344,7 +344,7 @@ c----------------------
       WRITE(9,*) "initial kinetic energy [eV]", Ev
       WRITE(9,*) "initital momentum    [p/mc]", Vx
       WRITE(9,*) "initital 3 - velocity [v/c]", Wx
-      IF(alpha.GT.1) THEN
+      IF(alpha.GT.0) THEN
         WRITE(9,*) "momentum spREAD x [%]", sigmax*100
         WRITE(9,*) "momentum spREAD y [%]", sigmay*100
         WRITE(9,*) "momentum spREAD z [%]", sigmaz*100
@@ -445,7 +445,9 @@ c     diffR ;   quantum differential cross section
      &   WRITE(*,*) 'Produce pairs'
 
       CALL rand_init(seed)
-
+      WRITE(9,*) " "
+      WRITE(9,*) 'seed =', seed
+      WRITE(9,*) " "
       RETURN
       END
 c-----------------------
