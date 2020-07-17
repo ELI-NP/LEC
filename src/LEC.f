@@ -283,8 +283,8 @@ c----------------------
       CHARACTER(LEN=100) :: table_location
 
       VL = 3.d0*1.0d8              ! light speed           [m/s]
-      EL = 2.74d0*1.0d3 *dsqrt(SL) ! peak electric field   [V/m]
-      BL = 9.28d0*1.0d - 2*dsqrt(SL) ! peak magnetic field   [Gauss]
+      EL = 2.74d0*1.0d3*dsqrt(SL)  ! peak electric field   [V/m]
+      BL = 9.28d0*1.0d-2*dsqrt(SL) ! peak magnetic field   [Gauss]
       Rm = 1.7d0*1.0d1/BL          ! typical Larmor radius [m]
       Rd1 = Rm/div                 ! grid size             [m]
       Rd2 = pw/div2
@@ -309,7 +309,7 @@ c----------------------
       pin = bin/(0.511d6*rmass)    ! normalized bin size
       rin = Em/emitgrid            ! reference bin size
       wb = alpha/Rd*dx             ! normalized transverse beam size
-      PQM =-1.d0/rmass
+      PQM = -1.d0/rmass
 
       WRITE(9,*) " "
       WRITE(9,*) "Parameters for pulse laser"
@@ -395,7 +395,7 @@ c----------------------
       IF(ksmax.GE.10000) ksout = ksmax/10000
       IF(ksmax.GE.1000000) ksoutP = ksmax/1000000
       Pksout = DBLE(ksoutP)
-c     setup for theoretical cross sections
+c     Setup for theoretical cross sections
 
       EmaxV = 1000.d0
       we0 = (log(EmaxV) - log(0.001d0))/199.0
@@ -516,8 +516,8 @@ c     Generate initial electron conditions for incident beam
         DO i = 1,sampled3
            Vx0 = Re(4,i)
            Vy0 = Re(5,i)
-           Re(4,i) = Vx0*dcos(inc_ang)-Vy0*dsin(inc_ang)
-           Re(5,i) = Vx0*dsin(inc_ang)+Vy0*dcos(inc_ang)
+           Re(4,i) = Vx0*dcos(inc_ang) - Vy0*dsin(inc_ang)
+           Re(5,i) = Vx0*dsin(inc_ang) + Vy0*dcos(inc_ang)
         END DO
 
         itotal = INT(sampled3/DBLE(nprocs))
@@ -570,7 +570,7 @@ c     Generate initial electron conditions for incident beam
 
       i = INT(sampled3/2) + 1
       j = i/itotal + 1
-      WRITE(9,*) "rank number with head-on collision", j-1
+      WRITE(9,*) "rank number with head-on collision", j - 1
       IF((jj + 1.LE.i).and.(jj + itotal.GE.i)) THEN
          WRITE(9,*) "head-on collision case myrank=", myrank
          WRITE(9,*) "adjust head-on collision case to Ne7(1)"
@@ -674,11 +674,11 @@ c----------------------
       itotal0 = INT(itotal/icpu + 1)
       DO LP = 1,icpu
          IPTSS  = itotal0*(LP - 1) + 1
-         IPTFF  = MIN(itotal0* LP,itotal)
-         DO L  = IPTSS,IPTFF
-            Vx  = Re(4,L)
-            Vy  = Re(5,L)
-            Vz  = Re(6,L)
+         IPTFF  = MIN(itotal0*LP,itotal)
+         DO L = IPTSS,IPTFF
+            Vx = Re(4,L)
+            Vy = Re(5,L)
+            Vz = Re(6,L)
             GAMM = sqrt(1.d0 + Vx*Vx + Vy*Vy + Vz*Vz)
             SE(LP) = SE(LP) + GAMM
          END DO
@@ -698,10 +698,10 @@ c----------------------
       EKK = EKK/(itotal*nprocs)
 
       SE_neg = 0.d0 ; SE_pos = 0.d0
-      num_pos=0 ; num_neg = 0
+      num_pos = 0 ; num_neg = 0
       DO LP = 1, icpu
          IPTSS = itotal0*(LP - 1) + 1
-         IPTFF = MIN(itotal0*LP, itotal)
+         IPTFF = MIN(itotal0*LP,itotal)
          DO L = IPTSS,IPTFF
             Vx  = Re(4,L)
             Vy  = Re(5,L)
@@ -824,7 +824,7 @@ c     diffR ;   quantum differential cross section
            kk = MIN(IDNINT(log(XI*1000.d0)*we0i + 1.5d0),200)
 c          Integration of total cross section
            ff = total(kk)*3000.d0
-c          coefficient
+c          Coefficient
            FF1 = ENE/3000.d0
            gg = Um/ff*ENEd/FF1*wight(L)
            DO k = 1,emitgrid
@@ -905,7 +905,6 @@ c     Output photon spectrum data
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'phtne',jobno
         OPEN (19,file=fo_name2,form='formatted',status='unknown')
-
         DO i = 1,emitgrid
           ENE0 = (DBLE(i)-0.5d0)*ENEd
           WRITE(19,*) ENE0*0.511d6, emitTT(i)*const, fmitTT(i)*const
@@ -960,7 +959,7 @@ c     setup for theoretical cross sections
          IPTSS = (LP - 1)*Lall + 1
          IPTFF = LP*Lall
       DO i = IPTSS,IPTFF
-         ENE0 = (DBLE(i)-0.5d0)*ENEd
+         ENE0 = (DBLE(i)  0.5d0)*ENEd
          IF(ENE0.GE.2.d0) THEN
            kk   = min(IDNINT(log(ENE0*0.5d0)/dp1 + 1.d0),LPx)
            ff   = totalH(kk)
@@ -1005,7 +1004,6 @@ c     Output positron spectrum data
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'pairTT', jobno
         OPEN (34,file=fo_name2,form='formatted',status='unknown')
-
         DO i = 1,emitgrid
            ENE0 = (DBLE(i)-0.5d0)*ENEd
            WRITE(34,*) ENE0*0.511d6, qmitTT(i)*const
@@ -1058,7 +1056,6 @@ c----------------------
          TmY = phtn(3,j,L)
          TmZ = phtn(6,j,L)
          Um  = phtn(4,j,L)*Pksout ! energy defference
-
          IF(XI.GT.0.001) THEN
            ii = MIN(IDNINT(TmZ/(pi)*ang2 + 0.5d0 + ang2),ang)
            jj = MIN(IDNINT(TmY/(pi)*ang2 + 0.5d0 + ang2),ang)
@@ -1097,7 +1094,6 @@ c     Output photon spectrum data
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'phtnTe', jobno
         OPEN (21,file=fo_name2,form='formatted',status='unknown')
-
         DO j = 1,ang
         DO i = 1,ang
            thetaz=(i - 0.5 - INT(ang2))/INT(ang2)*(pi)
@@ -1296,7 +1292,6 @@ c
      &         + AVEY*(Vy*GAMMI + PYS)*dt
      &         + AVEZ*(Vz*GAMMI + PZS)*dt
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         RAD = RAD + RRR
          Re(1,i) = Xe + Vx*GAMMI*dt + PXS*dt
          Re(2,i) = Ye + Vy*GAMMI*dt + PYS*dt
          Re(3,i) = Ze + Vz*GAMMI*dt + PZS*dt
@@ -1418,7 +1413,6 @@ c-------------------------------
      &         + AVEY*(Vy*GAMMI)*dt
      &         + AVEZ*(Vz*GAMMI)*dt
          RRR = ENE0**2*(BXT*PXS + BYT*PYS + BZT*PZS)*dt
-         RAD = RAD + RRR
          Re(1,i) = Xe + Vx*GAMMI*dt
          Re(2,i) = Ye + Vy*GAMMI*dt
          Re(3,i) = Ze + Vz*GAMMI*dt
@@ -1487,8 +1481,8 @@ c----------------------
          ii = IDNINT((k - 0.5d0)*ENEd + 0.5d0)
          ss = (k - 0.5d0)*ENEd + 0.5d0 - DBLE(ii)
          IF(ii.GT.2999) exit
-         TTT = diffR(ii,kk) +
-     &         ss*(diffR(ii + 1,kk) - diffR(ii,kk))
+         TTT = diffR(ii,kk)
+     &         + ss*(diffR(ii + 1,kk) - diffR(ii,kk))
          W(k + 1) = W(k) + TTT*ENEd/ff
          gg1 = W(k + 1)
 
@@ -1800,8 +1794,8 @@ c---------------------------
       DO k = IPTSS,IPTFF      ! particle loop
          b4 = Re(4,k) ; b5=Re(5,k) ; b6 = Re(6,k)
          b5 = -1.d0*b4*dsin(inc_ang) + b5*dcos(inc_ang)
-         i = MAX(IDNINT(b5*momdiv1*32.d0)+32,1)
-         j = MAX(IDNINT(b6*momdiv2*32.d0)+32,1)
+         i = MAX(IDNINT(b5*momdiv1*32.d0) + 32,1)
+         j = MAX(IDNINT(b6*momdiv2*32.d0) + 32,1)
          i = MIN(grid1,i)
          j = MIN(grid2,j)
          his(i,j) = his(i,j) + wight(k)
@@ -1816,7 +1810,7 @@ c---------------------------
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'dist_fn2d'
      &			   ,kstep/100000,jobno
-        OPEN (32,file = fo_name2,form='formatted',status='unknown')
+        OPEN (32,file=fo_name2,form='formatted',status='unknown')
 
         DO i = 1,grid1
         DO j = 1,grid2
@@ -1864,13 +1858,13 @@ c---------------------------
       W = 0.d0
       DO k = 1,3000
          ii = IDNINT((k - 0.5d0)*116.d0/3000.d0 + 0.5d0)
-         IF(ii.GT.115) exit
+         IF(ii.GT.115) EXIT
          ss = (k - 0.5d0)*116.d0/3000.d0 + 0.5d0 - DBLE(ii)
          TTT = dist_fn(ii) + ss*(dist_fn(ii + 1) - dist_fn(ii))
          W(k + 1) = W(k) + TTT*116.d0/3000.d0
          gg1 = W(k + 1)
          IF(rand.LT.gg1) THEN
-           ENN = k + (rand-W(k))/(W(k + 1)-W(k))
+           ENN = k + (rand - W(k))/(W(k + 1) - W(k))
          EXIT
          END IF
       END DO
@@ -1974,7 +1968,7 @@ c   Coulomb correction for non relativistic case
          dk = (k0 - 2.d0)/DBLE(LE0)       ! minus 2*mc^2
          kk = 1.d0/(k0*k0*k0)
 
-         DO i=1,LE0
+         DO i = 1,LE0
             k = dk*(DBLE(i)-0.5d0)  ! ratio of emission positron energy
             E0 = k + 1.d0           ! positron energy
             p0 = sqrt(E0**2 - 1.d0) ! positron momentum
