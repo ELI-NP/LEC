@@ -153,9 +153,9 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       READ(8,PARAM5) ; WRITE(9,PARAM5)
       CLOSE(8)
 
-      WRITE(9,*) "Check OPENMP"
+      WRITE(9,*) "Check OpenMP"
 !$omp parallel
-      thREADs = omp_get_num_threads()
+      threads = omp_get_num_threads()
 !$omp END parallel
       WRITE(9,*) "total number of threads=",threads
 
@@ -220,14 +220,14 @@ c     orbit calculation
         IF((MOD(kstep,1000).EQ.0)
      &    .AND.(myrank.EQ.0))
      &    WRITE(*,*) "Iteration =", kstep,"; Time step =", Rt*kstep
-c---------------------------------------------------------
+
       IF(kstep.GE.ksmax) GO TO 2500
       GO TO 1000					   ! END time loop
-c
+
       CLOSE(10) ; CLOSE(11) ; CLOSE(12)
       CLOSE(13) ; CLOSE(14) ; CLOSE(15)
       CLOSE(16) ;	CLOSE(20)
-c
+
 2500  CONTINUE
       DEALLOCATE(RE,RH)
 
@@ -358,7 +358,7 @@ c----------------------
       WRITE(9,*) "Laser wavelength/grid separation   ", div2
       WRITE(9,*) "grid separation,Rd1,Rd2         [m]", Rd1, Rd2
       WRITE(9,*) "grid separation,Rd=MIN(Rd1,Rd2) [m]", Rd
-      WRITE(9,*) "physical time step INTerval     [s]", Rt
+      WRITE(9,*) "physical time step interval     [s]", Rt
       WRITE(9,*) "physical unit time              [s]", Rt2
       WRITE(9,*) "energy bin size of spectrum    [eV]", bin
 
@@ -397,8 +397,8 @@ c----------------------
       Pksout = DBLE(ksoutP)
 c     setup for theoretical cross sections
 
-      EmaxV= 1000.d0
-      we0 =(log(EmaxV) - log(0.001d0))/199.0 !!
+      EmaxV = 1000.d0
+      we0 = (log(EmaxV) - log(0.001d0))/199.0
       we0i = 1.d0/we0
 
 c     radiation & pair production in strong - field
@@ -461,7 +461,7 @@ c-----------------------
       USE out_common
       IMPLICIT NONE
       REAL(kind=8) :: aa,random
-c     generate initial electron conditions for incident beam
+c     Generate initial electron conditions for incident beam
 
       IF(alpha.NE.0.d0) THEN
         sampled = 39 ; sampled2 = sampled/2
@@ -605,7 +605,7 @@ c     generate initial electron conditions for incident beam
       IF(MOD(kstep,ksoutP).EQ.0) THEN
          j = kstep/ksoutP
          IF(j.LE.1000000) THEN
-            DO i=1,itotal
+            DO i = 1,itotal
                Vx = Re(4,i)
                Vy = Re(5,i)
                Vz = Re(6,i)
@@ -685,7 +685,7 @@ c----------------------
       END DO
 
       GAMM = 0.d0
-      DO LP=1,icpu,4
+      DO LP = 1,icpu,4
          GAMM = GAMM + SE(LP) + SE(LP + 1)
      &          + SE(LP + 2) + SE(LP + 3)
       END DO
@@ -956,7 +956,7 @@ c     setup for theoretical cross sections
       ENEd = ENEh/emitgrid
       Lall = emitgrid/30
       qmit3 = 0.d0
-      DO LP=1,30
+      DO LP = 1,30
          IPTSS = (LP - 1)*Lall + 1
          IPTFF = LP*Lall
       DO i = IPTSS,IPTFF
@@ -1384,11 +1384,12 @@ c-------------------------------
 
          XI = Alf2*ENE0*sqrt(abs(ff - gg**2))*0.66667d0
          IF(XI.GT.0.001d0) THEN
-            kk    = MIN(IDNINT(log(XI*1000.d0)*we0i + 1.5d0),200)
-            ENEh  = Alf*totalRC(kk)
+            kk = MIN(IDNINT(log(XI*1000.d0)*we0i + 1.5d0),200)
+            ENEh = Alf*totalRC(kk)
          ELSE
-            ENEh  = Alf
+            ENEh = Alf
          END IF
+
          GAMMI = ENEh
          PXS   = (BXT - Wx0*gg)*GAMMI
          PYS   = (BYT - Wy0*gg)*GAMMI
@@ -1518,7 +1519,7 @@ c------------------------
 
 !$omp do
       DO LP = 1,icpu
-         IPTSS = itotal0*(LP - 1)+1
+         IPTSS = itotal0*(LP - 1) + 1
          IPTFF = MIN(itotal0*LP,itotal)
          DO i = IPTSS,IPTFF      ! particle loop
          DT1 = PQM*DT*0.5d0
@@ -1639,7 +1640,7 @@ c-------------------------
 
       sigma = MAX(sigmax,sigmay,sigmaz)
 !$omp workshare
-      enediv  = 1/(Em*(1 + 5.d0*sigma))
+      enediv = 1/(Em*(1 + 5.d0*sigma))
       his = 0.d0
       his_sum = 0.d0
 !$omp end workshare
@@ -1718,9 +1719,9 @@ c--------------------------
 
 !$omp do
       DO LP = 1,icpu               ! parallelization loop
-         IPTSS = (LP-1)*Lall + 1
+         IPTSS = (LP - 1)*Lall + 1
          IPTFF = LP*Lall
-      DO j=IPTSS,IPTFF             ! timestep loop
+      DO j = IPTSS,IPTFF             ! timestep loop
       DO L = 1,itotal              ! particle loop
          ENE = phtn(4,j,L)
          i = MAX(IDNINT(ENE/ENEd + 0.5d0),1)
@@ -1754,8 +1755,8 @@ c--------------------------
       const = pin/(ENEd)*enum
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
-        OPEN (34,file = fo_name2,form='formatted',status='unknown')
-        DO i=1,emitgrid
+        OPEN (34,file=fo_name2,form='formatted',status='unknown')
+        DO i = 1,emitgrid
            ENE0 = (i - 0.5d0)*ENEd
            WRITE(34,*) ENE0*0.511d6, emitTT(i)*const
         END DO
@@ -1794,7 +1795,7 @@ c---------------------------
       itotal0 = INT(itotal/icpu + 1)
 !$omp do
       DO LP = 1,icpu
-         IPTSS = itotal0*(LP - 1)+1
+         IPTSS = itotal0*(LP - 1) + 1
          IPTFF = MIN(itotal0*LP,itotal)
       DO k = IPTSS,IPTFF      ! particle loop
          b4 = Re(4,k) ; b5=Re(5,k) ; b6 = Re(6,k)
@@ -1820,8 +1821,8 @@ c---------------------------
         DO i = 1,grid1
         DO j = 1,grid2
            WRITE(32,666) (i - 32)/(32*momdiv1)   !py
-     &			,(j - 32)/(32*momdiv2)   !pz
-     &			,his_sum(i,j)
+     &		     , (j - 32)/(32*momdiv2)   !pz
+     &		     , his_sum(i,j)
         END DO
         END DO
 
@@ -2001,7 +2002,7 @@ c   Coulomb correction for non relativistic case
          END DO
       END DO
 
-      DO j=1,LPx
+      DO j = 1,LPx
          kx = dexp(dp1*DBLE(j - 1))*2.d0  ! initial photonn energy in x
          k0 = dsqrt(kx**2)
          dk = (k0 - 2.d0)/DBLE(LE0)       ! MINus 2*mc^2
@@ -2015,7 +2016,7 @@ c   Coulomb correction for non relativistic case
          totalH(j) = totL
       END DO
 c
-      DO j=1,LPx
+      DO j = 1,LPx
          totL = 0.d0
          DO i = 1,LE0
             totL = totL + resultL(i,j)/DBLE(LE0)
@@ -2027,7 +2028,7 @@ c
         WRITE(fo_name2,444) TRIM(data_file)//'Bethe-Heitler', jobno
         OPEN (33,file = fo_name2,form='formatted',status='unknown')
 c
-        DO i=1,LPx
+        DO i = 1,LPx
            WRITE(33,*) i, totalH(i), totalH2(i)
         END DO
         CLOSE(33)

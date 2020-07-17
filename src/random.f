@@ -53,4 +53,4 @@ c        rand = random()
 c	  WRITE(*,*) rand
 c	END DO
 c	STOP
-c      END
+c     END
