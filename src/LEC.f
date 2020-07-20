@@ -118,7 +118,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
            WRITE(*,*) 'Using data directory "'
      &	           // TRIM(data_dir) // '"'
          ELSE
-     	     WRITE(*,*) 'SpecIFy output directory'
+     	     WRITE(*,*) 'Specify output directory'
            READ(*,'(A)') data_dir
          END IF
       END IF
@@ -443,7 +443,7 @@ c     diffR ;   quantum differential cross section
         totalRC = 1.d0
       END IF
 
-      IF(use_load_particle)
+      IF((myrank.EQ.0).AND.use_load_particle)
      &	WRITE(*,*) "Load particles from: f_E_smoothed_new_final.txt"
 
       IF((myrank.EQ.0).AND.(OutRad.EQ.1))
@@ -1855,23 +1855,25 @@ c---------------------------
 c---------------------------
       USE random_common
       USE sim_common
+      USE out_common
       IMPLICIT NONE
       INTEGER :: ip
       INTEGER,PARAMETER :: np_local = 116
-      REAL(kind=8) :: gg1,ss,energy,random
+      REAL(kind=8) :: gg1,ss,energy,random,energy_max
       REAL(kind=8),DIMENSION(3001) :: W
       REAL(kind=8),DIMENSION(np_local) :: Ex_axis, dist_fn
 
-      OPEN(33,file='f_E_smoothed_new_final.txt',status='OLD')
+      OPEN(33,file=TRIM(data_file)//
+     &   'f_E_smoothed_new_final.txt',status='OLD')
 
       DO ip = 1,np_local
          READ(33,*) Ex_axis(ip), dist_fn(ip)
          Ex_axis(ip) = Ex_axis(ip)/0.511
-         dist_fn(ip) = dist_fn(ip)*3000/512
+         dist_fn(ip) = dist_fn(ip)
       END DO
 
       CLOSE(33)
-
+      energy_max = MAXVAL(Ex_axis)
       rand = random()
 
       W = 0.d0
@@ -1888,9 +1890,10 @@ c---------------------------
          END IF
       END DO
 
-      energy = ENN*2300/0.511/3000
+      energy = ENN*energy_max/3000
       p_x = dsqrt((energy + 1.d0)**2 - 1.d0)
       Vx = p_x
+      Em = energy_max/0.511
       RETURN
       END
 c-------------------------
