@@ -23,6 +23,7 @@ C
 !-------------------------------
       SUBROUTINE rand_init(seed)
 !-------------------------------
+c	USE mpi_common
       IMPLICIT NONE
       INTEGER,INTENT(IN) :: seed
       INTEGER,PARAMETER :: init_x = 123456789
@@ -44,13 +45,27 @@ c     gfortran random.f
 c     ./a.out
 c      PROGRAM main
 c	IMPLICIT NONE
-c	INTEGER :: i
+c      INCLUDE "mpif.h"
+c	INTEGER :: i,seed
+c      INTEGER :: myrank,ierr,nprocs
 c	REAL(kind=8) :: rand,rand2,random
-c	CALL rand_init(756891013)
+c      CHARACTER(LEN=100):: fo_name2
 c
-c	DO i = 1,10
-c        rand = random()
-c	  WRITE(*,*) rand
+c      CALL MPI_INIT(IERR)
+c      CALL MPI_COMM_SIZE(MPI_COMM_WORLD,NPROCS,IERR)
+c      CALL MPI_COMM_RANK(MPI_COMM_WORLD,MYRANK,IERR)
+c	seed = 123456789*(1 + myrank)
+c 	CALL rand_init(seed)
+c	WRITE(*,*) myrank, seed
+c      WRITE(fo_name2,444) 'random',myrank
+c      OPEN (1,file=fo_name2,form='formatted',status='unknown')
+c
+c	DO i = 1,700
+c         WRITE(1,*) random(), random()
 c	END DO
+c
+c      CLOSE(1)
+c      CALL MPI_FINALIZE(IERR)
+c444   FORMAT(A,I3.3,'.dat')
 c	STOP
-c     END
+c      END
