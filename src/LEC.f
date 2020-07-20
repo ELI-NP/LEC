@@ -1656,7 +1656,7 @@ c-------------------------
 
       sigma = MAX(sigmax,sigmay,sigmaz)
 !$omp workshare
-      enediv = 1/(Em*(1 + 5.d0*sigma))
+      enediv = 1/Em
       his = 0.d0
       his_sum = 0.d0
 !$omp end workshare
@@ -1686,7 +1686,7 @@ c-------------------------
       CALL mpi_allreduce(ff,ffsum,1,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
 
-      const = (bin/0.511d6)/(Em*(1 + 5.d0*sigma)/enegrid)*enum
+      const = (bin/0.511d6)/(Em/enegrid)*enum
       IF(myrank.EQ.0) THEN
 
         WRITE(fo_name2,444) TRIM(data_file)//'dist_fn'
@@ -1869,7 +1869,7 @@ c---------------------------
       DO ip = 1,np_local
          READ(33,*) Ex_axis(ip), dist_fn(ip)
          Ex_axis(ip) = Ex_axis(ip)/0.511
-         dist_fn(ip) = dist_fn(ip)
+         dist_fn(ip) = dist_fn(ip)*3000/512
       END DO
 
       CLOSE(33)
@@ -1893,7 +1893,7 @@ c---------------------------
       energy = ENN*energy_max/3000
       p_x = dsqrt((energy + 1.d0)**2 - 1.d0)
       Vx = p_x
-      Em = energy_max/0.511
+      Em = energy_max
       RETURN
       END
 c-------------------------
