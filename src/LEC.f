@@ -1,7 +1,7 @@
       MODULE random_common
       INTEGER,PARAMETER :: icpu = 4, emitgrid = 144
       INTEGER,PARAMETER :: LE0 = 1000, LE1 = 1000
-      INTEGER,PARAMETER :: LPx = 200, seed = 68826
+      INTEGER,PARAMETER :: LPx = 200
       REAL(kind=8) :: dp1
       REAL(kind=8),PARAMETER :: Zcom = 79.d0  ! Z component for nucl
       REAL(kind=8),PARAMETER :: Zcm3 = 4.3d0  ! zcm3 = zcom**(1/3)
@@ -15,11 +15,13 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
 
       MODULE sim_common
       USE random_common
-      INTEGER      :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl
+      INTEGER      :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl,seed
      &               ,itotal,ksoutP,iconR,SKL,LL,polar,shape
      &               ,photon,species,shot,itotal0,L,OutRad,OutPairs
-     &		   ,QED,sampled,sampled2,sampled3,sampled4,load
-      LOGICAL      :: emmits,exists
+     &		   ,QED,sampled,sampled2,sampled3,sampled4
+     &               ,loadpar,loadseed,qedseed
+      LOGICAL      :: emmits,exists,use_load_seed,use_load_particle
+     &               ,use_qed_seed
       REAL(kind=8) :: PQM     ! charge/mass
       REAL(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
@@ -51,7 +53,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       END MODULE sim_common
 
       MODULE mpi_common
-      INTEGER :: myrank,ierr,nprocs,thREADs
+      INTEGER :: myrank,ierr,nprocs,threads
       END MODULE mpi_common
 
       MODULE out_common
@@ -92,7 +94,8 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       NAMELIST /PARAM2/ SL,Ev,pw,pp,sp				       !laser PARAMETERs
       NAMELIST /PARAM3/ alpha,enum,bin,shot,inc_ang		       !electron PARAMETERs
       NAMELIST /PARAM4/ xinit,rmass,sigmax,sigmay,sigmaz           !configurations
-      NAMELIST /PARAM5/ iconR,QED,ipl,shape,load,OutRad,OutPairs   !physical processes
+      NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs        !physical processes
+      NAMELIST /PARAM6/ loadpar,loadseed,qedseed
 
       CALL system_clock(tmall0)
       CALL MPI_INIT(IERR)
@@ -128,7 +131,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       data_file = TRIM(ADJUSTL(data_dir))//'/'
 
       INQUIRE(file=input_file, exist=exists)
-      IF(.NOT. exists .AND. myrank == 0) THEN
+      IF(.NOT.exists.AND.myrank.EQ.0) THEN
         WRITE(*,*) '*** ERROR ***'
         WRITE(*,*) 'Input deck file "' // TRIM(input_file)
      &            // '" Does not exist.'
@@ -151,6 +154,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       READ(8,PARAM3) ; WRITE(9,PARAM3)
       READ(8,PARAM4) ; WRITE(9,PARAM4)
       READ(8,PARAM5) ; WRITE(9,PARAM5)
+      READ(8,PARAM6) ; WRITE(9,PARAM6)
       CLOSE(8)
 
       WRITE(9,*) "Check OpenMP"
@@ -311,6 +315,10 @@ c----------------------
       wb = alpha/Rd*dx             ! normalized transverse beam size
       PQM = -1.d0/rmass
 
+      IF(loadpar.NE.0) use_load_particle = .TRUE.
+      IF(loadseed.NE.0) use_load_seed = .TRUE.
+      IF(qedseed.NE.0) use_qed_seed = .TRUE.
+
       WRITE(9,*) " "
       WRITE(9,*) "Parameters for pulse laser"
       WRITE(9,*) " "
@@ -335,7 +343,7 @@ c----------------------
       WRITE(9,*) "pulse duration (FWHM)         [s]", ppt*1.1774d0
       WRITE(9,*) "waist radius (1/e2)           [m]", sp
 
-      IF(load.EQ.1) THEN
+      IF(use_load_particle) THEN
         WRITE(9,*) "Load particles from: f_E_smoothed_new_final.txt"
         GO TO 5555
       END IF
@@ -435,7 +443,7 @@ c     diffR ;   quantum differential cross section
         totalRC = 1.d0
       END IF
 
-      IF(load.EQ.1)
+      IF(use_load_particle)
      &	WRITE(*,*) "Load particles from: f_E_smoothed_new_final.txt"
 
       IF((myrank.EQ.0).AND.(OutRad.EQ.1))
@@ -444,10 +452,6 @@ c     diffR ;   quantum differential cross section
       IF((myrank.EQ.0).AND.(OutPairs.EQ.1))
      &   WRITE(*,*) 'Produce pairs'
 
-      CALL rand_init(seed)
-      WRITE(9,*) " "
-      WRITE(9,*) 'seed =', seed
-      WRITE(9,*) " "
       RETURN
       END
 c-----------------------
@@ -462,6 +466,14 @@ c-----------------------
       IMPLICIT NONE
       REAL(kind=8) :: aa,random
 c     Generate initial electron conditions for incident beam
+
+      seed = 20200720
+      IF(use_load_seed) seed = loadseed
+      seed = seed*(1 + myrank)
+      CALL rand_init(seed)
+      WRITE(9,*) " "
+      WRITE(9,*) 'loading seed =', seed
+      WRITE(9,*) " "
 
       IF(alpha.NE.0.d0) THEN
         sampled = 39 ; sampled2 = sampled/2
@@ -487,7 +499,7 @@ c     Generate initial electron conditions for incident beam
            Re(3,kk) = phaseY*wb
            wight0(kk) = dexp(-phaseX**2 - phaseY**2)
 
-           IF(load.EQ.1) CALL manual_load
+           IF(use_load_particle) CALL manual_load
 
            Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
      &		    *Vx*dsqrt(-2.d0*log(rand))
@@ -585,6 +597,16 @@ c     Generate initial electron conditions for incident beam
       IF(myrank.EQ.0) THEN
         WRITE(*,*) "Set beam OK"
         WRITE(*,*) "Total particle", itotal*nprocs
+      END IF
+
+      IF(iconR.EQ.3) THEN
+        seed = 20201129
+        IF(use_qed_seed) seed = qedseed
+        seed = seed*(1 + myrank)
+        CALL rand_init(seed)
+        WRITE(9,*) " "
+        WRITE(9,*) 'QED seed =', seed
+        WRITE(9,*) " "
       END IF
 
 444   FORMAT(A,I4.4,'.dat')
@@ -959,7 +981,7 @@ c     setup for theoretical cross sections
          IPTSS = (LP - 1)*Lall + 1
          IPTFF = LP*Lall
       DO i = IPTSS,IPTFF
-         ENE0 = (DBLE(i)  0.5d0)*ENEd
+         ENE0 = (DBLE(i) - 0.5d0)*ENEd
          IF(ENE0.GE.2.d0) THEN
            kk   = min(IDNINT(log(ENE0*0.5d0)/dp1 + 1.d0),LPx)
            ff   = totalH(kk)
