@@ -1859,19 +1859,16 @@ c---------------------------
       INTEGER :: ip
       INTEGER,PARAMETER :: np_local = 116
       REAL(kind=8) :: gg1,ss,energy,random
-      REAL(kind=8),DIMENSION(6000) :: W
+      REAL(kind=8),DIMENSION(3001) :: W
       REAL(kind=8),DIMENSION(np_local) :: Ex_axis, dist_fn
 
       OPEN(33,file='f_E_smoothed_new_final.txt',status='OLD')
 
       DO ip = 1,np_local
-
-        READ(33,*) Ex_axis(ip), dist_fn(ip)
-
-        Ex_axis(ip) = Ex_axis(ip)/0.511
-        dist_fn(ip) = dist_fn(ip)*3000/512
-
-      ENDDO
+         READ(33,*) Ex_axis(ip), dist_fn(ip)
+         Ex_axis(ip) = Ex_axis(ip)/0.511
+         dist_fn(ip) = dist_fn(ip)*3000/512
+      END DO
 
       CLOSE(33)
 
