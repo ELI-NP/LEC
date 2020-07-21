@@ -40,8 +40,8 @@ c
       END SUBROUTINE
 c
 c     Uncomment the following section to test the random number generator
-c     gfortran random.f
-c     ./a.out
+c     gfortran random.f ; for mpi processes, use mpif90 random.f
+c     ./a.out ; for mpi process, use mpirun -np 4 ./a.out
 c      PROGRAM main
 c	IMPLICIT NONE
 c      INCLUDE "mpif.h"

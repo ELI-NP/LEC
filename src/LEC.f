@@ -130,7 +130,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
 
       data_file = TRIM(ADJUSTL(data_dir))//'/'
 
-      INQUIRE(file=input_file, exist=exists)
+      INQUIRE(file=input_file,exist=exists)
       IF(.NOT.exists.AND.myrank.EQ.0) THEN
         WRITE(*,*) '*** ERROR ***'
         WRITE(*,*) 'Input deck file "' // TRIM(input_file)
@@ -146,7 +146,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       READ(8,PARAM1)
 
       jobno = jobno + myrank
-      WRITE(fo_name2,444) TRIM(ADJUSTL(data_file))//'output',jobno
+      WRITE(fo_name2,444) TRIM(ADJUSTL(data_file))//'output', jobno
       OPEN(9,file=fo_name2,form='formatted')
 
       WRITE(9,PARAM1)
@@ -348,7 +348,7 @@ c----------------------
         GO TO 5555
       END IF
       WRITE(9,*) " "
-      WRITE(9,*) "PARAMETERs for electron beam"
+      WRITE(9,*) "Parameters for electron beam"
       WRITE(9,*) "initial kinetic energy [eV]", Ev
       WRITE(9,*) "initital momentum    [p/mc]", Vx
       WRITE(9,*) "initital 3 - velocity [v/c]", Wx
@@ -373,7 +373,7 @@ c----------------------
       palf = 6.2d - 24
       alf  = palf*dt/Rt
       alf2 = alf*137.d0*9.d0/4.d0
-      comp  = palf*137.d0*VL*3.d0*PI
+      comp = palf*137.d0*VL*3.d0*PI
       WRITE(9,*) "coefficient for radiation [s]", palf
       WRITE(9,*) "Compton wavelength        [m]", comp
       IF(iconR.EQ.0) THEN
