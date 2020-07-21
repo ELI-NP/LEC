@@ -192,11 +192,19 @@ For an electron bunch, there are more than 7 outputs, depending on the number of
 
 The file ``AveENE`` records:
 
-+----------+-----------------------------+--------------------------------+-------------------------------+
-|    0     |   1                         |   2       		          | 3				  |
-+==========+=============================+================================+===============================+
-| time [s] | average kinetic energy [eV] |  average + :math:`\sigma` [eV] | average - :math:`\sigma` [eV] |
-+----------+-----------------------------+--------------------------------+-------------------------------+
++----------+-----------------------------+----------------------------------+---------------------------------+
+|    0     |   1                         |   2                              | 3                               |
++==========+=============================+==================================+=================================+
+| time [s] | average kinetic energy [eV] |  average + :math:`\sigma_+` [eV] | average - :math:`\sigma_-` [eV] |
++----------+-----------------------------+----------------------------------+---------------------------------+
+
+The meaning of :math:`\sigma_\pm` is slightly different from standard deviation. It is defined as:
+
+.. math::
+
+   \sigma_\pm = \frac{\sum |\gamma_i - \langle \gamma \rangle|_\pm}{N_\pm}
+
+where :math:`\sigma_+` is the energy deviation above the average while :math:`\sigma_-` is the energy deviation below the average. :math:`N_\pm` is the number of particles above and below the average energy. In most circumstances, :math:`\sigma_+=\sigma_-` and we can say that the particle energy has a normal distribution. In some cases, a deviation from normal distribution after the interaction may be observed.
 
 The file ``dist_fn`` records:
 
@@ -305,7 +313,9 @@ The longitudinal momentum spread is :math:`10\%` of its initial kinetic energy, 
 Load particle from file
 -----------------------
 
+The particle energy distribution can be loaded from the output of PIC simulation. The distribution function file name is ``load_particle.dat``. The data in the first column is the energy in the unit of electron volt [eV]. The second column is the particle distribution. The value of the distribution can be scaled accordingly.
 
+.. figure:: /figures/load_beam.png
 
 Models
 ======
