@@ -1,4 +1,3 @@
-
 def figure_format(fig_width='3.4',fig_height='2.1'):
     """
     Parameter
@@ -6,17 +5,17 @@ def figure_format(fig_width='3.4',fig_height='2.1'):
     fig_width : float
         figure width in inches
         e.g. 3.4
-        
+
     fig_height : float
         figure height in inches
         e.g. 3.4
-   
+
     Returns
     -------
     A tuple with:
     - Float corresponding to figure width and height
     - A dictionary containing several parameters, such as fontsize
-      , etc. If fig_width is not set, the default value is 3.4 inch, 
+      , etc. If fig_width is not set, the default value is 3.4 inch,
       corresponding to the width of a column in a double colomn paper.
     """
     golden_ratio = 1.618      # Aesthetic ratio
@@ -54,4 +53,3 @@ def figure_format(fig_width='3.4',fig_height='2.1'):
         	  'pgf.rcfonts': False,
         	  'ps.usedistiller': 'xpdf'}
     return(fig_width,fig_height,params)
-

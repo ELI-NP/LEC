@@ -34,8 +34,8 @@
  OUTRAD=          1,
  OUTPAIRS=          0,
  /
- Check openMP
- total number of threads=          64
+ Check OPENMP
+ total number of threads=           8
   
  Parameters for pulse laser
   
@@ -43,40 +43,37 @@
   
  0th order Gaussian beam
   
- Laser Intensity               [W/cm2]   1.0000000000000000E+022
- Peak electric field             [V/m]   274000000000000.00     
- Peak magnetic field           [Gauss]   9280000000.0000000     
- Larmor radius for light speed     [m]   1.8318965517241380E-009
- laser wavelength                  [m]   7.9999999999999996E-007
- pulse length                      [m]   5.5999999999999997E-006
- pulse duration                    [s]   1.8666666666666665E-014
- pulse duration (FWHM)             [s]   2.1978133333333330E-014
- waist radius (1/e2)               [m]   1.4400000000000000E-006
+ Laser Intensity           [W/cm2]   1.0000000000000000E+022
+ Peak electric field         [V/m]   274000000000000.00     
+ Peak magnetic field       [Gauss]   9280000000.0000000     
+ Larmor radius for light speed [m]   1.8318965517241380E-009
+ laser wavelength              [m]   7.9999999999999996E-007
+ pulse length                  [m]   5.5999999999999997E-006
+ pulse duration                [s]   1.8666666666666665E-014
+ pulse duration (FWHM)         [s]   2.1978133333333330E-014
+ waist radius (1/e2)           [m]   1.4400000000000000E-006
   
- parameters for electron beam
+ PARAMETERs for electron beam
+ initial kinetic energy [eV]   100000000.00000000     
+ initital momentum    [p/mc]   196.69217421590801     
+ initital 3 - velocity [v/c]  0.99998707628348127     
+ number of shot           1
   
+ Parameters for computation
   
- parameters for electron beam
- initial kinetic energy           [eV]   100000000.00000000     
- initital momentum              [p/mc]   196.69217421590801     
- initital 3-velocity             [v/c]  0.99998707628348127     
- number of shot                                  1
-  
- parameters for computation
-  
- Larmor radius / grid separation         128.00000000000000     
- Laser wavelength / grid separation      40.000000000000000     
- grid separation,Rd1,Rd2           [m]   1.4311691810344828E-011   2.0000000000000000E-008
- grid separation,Rd=min(Rd1,Rd2)   [m]   1.4311691810344828E-011
- physical time step interval       [s]   2.3852819683908047E-020
- physical unit time                [s]   3.0531609195402300E-018
- energy bin size of spectrum      [eV]   1000000.0000000000     
- coefficient for radiation         [s]   6.2000000000000001E-024
- Compton wavelength                [m]   2.4016219199632531E-012
+ Larmor radius/grid separation         128.00000000000000     
+ Laser wavelength/grid separation      40.000000000000000     
+ grid separation,Rd1,Rd2         [m]   1.4311691810344828E-011   2.0000000000000000E-008
+ grid separation,Rd=MIN(Rd1,Rd2) [m]   1.4311691810344828E-011
+ physical time step INTerval     [s]   2.3852819683908047E-020
+ physical unit time              [s]   3.0531609195402300E-018
+ energy bin size of spectrum    [eV]   1000000.0000000000     
+ coefficient for radiation [s]   6.2000000000000001E-024
+ Compton wavelength        [m]   2.4016219199632531E-012
   
  Particle pusher: Lorentz
   
- Use QED: No, Classical
+ Classical
   
  max time step    10000000
  single electron
@@ -88,12 +85,15 @@
  sampling electron number           5           1
  sampling electron number           6           1
  sampling electron number           7           1
- energy reduction (  EM work) [J]   1.0457878096000931E-015
- energy reduction (radiation) [J]   1.8264554368731900E-011
- total reduction energy [J]   1.8261959968351864E-011
- all      :   36.023000000000003     
- initc    :  0.18900000000000000     
- pmove    :   9.4359999999999999     
- rad      :   24.148000000000000     
+ rank number with head-on collision           1
+ head-on collision case myrank=           0
+ adjust head-on collision case to Ne7(1)
+ energy reduction(EM work) [J]   1.5295712594513665E-015
+ energy reduction (radiation) [J]   1.2369849070358154E-011
+ total reduction energy [J]   1.2368991769111022E-011
+ all      :   14.560000000000000     
+ initc    :  0.20499999999999999     
+ pmove    :   1.8899999999999999     
+ rad      :   11.981000000000000     
  reduction(rad):   0.0000000000000000     
- others   :   2.2500000000000000     
+ others   :  0.48399999999999999     
