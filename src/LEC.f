@@ -15,13 +15,13 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
 
       MODULE sim_common
       USE random_common
-      INTEGER      :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl,seed
-     &               ,itotal,ksoutP,iconR,SKL,LL,polar,shape
-     &               ,photon,species,shot,itotal0,L,OutRad,OutPairs
-     &		   ,QED,sampled,sampled2,sampled3,sampled4
-     &               ,loadpar,loadseed,qedseed
-      LOGICAL      :: emmits,exists,use_load_seed,use_load_particle
-     &               ,use_qed_seed
+      INTEGER :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl,seed
+     &          ,itotal,ksoutP,iconR,SKL,LL,polar,shape
+     &          ,photon,species,shot,itotal0,L,OutRad,OutPairs
+     &	    ,QED,sampled,sampled2,sampled3,sampled4
+     &          ,loadpar,loadseed,qedseed
+      LOGICAL :: emmits,exists,use_load_seed,use_load_particle
+     &          ,use_qed_seed
       REAL(kind=8) :: PQM     ! charge/mass
       REAL(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
@@ -77,7 +77,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitT3,fmitT3,qmitT3
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: emitTT,fmitTT,qmitTT
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emit3,fmit3,qmit3
-      REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE:: phtn
+      REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE :: phtn
       END MODULE R_common
 
       PROGRAM main
@@ -90,12 +90,12 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       IMPLICIT NONE
       INCLUDE "mpif.h"
 
-      NAMELIST /PARAM1/ jobno,ksmax,div,div2			       !time & grid PARAMETERs
-      NAMELIST /PARAM2/ SL,Ev,pw,pp,sp				       !laser PARAMETERs
-      NAMELIST /PARAM3/ alpha,enum,bin,shot,inc_ang		       !electron PARAMETERs
-      NAMELIST /PARAM4/ xinit,rmass,sigmax,sigmay,sigmaz           !configurations
-      NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs        !physical processes
-      NAMELIST /PARAM6/ loadpar,loadseed,qedseed
+      NAMELIST /PARAM1/ jobno,ksmax,div,div2			!time & grid parameter
+      NAMELIST /PARAM2/ SL,Ev,pw,pp,sp				!laser parameter
+      NAMELIST /PARAM3/ alpha,enum,bin,shot,inc_ang		!electron parameter
+      NAMELIST /PARAM4/ xinit,rmass,sigmax,sigmay,sigmaz    !configurations
+      NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs !physical processes
+      NAMELIST /PARAM6/ loadpar,loadseed,qedseed            !random number seed
 
       CALL system_clock(tmall0)
       CALL MPI_INIT(IERR)
@@ -123,7 +123,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
          END IF
       END IF
 
-      CALL MPI_BCAST(data_dir,100, MPI_CHARACTER, 0,MPI_COMM_WORLD,ierr)
+      CALL MPI_BCAST(data_dir,100,MPI_CHARACTER,0,MPI_COMM_WORLD,ierr)
 
       input_file = TRIM(ADJUSTL(data_dir))//'/'
      &	    // TRIM(ADJUSTL(filename))
@@ -139,7 +139,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       END IF
 
       IF(myrank.EQ.0) THEN
-        WRITE(*,*) 'Output directory:',data_file
+        WRITE(*,*) 'Output directory:', data_file
       END IF
 
       OPEN(8,status="old",file=TRIM(input_file),form='formatted')	!READ input data file
@@ -170,19 +170,19 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
 
       CALL setbeam
 
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt1q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt1q', jobno
       OPEN (10,file=fo_name2,form='formatted',status='REPLACE')
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt2q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt2q', jobno
       OPEN (11,file=fo_name2,form='formatted',status='REPLACE')
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt3q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt3q', jobno
       OPEN (12,file=fo_name2,form='formatted',status='REPLACE')
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt4q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt4q', jobno
       OPEN (13,file=fo_name2,form='formatted',status='REPLACE')
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt5q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt5q', jobno
       OPEN (14,file=fo_name2,form='formatted',status='REPLACE')
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt6q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt6q', jobno
       OPEN (15,file=fo_name2,form='formatted',status='REPLACE')
-      WRITE(fo_name2,444) TRIM(data_file)//'orbt7q',jobno
+      WRITE(fo_name2,444) TRIM(data_file)//'orbt7q', jobno
       OPEN (16,file=fo_name2,form='formatted',status='REPLACE')
       CALL system_clock(tinit)
       tinit = tinit - tinit0
@@ -269,7 +269,7 @@ c     orbit calculation
 
       IF(myrank.EQ.0)
      &   WRITE(*,*)
-     &   "Final runtime =",tmall/t_rate,"seconds"
+     &   "Final runtime =", tmall/t_rate, "seconds"
 
       STOP
       END
@@ -409,12 +409,12 @@ c     Setup for theoretical cross sections
       we0 = (log(EmaxV) - log(0.001d0))/199.0
       we0i = 1.d0/we0
 
-c     radiation & pair production in strong - field
+c     radiation & pair production in strong-field
 c     totalR : quantum   total cross section (x energy) ; fcem
 c     totalC : classical total cross section (x energy) ; gcem
 c     totalP : pair production total cross section      ; dcpr
-c     totalS : quantum   total cross section            ; dcem
-c     totalT : classical total cross section            ; ecem
+c     totalS :       quantum   total cross section      ; dcem
+c     totalT :       classical total cross section      ; ecem
 c     diffC ; classical differential cross section (x energy)
 c     diffQ ;   quantum differential cross section (x energy)
 c     diffD ; classical differential cross section
@@ -424,7 +424,7 @@ c     diffR ;   quantum differential cross section
       table_location = TRIM(cwd)//'/TABLE/'//TRIM(ADJUSTL(qed_file))
 
       IF(myrank.EQ.0) THEN
-        INQUIRE(file=TRIM(table_location), exist=exists)
+        INQUIRE(file=TRIM(table_location),exist=exists)
         IF(.NOT.exists) THEN
            WRITE(*,*) '*** ERROR ***'
            WRITE(*,*) 'Unable to find QED tables in the ',
@@ -576,7 +576,7 @@ c     Generate initial electron conditions for incident beam
       END IF
 
       DO i = 1,7
-         Ne7(i)=(itotal/8)*i + 1
+         Ne7(i) = (itotal/8)*i + 1
          WRITE(9,*) "sampling electron number", i, Ne7(i)
       END DO
 
@@ -584,7 +584,7 @@ c     Generate initial electron conditions for incident beam
       j = i/itotal + 1
       WRITE(9,*) "rank number with head-on collision", j - 1
       IF((jj + 1.LE.i).and.(jj + itotal.GE.i)) THEN
-         WRITE(9,*) "head-on collision case myrank=", myrank
+         WRITE(9,*) "head-on collision case myrank =", myrank
          WRITE(9,*) "adjust head-on collision case to Ne7(1)"
          Ne7(1) = i - jj
       END IF
@@ -695,8 +695,8 @@ c----------------------
       SE = 0.d0
       itotal0 = INT(itotal/icpu + 1)
       DO LP = 1,icpu
-         IPTSS  = itotal0*(LP - 1) + 1
-         IPTFF  = MIN(itotal0*LP,itotal)
+         IPTSS = itotal0*(LP - 1) + 1
+         IPTFF = MIN(itotal0*LP,itotal)
          DO L = IPTSS,IPTFF
             Vx = Re(4,L)
             Vy = Re(5,L)
@@ -747,9 +747,9 @@ c----------------------
      &		 + SE_pos(LP + 2) + SE_pos(LP + 3)
          SIG_neg = SIG_neg + SE_neg(LP)  + SE_neg(LP + 1)
      &		 + SE_neg(LP + 2) + SE_neg(LP + 3)
-          num_p = num_p   + num_pos(LP) + num_pos(LP + 1)
+          num_p = num_p + num_pos(LP) + num_pos(LP + 1)
      &            + num_pos(LP + 2) + num_pos(LP + 3)
-          num_n = num_n  + num_neg(LP) + num_neg(LP + 1)
+          num_n = num_n + num_neg(LP) + num_neg(LP + 1)
      &            + num_neg(LP + 2) + num_neg(LP + 3)
       END DO
 
@@ -768,7 +768,7 @@ c----------------------
       SIGE_neg = SIGE_neg/num_nn
 
       IF(myrank.EQ.0) THEN
-        WRITE(fo_name2,444) TRIM(data_file)//'AveEne',jobno
+        WRITE(fo_name2,444) TRIM(data_file)//'AveEne', jobno
         OPEN (20,file=fo_name2,form='formatted',status='unknown')
         WRITE(20,666) t*Rt2, EKK*0.511d6
      &		 , (EKK + SIGE_pos)*0.511d6
@@ -887,7 +887,7 @@ c          Coefficient
       vmitT3 = 0.d0
 !$omp parallel do private(k) shared(wmit3,vmit3)
 !$omp&         reduction(+:wmitT3,vmitT3)
-      DO k=1,icpu,4
+      DO k = 1,icpu,4
          wmitT3 = wmitT3 + wmit3(k) + wmit3(k + 1)
      &		+ wmit3(k + 2) + wmit3(k + 3)
          vmitT3 = vmitT3 + vmit3(k) + vmit3(k + 1)
@@ -904,13 +904,13 @@ c          Coefficient
 c     Summation in MPI processes
       vmitT3  = ABS(vmitT3)
       CALL mpi_allreduce(emitT3,emitTT,emitgrid,mpi_real8
-     &                         ,mpi_sum,mpi_comm_world,ierr)
+     &                   ,mpi_sum,mpi_comm_world,ierr)
       CALL mpi_allreduce(fmitT3,fmitTT,emitgrid,mpi_real8
-     &                         ,mpi_sum,mpi_comm_world,ierr)
+     &                   ,mpi_sum,mpi_comm_world,ierr)
       CALL mpi_allreduce(wmitT3,wmitTT,1,mpi_real8
-     &                         ,mpi_sum,mpi_comm_world,ierr)
+     &                   ,mpi_sum,mpi_comm_world,ierr)
       CALL mpi_allreduce(vmitT3,vmitTT,1,mpi_real8
-     &                         ,mpi_sum,mpi_comm_world,ierr)
+     &                   ,mpi_sum,mpi_comm_world,ierr)
       CALL system_clock(trdct1)
       trdct = trdct + trdct1 - trdct0
 
@@ -983,9 +983,9 @@ c     setup for theoretical cross sections
       DO i = IPTSS,IPTFF
          ENE0 = (DBLE(i) - 0.5d0)*ENEd
          IF(ENE0.GE.2.d0) THEN
-           kk   = min(IDNINT(log(ENE0*0.5d0)/dp1 + 1.d0),LPx)
-           ff   = totalH(kk)
-           ENE  = (1.d0 - dexp(-3.d - 5*ff))*emitT3(i)
+           kk = min(IDNINT(log(ENE0*0.5d0)/dp1 + 1.d0),LPx)
+           ff = totalH(kk)
+           ENE = (1.d0 - dexp(-3.d - 5*ff))*emitT3(i)
 c          Integration of total cross section
            ff = totalH2(kk)*1000.d0
 c          coefficient
@@ -1074,10 +1074,10 @@ c----------------------
          IPTFF = LP*Lall
       DO j = IPTSS,IPTFF
       DO L = 1,itotal
-         Xi  = phtn(1,j,L)        ! quantum PARAMETER
+         Xi = phtn(1,j,L)        ! quantum PARAMETER
          TmY = phtn(3,j,L)
          TmZ = phtn(6,j,L)
-         Um  = phtn(4,j,L)*Pksout ! energy defference
+         Um = phtn(4,j,L)*Pksout ! energy defference
          IF(XI.GT.0.001) THEN
            ii = MIN(IDNINT(TmZ/(pi)*ang2 + 0.5d0 + ang2),ang)
            jj = MIN(IDNINT(TmY/(pi)*ang2 + 0.5d0 + ang2),ang)
@@ -1094,7 +1094,7 @@ c----------------------
          Tm = 0.d0
          DO k = 1,icpu,4
             Tm = Tm + emit2(i,j,k ) + emit2(i,j,k + 1)
-     &		  + emit2(i,j,k + 2) + emit2(i,j,k + 3)
+     &	     + emit2(i,j,k + 2) + emit2(i,j,k + 3)
          END DO
          emitT2(i,j) = Tm
       END DO
@@ -1690,7 +1690,7 @@ c-------------------------
       IF(myrank.EQ.0) THEN
 
         WRITE(fo_name2,444) TRIM(data_file)//'dist_fn'
-     &			   ,kstep/100000,jobno
+     &			   , kstep/100000, jobno
         OPEN (31,file = fo_name2,form='formatted',status='unknown')
         DO i = 1,enegrid
            WRITE(31,666) i/(enegrid*enediv)*0.511d6
@@ -1770,7 +1770,7 @@ c--------------------------
 
       const = pin/(ENEd)*enum
       IF(myrank.EQ.0) THEN
-        WRITE(fo_name2,444) TRIM(data_file)//'dist_ph',jobno
+        WRITE(fo_name2,444) TRIM(data_file)//'dist_ph', jobno
         OPEN (34,file=fo_name2,form='formatted',status='unknown')
         DO i = 1,emitgrid
            ENE0 = (i - 0.5d0)*ENEd
@@ -1831,7 +1831,7 @@ c---------------------------
 
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'dist_fn2d'
-     &			   ,kstep/100000,jobno
+     &			   , kstep/100000, jobno
         OPEN (32,file=fo_name2,form='formatted',status='unknown')
 
         DO i = 1,grid1
@@ -2042,7 +2042,7 @@ c
 
       IF(myrank.EQ.0) THEN
         WRITE(fo_name2,444) TRIM(data_file)//'Bethe-Heitler', jobno
-        OPEN (33,file = fo_name2,form='formatted',status='unknown')
+        OPEN (33,file=fo_name2,form='formatted',status='unknown')
 c
         DO i = 1,LPx
            WRITE(33,*) i, totalH(i), totalH2(i)
