@@ -60,9 +60,9 @@ copyright = u'2020, Ong Jian Fuh'
 author = u'Ong Jian Fuh'
 
 # The short X.Y version.
-version = u'0.0.1'
+version = u'2.0.0'
 # The full version, including alpha/beta/rc tags
-release = u'0.0.1'
+release = u'2.0.0'
 
 
 # -- General configuration ---------------------------------------------------
