@@ -2069,7 +2069,7 @@ C-----------------------------------------------------------------
       WRITE(*,*) ' #######L  ########E   ##########C    '
       WRITE(*,*) '#LASER##  ELECTRON#    COLLISION     '
       WRITE(*,*) ' '//achar(27)//'[32m'
-      WRITE(*,*) 'Welcome to Laser Electron Collision code (v-1.3.0)'
+      WRITE(*,*) 'Welcome to Laser Electron Collision code (v-2.0.0)'
       WRITE(*,*) ' '//achar(27)//'[0m'
       WRITE(*,*) '*****************************************************'
       WRITE(*,*) "The code is running on", NPROCS, " processors"
