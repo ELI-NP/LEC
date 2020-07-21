@@ -61,7 +61,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       CHARACTER(LEN=100):: fo_name2,cwd
       CHARACTER(LEN=10) :: filename = 'input.dat'
       CHARACTER(LEN=100):: data_dir,data_file,input_file
-      CHARACTER(LEN=*), PARAMETER :: data_dir_file =
+      CHARACTER(LEN=*),PARAMETER :: data_dir_file =
      &					'USE_DATA_DIRECTORY'
       END MODULE out_common
 
