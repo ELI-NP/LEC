@@ -11,12 +11,12 @@
 	COMMON /kisscom/x,y,z,w
 C
       x = 69069*x + 1327217885
-      y = ieor(y,ishft(y,13))
-      y = ieor(y,ishft(y,-17))
-      y = ieor(y,ishft(y,5))
-      z = 18000*iand(z,65535) + ishft(z,-16)
-      w = 30903*iand(w,65535) + ishft(w,-16)
-      kiss = x + y + ishft (z, 16) + w
+      y = IEOR(y,ISHFT(y,13))
+      y = IEOR(y,ISHFT(y,-17))
+      y = IEOR(y,ISHFT(y,5))
+      z = 18000*IAND(z,65535) + ISHFT(z,-16)
+      w = 30903*IAND(w,65535) + ISHFT(w,-16)
+      kiss = x + y + ISHFT(z,16) + w
       random = (DBLE(kiss) + 2147483648.d0)/4294967296.d0
       RETURN
 	END
