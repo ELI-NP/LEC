@@ -73,7 +73,7 @@ This section describes the details of the input parameters, output files, and ex
 
    The temporal profile for 5th order paraxial approximation is not Gaussian. The temporal profile is :math:`g=\mathrm{cosech}((t-x)/\tau_\mathrm{L})`.
 
-**loadpar** [*Integer*] Load particle energy distribution from external file. The default filename is ``f_E_smoothed_new_final.txt``. To change the filename, please edit the subroutine ``manual_load``.
+**loadpar** [*Integer*] Load particle energy distribution from external file. The default filename is ``dist_fn.dat``. To change the filename, please edit the subroutine ``manual_load``.
 
 **OutRad** [*Integer*] Specifying whether to calculate radiation. When setting ``OutRad=1``, emission spectrum, photon number distribution, radiation angular distribution will be calculated. This part consumes most of the simulation time.
 
@@ -287,17 +287,24 @@ In this examples, we show the results of :math:`10^9` electrons colliding with t
 
 .. code-block:: fortran
 
-   &PARAM1  jobno=003,ksmax=1000000,div=60.d0,div2=40.d0	               ,&END
-   &PARAM2  SL=1.d22,Ev=600.d6,pw=0.82d-6,pp=3.3d-6,sp=5.5d-6                  ,&END
-   &PARAM3  alpha=1.d-6,enum=1.0d9,bin=1.d6,shot=1,inc_ang = 0.d0	       ,&END
-   &PARAM4  xinit=2.d0,rmass=1.d0,sigmax=0.1d0,sigmay=0.01d0,sigmaz=0.01d0     ,&END
-   &PARAM5  iconR=1,QED=0,ipl=0,shape=0,OutRad=1,OutPairs=0 	               ,&END
+   &PARAM1  jobno=003,ksmax=1000000,div=60.d0,div2=40.d0                      ,&END
+   &PARAM2  SL=1.d22,Ev=600.d6,pw=0.82d-6,pp=3.3d-6,sp=5.5d-6                 ,&END
+   &PARAM3  alpha=1.d-6,enum=1.0d9,bin=1.d6,shot=1,inc_ang = 0.d0             ,&END
+   &PARAM4  xinit=2.d0,rmass=1.d0,sigmax=0.1d0,sigmay=0.01d0,sigmaz=0.01d0    ,&END
+   &PARAM5  iconR=1,QED=0,ipl=0,shape=0,OutRad=1,OutPairs=0                   ,&END
+   &PARAM6  loadpar=0,loadseed=33587,qedseed=0                                ,&END
 
 The longitudinal momentum spread is :math:`10\%` of its initial kinetic energy, i.e. ``sigmax=0.1d0``. Other components are set to a very small value. The simulations were run for Sokolov (classical, ``iconR=1, QED=0``), Sokolov (QED-assisted, ``iconR=1, QED=1``), and Stochastic (``iconR=3, QED=1``). For Stochastic, ``QED=1`` is mandatory.
 
 .. figure:: /figures/energies_beam.png
 
+.. figure:: /figures/dist_function.png
+
 .. figure:: /figures/photonnumber_beam.png
+
+Load particle from file
+-----------------------
+
 
 
 Models
