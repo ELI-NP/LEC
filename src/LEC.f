@@ -854,8 +854,8 @@ c          Coefficient
               ii = IDNINT(ENE0/ENE*3000.d0 + 0.5d0)
               Xe = ENE0/ENE*3000.d0 + 0.5d0 - DBLE(ii)
               IF(ii.GT.2999) EXIT
-              TTT = diff1(ii,kk)+Xe*(diff1(ii + 1,kk) - diff1(ii,kk))
-              PXS = diff2(ii,kk)+Xe*(diff2(ii + 1,kk) - diff2(ii,kk))
+              TTT = diff1(ii,kk) + Xe*(diff1(ii + 1,kk) - diff1(ii,kk))
+              PXS = diff2(ii,kk) + Xe*(diff2(ii + 1,kk) - diff2(ii,kk))
               emit3(k,LP) = emit3(k,LP) + TTT*gg/ENE
               fmit3(k,LP) = fmit3(k,LP) + PXS*gg
            END DO
