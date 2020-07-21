@@ -1,63 +1,70 @@
+.. _input parameters:
+
 Input parameters
 ================
+
+.. admonition:: Note!
+
+   New ``PARAM`` may be added from time to time.
 
 This section describes the details of the input parameters, output files, and examples. The code was written in ``fortran90``. The input parameters are contained in the file ``input.dat`` in the folder ``Data``.
 
 .. code-block:: fortran
 
-   &PARAM1  jobno=001,ksmax=1000000,div=60.d0,div2=40.d0	             ,&END
-   &PARAM2  SL=1.0d22,Ev=10.d6,pw=0.8d-6,pp=5.6d-6,sp=1.44d-6                ,&END
-   &PARAM3  alpha=0.0d-6,enum=1.0d9,bin=1.d6,shot=1,inc_ang = 0.d0           ,&END
-   &PARAM4  xinit=1.1d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0 ,&END
-   &PARAM5  iconR=2,QED=1,ipl=0,shape=0,load=0,OutRad=0,OutPairs=0 	     ,&END
+   &PARAM1  jobno=001,ksmax=1000000,div=60.d0,div2=40.d0                      ,&END
+   &PARAM2  SL=1.0d22,Ev=10.d6,pw=0.8d-6,pp=5.6d-6,sp=1.44d-6                 ,&END
+   &PARAM3  alpha=0.0d-6,enum=1.0d9,bin=1.d6,shot=1,inc_ang = 0.d0            ,&END
+   &PARAM4  xinit=1.1d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0  ,&END
+   &PARAM5  iconR=2,QED=1,ipl=0,shape=0,OutRad=0,OutPairs=0                   ,&END
+   &PARAM6  loadpar=1,loadseed=33587,qedseed=0                                ,&END
 
-**jobno**    The job numbering. Integer.
+**jobno** [*Integer*] The job numbering.
 
-**ksmax**    Maximum number of time step. Integer.
+**ksmax** [*Integer*] Maximum number of time step.
 
-**div,div2** The number of division or cells per Lamor radius.
+**div,div2** [*Float*] The number of division or cells per Lamor radius.
 
-**SL**       Laser intensity [:math:`\mathrm{W~cm^{-2}}`].
+**SL** [*Float*] Laser intensity [:math:`\mathrm{W~cm^{-2}}`].
 
-**Ev**       Electron energy [eV].
+**Ev** [*Float*] Electron energy [eV].
 
-**pw** Laser wavelength [meter].
+**pw** [*Float*] Laser wavelength [meter].
 
-**pp** Laser pulse length [meter]. Pulse duration is :math:`\tau_\mathrm{L}=\mathrm{pp}/c`. Pulse duration at FWHM is :math:`\tau_\mathrm{L}\times 1.1744`
+**pp** [*Float*] Laser pulse length [meter]. Pulse duration is :math:`\tau_\mathrm{L}=\mathrm{pp}/c`. Pulse duration at FWHM is :math:`\tau_\mathrm{L}\times 1.1744`
 
-**sp** Laser waist radius (at :math:`1/e^2`) [meter].
+**sp** [*Float*] Laser waist radius (at :math:`1/e^2`) [meter].
 
-**alpha** Electron waist radius (at :math:`1/e^2`) [meter]. Set to 0.0d-6 for a single electron. If set to a value larger than 0, electron energy distribution in 1D and 2D will be outputted.
+**alpha** [*Float*] Electron waist radius (at :math:`1/e^2`) [meter]. Set to 0.0d-6 for a single electron. If set to a value larger than 0, electron energy distribution in 1D and 2D will be outputted.
 
-**enum** Electron number in a bunch. Used for radiation calculation. For single electron, ``enum=1.d0``
+**enum** [*Float*] Electron number in a bunch. Used for radiation calculation. For single electron, ``enum=1.d0``
 
-**bin** Radiation spectrum bin size [eV].
+**bin** [*Float*] Radiation spectrum bin size [eV].
 
-**shot** Number of shot. Integer.
+**shot** [*Integer*] Number of shot.
 
-**inc_ang** Incident angle of the electron with respect to the x-axis [degree].  
+**inc_ang** [*Float*] Incident angle of the electron with respect to the x-axis [degree].
 
-**xinit** Initial position of the electron from the collision point. The collision happens at :math:`t=0`. The laser is one pulse length away from :math:`t=0`.
+**xinit** [*Float*] Initial position of the electron from the collision point. The collision happens at :math:`t=0`. The laser is one pulse length away from :math:`t=0`.
 
-**rmass** The charge to mass ratio of the colliding particle. Setting to ``rmass=206`` represents muon.
+**rmass** [*Float*] The charge to mass ratio of the colliding particle. Setting to ``rmass=206`` represents muon.
 
-**sigma_{x,y,z}** Electron momentum energy spreads in three directions. This input is ignored for a single electron
+**sigma_{x,y,z}** [*Float*] Electron momentum energy spreads in three directions. This input is ignored for a single electron
 
-**iconR** Specifying the particle pusher used. Integer.
+**iconR** [*Integer*] Specifying the particle pusher used.
 
    * ``iconR=0`` Lorentz force
    * ``iconR=1`` Sokolov
    * ``iconR=2`` Reduced Landau-Liftshitz
    * ``iconR=3`` Stochastic
 
-**QED** Specifying whether to use QED for Sokolov and Reduced Landau-Liftshitz. ``QED=1`` is mandatory for Stochastic process.
+**QED** [*Integer*] Specifying whether to use QED for Sokolov and Reduced Landau-Liftshitz. ``QED=1`` is mandatory for Stochastic process.
 
-**ipl** Specifying laser polarisation. 
+**ipl** [*Integer*] Specifying laser polarisation.
 
    * ``ipl=0`` linear polarisation (LP)
    * ``ipl=1`` circular polarisation (CP).
 
-**shape** Laser spatial and temporal profile. Laser profile can be modified in *laser.f*. Integer.
+**shape** [*Integer*] Laser spatial and temporal profile. Laser profile can be modified in *laser.f*.
 
    * ``shape=0`` 0th order Gaussian beam.
    * ``shape=1`` 5th order paraxial approximation.
@@ -66,12 +73,15 @@ This section describes the details of the input parameters, output files, and ex
 
    The temporal profile for 5th order paraxial approximation is not Gaussian. The temporal profile is :math:`g=\mathrm{cosech}((t-x)/\tau_\mathrm{L})`.
 
-**load** Load particle energy distribution from external file. The default filename is ``f_E_smoothed_new_final.txt``. To change the filename, please edit the subroutine ``manual_load``. Integer.
+**loadpar** [*Integer*] Load particle energy distribution from external file. The default filename is ``f_E_smoothed_new_final.txt``. To change the filename, please edit the subroutine ``manual_load``.
 
-**OutRad** Specifying whether to calculate radiation. When setting ``OutRad=1``, emission spectrum, photon number distribution, radiation angular distribution will be calculated. This part consumes most of the simulation time. Integer.
+**OutRad** [*Integer*] Specifying whether to calculate radiation. When setting ``OutRad=1``, emission spectrum, photon number distribution, radiation angular distribution will be calculated. This part consumes most of the simulation time.
 
-**OutPairs** Specifying whether to calculate pair production. The code currently support the Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated if ``OutPairs=1``. The Z component of nucleus for the specific converter is specify in ``module random_commom``. Integer.
+**OutPairs** [*Integer*] Specifying whether to calculate pair production. The code currently support the Bethe-Heitler pair production. The cross section for Bremsstrahlung and pair production will be calculated if ``OutPairs=1``. The Z component of nucleus for the specific converter is specify in ``module random_commom``.
 
+**loadseed**, [*Integer*] Specifying the user define seed for the loading of momentum distribution. If set to zero then the default seed in the code will be used.
+
+**qedseed**, [*Integer*] Specifying the user define seed for Stochastic process (``iconR=3``). If set to zero then the default seed in the code will be used. To obtain different stochastic event of the same electron bunch, keep ``loadseed`` fixed and change ``qedseed``.
 
 Output files
 ============
@@ -94,26 +104,30 @@ Example of a single electron for ``Lorentz vs Sokolov``. The input parameters ar
    &PARAM4  xinit=5.d0,rmass=1.d0,sigmax=0.01d0,sigmay=0.01d0,sigmaz=0.01d0 ,&END
    &PARAM5  iconR=1,QED=0,ipl=0,shape=0,load=0,OutRad=1,OutPairs=0 	    ,&END
 
+.. admonition:: Note!
+
+   New ``PARAM`` may be added from time to time. Please refers to the :ref:`input list <input parameters>` to see the lastest ``PARAM``.
+
 The outputs are written in ASCII format. The file ``output001.dat`` records the detail parameters of the simulation. For example:
 
 .. code-block:: fortran
 
    Parameters for pulse laser
-  
+
    Laser polarization: linear
-  
+
    0th order Gaussian beam
-  
+
    Laser Intensity               [W/cm2]   1.0000000000000000E+022
-   Peak electric field             [V/m]   274000000000000.00     
-   Peak magnetic field           [Gauss]   9280000000.0000000     
+   Peak electric field             [V/m]   274000000000000.00
+   Peak magnetic field           [Gauss]   9280000000.0000000
    Larmor radius for light speed     [m]   1.8318965517241380E-009
    laser wavelength                  [m]   7.9999999999999996E-007
    pulse length                      [m]   5.5999999999999997E-006
    pulse duration                    [s]   1.8666666666666665E-014
    pulse duration (FWHM)             [s]   2.1978133333333330E-014
    waist radius (1/e2)               [m]   1.4400000000000000E-006
-  
+
    parameters for electron beam
    ...
 
@@ -140,29 +154,29 @@ The file ``orbt1q001.dat`` records the trajectories, energy etc. of the particle
 
    The numbers **0**, **1**, **2**,...indicate the columns to extract the data by using **usecols=[0,1,2,...]** in :ref:`Python <python>`.
    For :ref:`gnuplot <gnu>`, the columns number becomes **($1)**, **($2)**, **($3)**,...
-   
+
 The file ``phtne001.dat`` records the radiation output. For example:
 
 +-------------+---------------+-------------------------------------+
-|    0        |   1           |   2   				    |		
+|    0        |   1           |   2   				    |
 +=============+===============+=====================================+
 | energy [eV] | photon number | photon number :math:`\times` energy |
 +-------------+---------------+-------------------------------------+
 
 .. code-block:: fortran
 
-   8333.3333333333321        238.86944345907790        6.2633513616217478     
-   25000.000000000000        182.50447244093024        7.5507336932200397     
-   41666.666666666664        104.14244180601469        9.1380529004804760     
-   58333.333333333328        89.422617071344263        9.8579995567498120     
-   75000.000000000000        70.619159337234422        10.697476969356655     
-   91666.666666666657        63.363841302196569        11.199199843048401 
-   ... 
+   8333.3333333333321        238.86944345907790        6.2633513616217478
+   25000.000000000000        182.50447244093024        7.5507336932200397
+   41666.666666666664        104.14244180601469        9.1380529004804760
+   58333.333333333328        89.422617071344263        9.8579995567498120
+   75000.000000000000        70.619159337234422        10.697476969356655
+   91666.666666666657        63.363841302196569        11.199199843048401
+   ...
 
 The file ``phtnTe001.dat`` records the radiation angular distribution. For example:
 
 +------------------------+------------------------+-----------------------+
-|    0                   |   1                    |   2         	  |		
+|    0                   |   1                    |   2         	  |
 +========================+========================+=======================+
 | :math:`\theta_z` [rad] | :math:`\theta_y` [rad] | radiated energy [a.u] |
 +------------------------+------------------------+-----------------------+
@@ -174,7 +188,7 @@ The file ``phtnTe001.dat`` records the radiation angular distribution. For examp
    -0.3126E+01    -0.3139E+01     0.0000E+00
    -0.3120E+01    -0.3139E+01     0.0000E+00
 
-For an electron bunch, there are more than 7 outputs, depending on the number of MPI processes. Each output record a sample electron information. On the other hand, file such as ``AveEne(jobno).dat``, ``dist_fn(kstep)(jobno).dat``, ``dist_fn2d(kstep)(jobno).dat`` will be output. 
+For an electron bunch, there are more than 7 outputs, depending on the number of MPI processes. Each output record a sample electron information. On the other hand, file such as ``AveEne(jobno).dat``, ``dist_fn(kstep)(jobno).dat``, ``dist_fn2d(kstep)(jobno).dat`` will be output.
 
 The file ``AveENE`` records:
 
@@ -187,15 +201,15 @@ The file ``AveENE`` records:
 The file ``dist_fn`` records:
 
 +-------------+-----------------------+
-|    0        |   1                   | 	
+|    0        |   1                   |
 +=============+=======================+
-| energy [eV] | electron number [a.u] | 
+| energy [eV] | electron number [a.u] |
 +-------------+-----------------------+
 
 The file ``dist_fn2d`` records:
 
 +--------------------------+--------------------------+------------------------+
-|    0                     |   1                      |   2       	       | 
+|    0                     |   1                      |   2       	       |
 +==========================+==========================+========================+
 | :math:`p_y` [normalized] | :math:`p_z` [normalized] |  electron number [a.u] |
 +--------------------------+--------------------------+------------------------+
@@ -217,12 +231,12 @@ In this examples, the visualisation is performed by using Python in `Jupyter not
                                               +str(file2).zfill(3)+".dat",unpack=True,
                                               usecols=[0,1,2,3,4,5,6],dtype=np.float)
 
-In the Jupyter notebook, there is a python function ``import figformat``. This function output/display figures with selected parameters. The figure width, **fig_width** is set to 3.4 inches, represents a single column width of a double column journal. 
+In the Jupyter notebook, there is a python function ``import figformat``. This function output/display figures with selected parameters. The figure width, **fig_width** is set to 3.4 inches, represents a single column width of a double column journal.
 
 .. code-block:: python
 
    import matplotlib as mpl
-   import figformat 
+   import figformat
    fig_width,fig_height,params=figformat.figure_format(fig_width=3.4,fig_height=2)
    mpl.rcParams.update(params)
 
@@ -235,9 +249,9 @@ Gnuplot
 
 On the other hand, a quick visualisation can be performed by using `gnuplot <http://www.gnuplot.info>`_. For example:
 
-:: 
+::
 
-   > plot “***.dat” using ($1):($4) with lines 
+   > plot “***.dat” using ($1):($4) with lines
    > replot “***.dat” using ($1):($4) with lines
 
 .. _examples:
@@ -250,7 +264,7 @@ Single electron
 
 In this example, we plot several outputs of a single electron. Details of the plotting code can be referred to the Jupyter notebook. It can be viewed in GitHub. We showed the output for Lorentz (without RR) and Sokolov (with RR) in classical regime.
 
-The electron trajectory 
+The electron trajectory
 
 .. figure:: /figures/trajectories.png
 
@@ -265,10 +279,6 @@ The radiation spectrum
 The photon number distribution
 
 .. figure:: /figures/photonnumber.png
-
-The radiation angular distribution
-
-.. figure:: /figures/angular_dist.png
 
 Electron bunch
 --------------
@@ -295,7 +305,7 @@ Models
 
 .. todo:: To do
 
-   Details numerical implementation can be obtained in Ref. :cite:`mypop`.
+   Details numerical implementation can be found in Ref. :cite:`mypop`.
 
 Landau-Liftshitz
 ----------------
@@ -338,7 +348,7 @@ and :math:`K_{\nu}(x)` is modified Bessel function. At classical limit :math:`\c
 
 .. math::
 
-   dP&=&\mathcal{E}dW_{em}\nonumber\\ &\rightarrow& \frac{e^{2}\omega_{c}}{ \sqrt{3}\pi c}\frac{1}{\gamma^{2}} 
+   dP&=&\mathcal{E}dW_{em}\nonumber\\ &\rightarrow& \frac{e^{2}\omega_{c}}{ \sqrt{3}\pi c}\frac{1}{\gamma^{2}}
    \frac{\omega}{\omega}_{c}[2K_{2/3}(\delta)-\int_{\delta}^{\infty}K_{1/3}(s)ds]d\omega
 
 reduced to classical synchrotron radiation where :math:`\omega_{c}` is the critical frequency and :math:`\delta\longrightarrow 2\xi/3\chi`.
@@ -349,12 +359,11 @@ The function :math:`q(\chi_e)~\text{for}~\chi_e\ll 1` (blue)
 
 .. math::
 
-    q(\chi_e\ll 1)\approx 1-\frac{55}{16}\sqrt{3}\chi + 48\chi^2 
+    q(\chi_e\ll 1)\approx 1-\frac{55}{16}\sqrt{3}\chi + 48\chi^2
 
 The function :math:`q(\chi_e)~\text{for}~\chi_e\gg 1` (green)
 
 .. math::
 
-    q(\chi_e\gg 1)\approx\frac{48}{243}\Gamma(\frac{2}{3})\chi^{-4/3} 
-    \left[ 1 -\frac{81}{16\Gamma(2/3)}(3\chi)^{-2/3} \right] 
-
+    q(\chi_e\gg 1)\approx\frac{48}{243}\Gamma(\frac{2}{3})\chi^{-4/3}
+    \left[ 1 -\frac{81}{16\Gamma(2/3)}(3\chi)^{-2/3} \right]
