@@ -344,7 +344,8 @@ c----------------------
       WRITE(9,*) "waist radius (1/e2)           [m]", sp
 
       IF(use_load_particle) THEN
-        WRITE(9,*) "Load particles from: f_E_smoothed_new_final.txt"
+        WRITE(9,*) "Load particles from: load_particle.dat"
+        sigmax = 0.d0 ; sigmay = 0.d0 ; sigmaz = 0.d0
         GO TO 5555
       END IF
       WRITE(9,*) " "
@@ -444,7 +445,7 @@ c     diffR ;   quantum differential cross section
       END IF
 
       IF((myrank.EQ.0).AND.use_load_particle)
-     &	WRITE(*,*) "Load particles from: f_E_smoothed_new_final.txt"
+     &	WRITE(*,*) "Load particles from: load_particle.dat"
 
       IF((myrank.EQ.0).AND.(OutRad.EQ.1))
      &   WRITE(*,*) 'Produce radiation'
@@ -490,8 +491,6 @@ c     Generate initial electron conditions for incident beam
         DO j = 1,sampled - 1
         DO i = 1,sampled - 1
            kk = (j - 1)*(sampled - 1) + i
-           rand = random()
-           rand1 = random()
            phaseX  = (DBLE(i - sampled2))/(sampled2 - 1)*0.707d0
            phaseY  = (DBLE(j - sampled2))/(sampled2 - 1)*0.707d0
            Re(1,kk) = wp*xinit
@@ -501,12 +500,12 @@ c     Generate initial electron conditions for incident beam
 
            IF(use_load_particle) CALL manual_load
 
-           Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*rand1)
-     &		    *Vx*dsqrt(-2.d0*log(rand))
-           Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*rand1)
-     &		    *dsqrt(-2.d0*log(rand))
-           Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*rand1)
-     &	          *dsqrt(-2.d0*log(rand))
+           Re(4,kk) = Vx*(-1.d0) + sigmax*dcos(2.d0*pi*random())
+     &		    *Vx*dsqrt(-2.d0*log(random()))
+           Re(5,kk) = sigmay*Vx*dcos(2.d0*pi*random())
+     &		    *dsqrt(-2.d0*log(random()))
+           Re(6,kk) = sigmaz*Vx*dsin(2.d0*pi*random())
+     &	          *dsqrt(-2.d0*log(random()))
         END DO
         END DO
 
@@ -1650,7 +1649,7 @@ c-------------------------
       REAL(kind=8) :: b4,b5,b6,enediv,aa,sigma,ffsum
       REAL(kind=8),DIMENSION(:),ALLOCATABLE :: his,his_sum
 
-      enegrid = 512
+      enegrid = 256
       ALLOCATE(his(enegrid))
       ALLOCATE(his_sum(enegrid))
 
@@ -1686,7 +1685,7 @@ c-------------------------
       CALL mpi_allreduce(ff,ffsum,1,mpi_real8
      &                   ,mpi_sum,mpi_comm_world,ierr)
 
-      const = (bin/0.511d6)/(Em/enegrid)*enum
+      const = (bin/0.511d6)/(Em/enegrid)
       IF(myrank.EQ.0) THEN
 
         WRITE(fo_name2,444) TRIM(data_file)//'dist_fn'
@@ -1858,18 +1857,18 @@ c---------------------------
       USE out_common
       IMPLICIT NONE
       INTEGER :: ip
-      INTEGER,PARAMETER :: np_local = 116
+      INTEGER,PARAMETER :: np_local = 2339, ngrid = 3000
       REAL(kind=8) :: gg1,ss,energy,random,energy_max
-      REAL(kind=8),DIMENSION(3001) :: W
+      REAL(kind=8),DIMENSION(ngrid + 1) :: W
       REAL(kind=8),DIMENSION(np_local) :: Ex_axis, dist_fn
 
       OPEN(33,file=TRIM(data_file)//
-     &   'f_E_smoothed_new_final.txt',status='OLD')
+     &   'load_particle.dat',status='OLD')
 
       DO ip = 1,np_local
          READ(33,*) Ex_axis(ip), dist_fn(ip)
-         Ex_axis(ip) = Ex_axis(ip)/0.511
-         dist_fn(ip) = dist_fn(ip)*3000/512
+         Ex_axis(ip) = Ex_axis(ip)/0.511d6
+         dist_fn(ip) = dist_fn(ip)*ngrid/256
       END DO
 
       CLOSE(33)
@@ -1877,12 +1876,12 @@ c---------------------------
       rand = random()
 
       W = 0.d0
-      DO k = 1,3000
-         ii = IDNINT((k - 0.5d0)*116.d0/3000.d0 + 0.5d0)
-         IF(ii.GT.115) EXIT
-         ss = (k - 0.5d0)*116.d0/3000.d0 + 0.5d0 - DBLE(ii)
+      DO k = 1,ngrid
+         ii = IDNINT((k - 0.5d0)*np_local/ngrid + 0.5d0)
+         IF(ii.GT.(np_local - 1)) EXIT
+         ss = (k - 0.5d0)*np_local/ngrid + 0.5d0 - DBLE(ii)
          TTT = dist_fn(ii) + ss*(dist_fn(ii + 1) - dist_fn(ii))
-         W(k + 1) = W(k) + TTT*116.d0/3000.d0
+         W(k + 1) = W(k) + TTT*np_local/ngrid
          gg1 = W(k + 1)
          IF(rand.LT.gg1) THEN
            ENN = k + (rand - W(k))/(W(k + 1) - W(k))
@@ -1890,10 +1889,11 @@ c---------------------------
          END IF
       END DO
 
-      energy = ENN*energy_max/3000
+      energy = ENN*energy_max/DBLE(ngrid)
       p_x = dsqrt((energy + 1.d0)**2 - 1.d0)
       Vx = p_x
       Em = energy_max
+
       RETURN
       END
 c-------------------------
