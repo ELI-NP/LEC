@@ -23,7 +23,6 @@ C
 !-------------------------------
       SUBROUTINE rand_init(seed)
 !-------------------------------
-c	USE mpi_common
       IMPLICIT NONE
       INTEGER,INTENT(IN) :: seed
       INTEGER,PARAMETER :: init_x = 123456789
