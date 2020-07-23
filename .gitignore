@@ -45,7 +45,7 @@ docs/build/
 docs/source/_templates/
 
 # Data files
-examples/Data_test
+Data_test/
 
 # Under development files
 linkedlist.f
