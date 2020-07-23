@@ -48,7 +48,6 @@ docs/source/_templates/
 examples/Data_test
 
 # Under development files
-src/linkedlist.f
-examples/13_Python_LEC_examples_02.ipynb
-examples/.ipynb_checkpoints
-examples/Data*
+linkedlist.f
+13_Python_LEC_examples_02.ipynb
+.ipynb_checkpoints
