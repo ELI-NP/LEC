@@ -45,10 +45,10 @@ docs/build/
 docs/source/_templates/
 
 # Data files
-examples/Data_test
+Data_test/
 
 # Under development files
 src/linkedlist.f
-examples/13_Python_LEC_examples_02.ipynb
-examples/.ipynb_checkpoints
-examples/Data*
+13_Python_LEC_examples_02.ipynb
+.ipynb_checkpoints
+Data*/
