@@ -1614,6 +1614,20 @@ c   Update electron momentum due to recoil
             Vz = Vz0
          END IF
 
+         IF(produce_photon) THEN
+            CALL create(photon)
+            photon%position(1) = Xe
+            photon%position(2) = Ye
+            photon%position(3) = Ze
+            photon%momentum(1) = Vx0*ENN
+            photon%momentum(2) = Vy0*ENN
+            photon%momentum(3) = Vz0*ENN
+            photon%energy = ENE*ENN
+            photon%weight = wight(i)
+            CALL add_to_list(species_list(iphoton)%attached_list
+     &                      ,photon)
+         END IF
+
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE
          TTT = AVEX*(Vx*GAMMI)*dt
