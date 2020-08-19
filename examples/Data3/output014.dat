@@ -30,12 +30,16 @@
  QED=          0,
  IPL=          0,
  SHAPE=          0,
- LOAD=          0,
- OUTRAD=          1,
+ OUTRAD=          0,
  OUTPAIRS=          0,
  /
- Check OPENMP
- total number of threads=           8
+&PARAM6
+ LOADPAR=          0,
+ LOADSEED=      33587,
+ QEDSEED=          0,
+ /
+ Check OpenMP
+ total number of threads=          64
   
  Parameters for pulse laser
   
@@ -53,10 +57,13 @@
  pulse duration (FWHM)         [s]   1.2951400000000000E-014
  waist radius (1/e2)           [m]   5.4999999999999999E-006
   
- PARAMETERs for electron beam
+ Parameters for electron beam
  initial kinetic energy [eV]   600000000.00000000     
  initital momentum    [p/mc]   1175.1678719849178     
  initital 3 - velocity [v/c]  0.99999963794883517     
+ momentum spread x [%]   10.000000000000000     
+ momentum spread y [%]   1.0000000000000000     
+ momentum spread z [%]   1.0000000000000000     
  number of shot           1
   
  Parameters for computation
@@ -65,7 +72,7 @@
  Laser wavelength/grid separation      40.000000000000000     
  grid separation,Rd1,Rd2         [m]   3.0531609195402299E-011   2.0499999999999998E-008
  grid separation,Rd=MIN(Rd1,Rd2) [m]   3.0531609195402299E-011
- physical time step INTerval     [s]   5.0886015325670500E-020
+ physical time step interval     [s]   5.0886015325670500E-020
  physical unit time              [s]   3.0531609195402300E-018
  energy bin size of spectrum    [eV]   1000000.0000000000     
  coefficient for radiation [s]   6.2000000000000001E-024
@@ -75,6 +82,9 @@
  Classical
   
  max time step     1000000
+  
+ loading seed =      403044
+  
  transverse beam size   [m]   9.9999999999999995E-007
  electron number per shot     1000000000.0000000     
  incident angle    [degree]   0.0000000000000000     
@@ -92,12 +102,9 @@
  sampling electron number           7          36
  rank number with head-on collision          16
  Total final. particle  0.99860281184914501     
- energy reduction(EM work) [J]   4.1360839345175127E-005
- energy reduction (radiation) [J]   6.9736434738936412E-002
- total reduction energy [J]   6.9706189873769392E-002
- all      :   1118.9520000000000     
- initc    :   1.0440000000000000     
- pmove    :   8.3940000000000001     
- rad      :   1077.6900000000001     
- reduction(rad):   24.587000000000000     
- others   :   7.2370000000000001     
+ all      :   9.7680000000000007     
+ initc    :   3.3000000000000002E-002
+ pmove    :   8.0869999999999997     
+ rad      :   0.0000000000000000     
+ reduction(rad):   0.0000000000000000     
+ others   :   1.6479999999999999     

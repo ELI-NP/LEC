@@ -21,10 +21,10 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
      &	    ,QED,sampled,sampled2,sampled3,sampled4
      &          ,loadpar,loadseed,qedseed
       LOGICAL :: emmits,exists,use_load_seed,use_load_particle
-     &          ,use_qed_seed
+     &          ,use_qed_seed,use_background_field
       REAL(kind=8) :: PQM     ! charge/mass
       REAL(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
-      REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
+      REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ,background
       REAL(kind=8) :: PXS,PYS,PZS,BXT,BYT,BZT
       REAL(kind=8) :: Rx,Rm,Rt,Rd1,Rd2,Rt2
       REAL(kind=8) :: pin,rin,div,div2,xinit,bin,enum,rmass
@@ -95,7 +95,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       NAMELIST /PARAM3/ alpha,enum,bin,shot,inc_ang		!electron parameter
       NAMELIST /PARAM4/ xinit,rmass,sigmax,sigmay,sigmaz    !configurations
       NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs !physical processes
-      NAMELIST /PARAM6/ loadpar,loadseed,qedseed            !random number seed
+      NAMELIST /PARAM6/ loadpar,loadseed,qedseed,background !random number seed
 
       CALL system_clock(tmall0)
       CALL MPI_INIT(IERR)
@@ -318,6 +318,7 @@ c----------------------
       IF(loadpar.NE.0) use_load_particle = .TRUE.
       IF(loadseed.NE.0) use_load_seed = .TRUE.
       IF(qedseed.NE.0) use_qed_seed = .TRUE.
+      IF(background.NE.0) use_background_field = .TRUE.
 
       WRITE(9,*) " "
       WRITE(9,*) "Parameters for pulse laser"
@@ -667,7 +668,7 @@ c------------------------
          Vy = Re(5,k)
          Vz = Re(6,k)
          ENE = dsqrt(1.d0 + Vx**2 + Vy**2 + Vz**2)
-         WRITE(9 + i,666) t*Rt2, Re(1,k)*Rx, Re(2,k)*Rx	!t, x, y
+         WRITE(9 + i,666) t*Rt2, Re(1,k)*Rx, Re(2,k)*Rx, Re(3,k)*Rx !t, x, y, z
      &             ,Re(4,k), Re(5,k), (ENE)*0.511d6, Xi	!px, py, K.E, Xi
       END DO
       END IF

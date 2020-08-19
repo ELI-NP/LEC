@@ -115,7 +115,12 @@ c
       AVEZ = polar*BZT
       AVBX = 0.d0
       AVBY = -1.d0*AVEZ
-      AVBZ = AVEY
+
+      IF(use_background_field) THEN
+         AVBZ = AVEY + background/(1 + dexp(0.5*(Xe + 0.5*wp)))
+      ELSE
+         AVBZ = AVEY
+      END IF
 c
       RETURN
       END
