@@ -39,7 +39,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8) :: we0i,wpi,wsi,Pksout,wmin,www,Tm,Um,FF1,ENEd
       REAL(kind=8) :: ENEh,ENEv,ENE0,ENE,EmaxV,we0,XI,ENN,p_x,ENEA
       REAL(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
-      REAL(kind=8) :: ERD,EKE,EKK,ERK
+      REAL(kind=8) :: ERD,EKE,EKK,ERK,uu,recoil
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: RE,RH
       REAL(kind=8),DIMENSION(0:3000 + 1,200):: diffC,diffQ,diffD,diffR
       REAL(kind=8),DIMENSION(200) :: totalR,totalC,totalP,totalRC
@@ -1598,9 +1598,11 @@ c   Calculates whether emission should occur or not
               CALL qmemit
               ENN = ENN/6000.d0
 c   Update electron momentum due to recoil
-              Vx = Vx0*(1.d0 - ENN)
-              Vy = Vy0*(1.d0 - ENN)
-              Vz = Vz0*(1.d0 - ENN)
+              uu = dsqrt(Vx0*Vx0 + Vy0*Vy0 + Vz0*Vz0)
+              recoil = (uu - ENN*ENE0)/uu
+              Vx = Vx0*recoil
+              Vy = Vy0*recoil
+              Vz = Vz0*recoil
             ELSE
               ENEh = Alf
               Vx = Vx0
