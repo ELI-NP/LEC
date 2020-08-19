@@ -39,7 +39,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8) :: we0i,wpi,wsi,Pksout,wmin,www,Tm,Um,FF1,ENEd
       REAL(kind=8) :: ENEh,ENEv,ENE0,ENE,EmaxV,we0,XI,ENN,p_x,ENEA
       REAL(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
-      REAL(kind=8) :: ERD,EKE,EKK,ERK
+      REAL(kind=8) :: ERD,EKE,EKK,ERK,recoil,uu
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: RE,RH
       REAL(kind=8),DIMENSION(0:3000 + 1,200):: diffC,diffQ,diffD,diffR
       REAL(kind=8),DIMENSION(200) :: totalR,totalC,totalP,totalRC
@@ -1598,9 +1598,11 @@ c   Calculates whether emission should occur or not
               CALL qmemit
               ENN = ENN/6000.d0
 c   Update electron momentum due to recoil
-              Vx = Vx0*(1.d0 - ENN)
-              Vy = Vy0*(1.d0 - ENN)
-              Vz = Vz0*(1.d0 - ENN)
+              uu = dsqrt(Vx0*Vx0 + Vy0*Vy0 + Vz0*Vz0)
+              recoil = (uu - ENN*ENE)/uu
+              Vx = Vx0*recoil
+              Vy = Vy0*recoil
+              Vz = Vz0*recoil
             ELSE
               ENEh = Alf
               Vx = Vx0
@@ -1614,19 +1616,19 @@ c   Update electron momentum due to recoil
             Vz = Vz0
          END IF
 
-         IF(produce_photon) THEN
-            CALL create(photon)
-            photon%position(1) = Xe
-            photon%position(2) = Ye
-            photon%position(3) = Ze
-            photon%momentum(1) = Vx0*ENN
-            photon%momentum(2) = Vy0*ENN
-            photon%momentum(3) = Vz0*ENN
-            photon%energy = ENE*ENN
-            photon%weight = wight(i)
-            CALL add_to_list(species_list(iphoton)%attached_list
-     &                      ,photon)
-         END IF
+c         IF(produce_photon) THEN
+c            CALL create(photon)
+c            photon%position(1) = Xe
+c            photon%position(2) = Ye
+c            photon%position(3) = Ze
+c            photon%momentum(1) = Vx0*ENN
+c            photon%momentum(2) = Vy0*ENN
+c            photon%momentum(3) = Vz0*ENN
+c            photon%energy = ENE*ENN
+c            photon%weight = wight(i)
+c            CALL add_to_list(species_list(iphoton)%attached_list
+c     &                      ,photon)
+c         END IF
 
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE
