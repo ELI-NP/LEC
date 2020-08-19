@@ -1599,7 +1599,7 @@ c   Calculates whether emission should occur or not
               ENN = ENN/6000.d0
 c   Update electron momentum due to recoil
               uu = dsqrt(Vx0*Vx0 + Vy0*Vy0 + Vz0*Vz0)
-              recoil = (uu - ENN*ENE)/uu
+              recoil = (uu - ENN*ENE0)/uu
               Vx = Vx0*recoil
               Vy = Vy0*recoil
               Vz = Vz0*recoil
