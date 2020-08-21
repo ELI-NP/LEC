@@ -17,11 +17,11 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       USE random_common
       INTEGER :: i,j,k,ksmax,ksout,kk,kstep,ii,ipl,seed
      &          ,itotal,ksoutP,iconR,SKL,LL,polar,shape
-     &          ,photon,species,shot,itotal0,L,OutRad,OutPairs
+     &          ,species,shot,itotal0,L,OutRad,OutPairs
      &	    ,QED,sampled,sampled2,sampled3,sampled4
-     &          ,loadpar,loadseed,qedseed
+     &          ,loadpar,loadseed,qedseed,photons,photon
       LOGICAL :: emmits,exists,use_load_seed,use_load_particle
-     &          ,use_qed_seed,use_background_field
+     &          ,use_qed_seed,use_background_field,produce_photon
       REAL(kind=8) :: PQM     ! charge/mass
       REAL(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
       REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ,background
@@ -39,11 +39,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8) :: we0i,wpi,wsi,Pksout,wmin,www,Tm,Um,FF1,ENEd
       REAL(kind=8) :: ENEh,ENEv,ENE0,ENE,EmaxV,we0,XI,ENN,p_x,ENEA
       REAL(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
-<<<<<<< HEAD
       REAL(kind=8) :: ERD,EKE,EKK,ERK,uu,recoil
-=======
-      REAL(kind=8) :: ERD,EKE,EKK,ERK,recoil,uu
->>>>>>> master
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: RE,RH
       REAL(kind=8),DIMENSION(0:3000 + 1,200):: diffC,diffQ,diffD,diffR
       REAL(kind=8),DIMENSION(200) :: totalR,totalC,totalP,totalRC
@@ -84,6 +80,33 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8),DIMENSION(:,:,:), ALLOCATABLE :: phtn
       END MODULE R_common
 
+      MODULE P_common
+      TYPE particle
+         REAL(kind=8),DIMENSION(3) :: momentum
+         REAL(kind=8),DIMENSION(3) :: position
+         REAL(kind=8) :: weight
+         TYPE(particle),POINTER :: next, prev
+         REAL(kind=8) :: energy
+      END TYPE particle
+
+      TYPE particle_list
+         TYPE(particle),POINTER :: head
+         TYPE(particle),POINTER :: tail
+         INTEGER :: count
+         INTEGER :: id_update
+         TYPE(particle_list),POINTER :: next, prev
+      END TYPE particle_list
+
+      TYPE particle_species
+         CHARACTER(LEN=10) :: name
+         TYPE(particle_species),POINTER :: next, prev
+         REAL(kind=8) :: weight
+         INTEGER :: count
+         TYPE(particle_list) :: attached_list
+      END TYPE particle_species
+
+      END MODULE P_common
+
       PROGRAM main
       USE random_common
       USE sim_common
@@ -98,7 +121,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       NAMELIST /PARAM2/ SL,Ev,pw,pp,sp				!laser parameter
       NAMELIST /PARAM3/ alpha,enum,bin,shot,inc_ang		!electron parameter
       NAMELIST /PARAM4/ xinit,rmass,sigmax,sigmay,sigmaz    !configurations
-      NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs !physical processes
+      NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs,photons !physical processes
       NAMELIST /PARAM6/ loadpar,loadseed,qedseed,background !random number seed
 
       CALL system_clock(tmall0)
@@ -323,6 +346,7 @@ c----------------------
       IF(loadseed.NE.0) use_load_seed = .TRUE.
       IF(qedseed.NE.0) use_qed_seed = .TRUE.
       IF(background.NE.0) use_background_field = .TRUE.
+      IF(photons.EQ.1) produce_photon = .TRUE.
 
       WRITE(9,*) " "
       WRITE(9,*) "Parameters for pulse laser"
@@ -1526,8 +1550,12 @@ c------------------------
       USE sim_common
       USE mpi_common
       USE R_common
+      USE P_common
       USE omp_lib
       IMPLICIT NONE
+      INTEGER :: photon_species
+
+      photon_species = 0
 
       IF(QED.EQ.0) THEN
         WRITE(*,*) "QED must be turned on"
@@ -1621,19 +1649,7 @@ c   Update electron momentum due to recoil
             Vz = Vz0
          END IF
 
-c         IF(produce_photon) THEN
-c            CALL create(photon)
-c            photon%position(1) = Xe
-c            photon%position(2) = Ye
-c            photon%position(3) = Ze
-c            photon%momentum(1) = Vx0*ENN
-c            photon%momentum(2) = Vy0*ENN
-c            photon%momentum(3) = Vz0*ENN
-c            photon%energy = ENE*ENN
-c            photon%weight = wight(i)
-c            CALL add_to_list(species_list(iphoton)%attached_list
-c     &                      ,photon)
-c         END IF
+         IF(produce_photon) CALL create_photon(photon_species)
 
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE

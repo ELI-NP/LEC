@@ -4,6 +4,7 @@ set dir=$PWD
 set SRC0=$dir/src/LEC.f
 set SRC1=$dir/src/laser.f
 set SRC2=$dir/src/random.f
+set SRC3=$dir/src/linkedlist.f
 set LOADM=$dir/bin/LEC
 set OBJDIR=$dir/obj
 
@@ -12,7 +13,7 @@ mkdir $dir/bin/
 
 #
 #
-$COMPILER -O3 -fopenmp -fopt-info -mcmodel=medium -fconvert=big-endian -g -fbacktrace -fbounds-check -J$OBJDIR -o $LOADM $SRC0 $SRC1 $SRC2 >& cmp.lst
+$COMPILER -O3 -fopenmp -fopt-info -mcmodel=medium -fconvert=big-endian -g -fbacktrace -fbounds-check -J$OBJDIR -o $LOADM $SRC0 $SRC1 $SRC2 $SRC3 >& cmp.lst
 #
 echo " ------------    End of  Compile   --------------   "
 #
