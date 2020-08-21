@@ -21,10 +21,10 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
      &	    ,QED,sampled,sampled2,sampled3,sampled4
      &          ,loadpar,loadseed,qedseed
       LOGICAL :: emmits,exists,use_load_seed,use_load_particle
-     &          ,use_qed_seed
+     &          ,use_qed_seed,use_background_field
       REAL(kind=8) :: PQM     ! charge/mass
       REAL(kind=8) :: Xe,Ye,Ze,T,VX,VY,VZ
-      REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ
+      REAL(kind=8) :: AVEX,AVEY,AVEZ,AVBX,AVBY,AVBZ,background
       REAL(kind=8) :: PXS,PYS,PZS,BXT,BYT,BZT
       REAL(kind=8) :: Rx,Rm,Rt,Rd1,Rd2,Rt2
       REAL(kind=8) :: pin,rin,div,div2,xinit,bin,enum,rmass
@@ -39,7 +39,11 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8) :: we0i,wpi,wsi,Pksout,wmin,www,Tm,Um,FF1,ENEd
       REAL(kind=8) :: ENEh,ENEv,ENE0,ENE,EmaxV,we0,XI,ENN,p_x,ENEA
       REAL(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
-      REAL(kind=8) :: ERD,EKE,EKK,ERK
+<<<<<<< HEAD
+      REAL(kind=8) :: ERD,EKE,EKK,ERK,uu,recoil
+=======
+      REAL(kind=8) :: ERD,EKE,EKK,ERK,recoil,uu
+>>>>>>> master
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: RE,RH
       REAL(kind=8),DIMENSION(0:3000 + 1,200):: diffC,diffQ,diffD,diffR
       REAL(kind=8),DIMENSION(200) :: totalR,totalC,totalP,totalRC
@@ -95,7 +99,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       NAMELIST /PARAM3/ alpha,enum,bin,shot,inc_ang		!electron parameter
       NAMELIST /PARAM4/ xinit,rmass,sigmax,sigmay,sigmaz    !configurations
       NAMELIST /PARAM5/ iconR,QED,ipl,shape,OutRad,OutPairs !physical processes
-      NAMELIST /PARAM6/ loadpar,loadseed,qedseed            !random number seed
+      NAMELIST /PARAM6/ loadpar,loadseed,qedseed,background !random number seed
 
       CALL system_clock(tmall0)
       CALL MPI_INIT(IERR)
@@ -318,6 +322,7 @@ c----------------------
       IF(loadpar.NE.0) use_load_particle = .TRUE.
       IF(loadseed.NE.0) use_load_seed = .TRUE.
       IF(qedseed.NE.0) use_qed_seed = .TRUE.
+      IF(background.NE.0) use_background_field = .TRUE.
 
       WRITE(9,*) " "
       WRITE(9,*) "Parameters for pulse laser"
@@ -667,7 +672,7 @@ c------------------------
          Vy = Re(5,k)
          Vz = Re(6,k)
          ENE = dsqrt(1.d0 + Vx**2 + Vy**2 + Vz**2)
-         WRITE(9 + i,666) t*Rt2, Re(1,k)*Rx, Re(2,k)*Rx	!t, x, y
+         WRITE(9 + i,666) t*Rt2, Re(1,k)*Rx, Re(2,k)*Rx, Re(3,k)*Rx !t, x, y, z
      &             ,Re(4,k), Re(5,k), (ENE)*0.511d6, Xi	!px, py, K.E, Xi
       END DO
       END IF
@@ -1598,9 +1603,11 @@ c   Calculates whether emission should occur or not
               CALL qmemit
               ENN = ENN/6000.d0
 c   Update electron momentum due to recoil
-              Vx = Vx0*(1.d0 - ENN)
-              Vy = Vy0*(1.d0 - ENN)
-              Vz = Vz0*(1.d0 - ENN)
+              uu = dsqrt(Vx0*Vx0 + Vy0*Vy0 + Vz0*Vz0)
+              recoil = (uu - ENN*ENE0)/uu
+              Vx = Vx0*recoil
+              Vy = Vy0*recoil
+              Vz = Vz0*recoil
             ELSE
               ENEh = Alf
               Vx = Vx0
@@ -1613,6 +1620,20 @@ c   Update electron momentum due to recoil
             Vy = Vy0
             Vz = Vz0
          END IF
+
+c         IF(produce_photon) THEN
+c            CALL create(photon)
+c            photon%position(1) = Xe
+c            photon%position(2) = Ye
+c            photon%position(3) = Ze
+c            photon%momentum(1) = Vx0*ENN
+c            photon%momentum(2) = Vy0*ENN
+c            photon%momentum(3) = Vz0*ENN
+c            photon%energy = ENE*ENN
+c            photon%weight = wight(i)
+c            CALL add_to_list(species_list(iphoton)%attached_list
+c     &                      ,photon)
+c         END IF
 
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE

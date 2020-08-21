@@ -30,12 +30,16 @@
  QED=          0,
  IPL=          0,
  SHAPE=          0,
- LOAD=          0,
  OUTRAD=          1,
  OUTPAIRS=          0,
  /
- Check OPENMP
- total number of threads=           8
+&PARAM6
+ LOADPAR=          0,
+ LOADSEED=      33587,
+ QEDSEED=          0,
+ /
+ Check OpenMP
+ total number of threads=          64
   
  Parameters for pulse laser
   
@@ -53,7 +57,7 @@
  pulse duration (FWHM)         [s]   2.1978133333333330E-014
  waist radius (1/e2)           [m]   1.4400000000000000E-006
   
- PARAMETERs for electron beam
+ Parameters for electron beam
  initial kinetic energy [eV]   100000000.00000000     
  initital momentum    [p/mc]   196.69217421590801     
  initital 3 - velocity [v/c]  0.99998707628348127     
@@ -65,7 +69,7 @@
  Laser wavelength/grid separation      40.000000000000000     
  grid separation,Rd1,Rd2         [m]   1.4311691810344828E-011   2.0000000000000000E-008
  grid separation,Rd=MIN(Rd1,Rd2) [m]   1.4311691810344828E-011
- physical time step INTerval     [s]   2.3852819683908047E-020
+ physical time step interval     [s]   2.3852819683908047E-020
  physical unit time              [s]   3.0531609195402300E-018
  energy bin size of spectrum    [eV]   1000000.0000000000     
  coefficient for radiation [s]   6.2000000000000001E-024
@@ -76,6 +80,9 @@
  Classical
   
  max time step    10000000
+  
+ loading seed =       33587
+  
  single electron
  electron number per shot = 1  
  sampling electron number           1           1
@@ -86,14 +93,14 @@
  sampling electron number           6           1
  sampling electron number           7           1
  rank number with head-on collision           1
- head-on collision case myrank=           0
+ head-on collision case myrank =           0
  adjust head-on collision case to Ne7(1)
  energy reduction(EM work) [J]   1.5295712594513665E-015
  energy reduction (radiation) [J]   1.2369849070358154E-011
- total reduction energy [J]   1.2368991769111022E-011
- all      :   14.560000000000000     
- initc    :  0.20499999999999999     
- pmove    :   1.8899999999999999     
- rad      :   11.981000000000000     
- reduction(rad):   0.0000000000000000     
- others   :  0.48399999999999999     
+ total reduction energy [J]   1.2404054736102868E-011
+ all      :   3.1040000000000001     
+ initc    :  0.20000000000000001     
+ pmove    :   1.8480000000000001     
+ rad      :  0.51700000000000002     
+ reduction(rad):   1.0000000000000000E-003
+ others   :  0.53800000000000003     

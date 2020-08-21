@@ -88,7 +88,12 @@ c
       AVEZ = BXT*E3temp
       AVBX = BXT*B1temp
       AVBY = BXT*B2temp
-      AVBZ = BXT*B3temp
+c
+      IF(use_background_field) THEN
+         AVBZ = BXT*B3temp + background/(1 + dexp(0.5*(Xe + 0.5*wp)))
+      ELSE
+         AVBZ = BXT*B3temp
+      END IF
 c
       RETURN
       END
@@ -115,7 +120,12 @@ c
       AVEZ = polar*BZT
       AVBX = 0.d0
       AVBY = -1.d0*AVEZ
-      AVBZ = AVEY
+
+      IF(use_background_field) THEN
+         AVBZ = AVEY + background/(1 + dexp(0.5*(Xe + 0.5*wp)))
+      ELSE
+         AVBZ = AVEY
+      END IF
 c
       RETURN
       END
