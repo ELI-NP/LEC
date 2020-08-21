@@ -2,5 +2,10 @@
 &PARAM2  SL=1.d22,Ev=600.d6,pw=0.82d-6,pp=3.3d-6,sp=5.5d-6                  ,&END
 &PARAM3  alpha=1.d-6,enum=1.0d9,bin=1.d6,shot=1,inc_ang = 0.d0		    ,&END
 &PARAM4  xinit=2.d0,rmass=1.d0,sigmax=0.1d0,sigmay=0.01d0,sigmaz=0.01d0     ,&END
+<<<<<<< HEAD
 &PARAM5  iconR=1,QED=0,ipl=0,shape=0,OutRad=0,OutPairs=0 	                ,&END
 &PARAM6  loadpar=0,loadseed=33587,qedseed=0 ,&END
+=======
+&PARAM5  iconR=1,QED=0,ipl=0,shape=0,OutRad=1,OutPairs=0 	                ,&END
+&PARAM6  loadpar=0,loadseed=0,qedseed=0						    ,&END
+>>>>>>> master
