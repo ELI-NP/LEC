@@ -100,10 +100,13 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       TYPE particle_species
          CHARACTER(LEN=10) :: name
          TYPE(particle_species),POINTER :: next, prev
-         REAL(kind=8) :: weight
+         REAL(kind=8) :: mass, charge, weight
          INTEGER :: count
          TYPE(particle_list) :: attached_list
       END TYPE particle_species
+
+      CHARACTER(LEN=20) :: photon_species
+      TYPE(particle_species), DIMENSION(:), POINTER :: species_list
 
       END MODULE P_common
 
@@ -114,6 +117,7 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       USE R_common
       USE out_common
       USE omp_lib
+      USE P_common
       IMPLICIT NONE
       INCLUDE "mpif.h"
 
@@ -231,7 +235,7 @@ c     orbit calculation
         IF(iconR.EQ.2) CALL Landau_Lifshitz   ! Landau-Lifshitz
 
         IF(iconR.EQ.3) CALL qedemmit	    ! Stochastic
-
+        CALL push_photons
         CALL outorbit 				    ! Output extracted electron orbit
 
         CALL system_clock(tmove1)
@@ -1553,9 +1557,17 @@ c------------------------
       USE P_common
       USE omp_lib
       IMPLICIT NONE
-      INTEGER :: photon_species
+      LOGICAL :: move_photons
+      ALLOCATE(species_list(1))
+      species_list(1)%name = photon_species
+      species_list(1)%mass = -1.d0
+      species_list(1)%charge = 0.d0
+      species_list(1)%weight = 1.d0
+      species_list(1)%count = -1
+      NULLIFY(species_list(1)%next)
+      NULLIFY(species_list(1)%prev)
 
-      photon_species = 0
+      move_photons = .TRUE.
 
       IF(QED.EQ.0) THEN
         WRITE(*,*) "QED must be turned on"
@@ -1633,9 +1645,9 @@ c   Calculates whether emission should occur or not
 c   Update electron momentum due to recoil
               uu = dsqrt(Vx0*Vx0 + Vy0*Vy0 + Vz0*Vz0)
               recoil = (uu - ENN*ENE0)/uu
-              Vx = Vx0*recoil
-              Vy = Vy0*recoil
-              Vz = Vz0*recoil
+              Vx = Vx0*(1 - ENN) !recoil
+              Vy = Vy0*(1 - ENN) !recoil
+              Vz = Vz0*(1 - ENN) !recoil
             ELSE
               ENEh = Alf
               Vx = Vx0
@@ -1649,7 +1661,8 @@ c   Update electron momentum due to recoil
             Vz = Vz0
          END IF
 
-         IF(produce_photon) CALL create_photon(photon_species)
+         IF(produce_photon) CALL create_photon
+         IF(move_photons) CALL push_photons
 
          ENE = SQRT(1.d0 + VX*VX + VY*VY + VZ*VZ)
          GAMMI = 1.d0/ENE
@@ -1664,7 +1677,7 @@ c   Update electron momentum due to recoil
          Re(6,i) = Vz
          Re(7,i) = TTT
          Re(8,i) = (ENE00 - ENE) - TTT
-         Re(9,i) = ENE0 - ENE
+         Re(9,i) = ENN*ENE0 !ENE0 - ENE
          Re(10,i) = Xi
          Re(11,i) = ENE
          END DO

@@ -43,7 +43,7 @@
       END SUBROUTINE add_to_list
       END MODULE partlist
 !--------------------------------------------------
-      SUBROUTINE create_photon(iphoton)
+      SUBROUTINE create_photon
 !--------------------------------------------------
       USE sim_common
       USE mpi_common
@@ -51,9 +51,8 @@
       USE P_common
       USE partlist
       IMPLICIT NONE
-      INTEGER,INTENT(IN) :: iphoton
       TYPE(particle),POINTER :: new_photon
-      TYPE(particle_species),DIMENSION(:),POINTER :: species_list
+
       CALL create(new_photon)
       new_photon%position(1) = Xe
       new_photon%position(2) = Ye
@@ -63,37 +62,55 @@
       new_photon%momentum(3) = Vz0*ENN
       new_photon%energy = ENN*ENE0
       new_photon%weight = wight(i)
-c      CALL add_to_list(species_list(iphoton)%attached_list
-c     &                      ,new_photon)
-      IF(myrank.EQ.0) WRITE(*,*) new_photon%energy
+      CALL add_to_list(species_list(1)%attached_list
+     &                      ,new_photon)
+c      IF(myrank.EQ.0) WRITE(*,*) species_list(1)%attached_list
       END SUBROUTINE create_photon
 !--------------------------------------
-c      SUBROUTINE push_photons(ispecies)
+      SUBROUTINE push_photons
 !--------------------------------------
-c      USE P_common
-c      IMPLICIT NONE
-c      REAL(kind=8) :: delta_x, delta_y, delta_z
-c      INTEGER,INTENT(IN) :: ispecies
-c      TYPE(particle), POINTER :: current
-c      REAL(kind=8) :: current_energy, dtfac, fac
-c      dtfac = dt * c**2
+      USE P_common
+      USE sim_common
+      USE out_common
+      IMPLICIT NONE
+
+      REAL(kind=8) :: delta_x, delta_y, delta_z,photon_x,photon_y
+      TYPE(particle), POINTER :: current
+      REAL(kind=8) :: current_energy, dtfac, fac
+
+      WRITE(fo_name2,444) TRIM(data_file)//'photon',jobno
+      OPEN(34,file=fo_name2,form='formatted')
+
 c      ! set current to point to head of list
-c      current => species_list(ispecies)%attached_list%head
+      current => species_list(1)%attached_list%head
 
       ! loop over photons
-c      DO WHILE(ASSOCIATED(current))
+      DO WHILE(ASSOCIATED(current))
 
       ! Note that this is the energy of a single REAL particle in the
       ! pseudoparticle, NOT the energy of the pseudoparticle
-c         current_energy = current%particle_energy
+         current_energy = current%energy
 
-c         fac = dtfac/current_energy
-c         delta_x = current%momentum(1)*fac
-c         delta_y = current%momentum(2)*fac
-c         delta_z = current%momentum(3)*fac
-c         current%position(1) = current%position(1) + delta_x
-c         current%position(2) = current%position(2) + delta_y
-c         current%position(3) = current%position(3) + delta_z
-c         current => current%next
-c      END DO
-c      END SUBROUTINE push_photons
+         fac = dt
+         TT = dsqrt(Vx**2+Vy**2+Vz**2)
+         delta_x = Vx/TT*fac
+         delta_y = Vy/TT*fac
+         delta_z = Vz/TT*fac
+         current%position(1) = current%position(1) + delta_x
+         current%position(2) = current%position(2) + delta_y
+         current%position(3) = current%position(3) + delta_z
+
+         photon_x = current%position(1)
+         photon_y = current%position(2)
+
+         IF(MOD(kstep,ksout).EQ.0) THEN
+           WRITE(34,666) photon_x*Rx, photon_y*Rx
+         END IF
+         current => current%next
+      END DO
+
+
+
+444   format(A,I3.3,'.dat')
+666   format(11(E16.6,1X))
+      END SUBROUTINE push_photons
