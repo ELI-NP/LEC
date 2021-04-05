@@ -39,11 +39,9 @@ c     REAL(kind=8),PARAMETER :: Zcm3 = 2.35d0 ! zcm3 = zcom**(1/3)
       REAL(kind=8) :: we0i,wpi,wsi,Pksout,wmin,www,Tm,Um,FF1,ENEd
       REAL(kind=8) :: ENEh,ENEv,ENE0,ENE,EmaxV,we0,XI,ENN,p_x,ENEA
       REAL(kind=8) :: x0,y0,z0,Tx,Ty,Tz,percentage
-<<<<<<< HEAD
+
       REAL(kind=8) :: ERD,EKE,EKK,ERK,uu,recoil
-=======
-      REAL(kind=8) :: ERD,EKE,EKK,ERK,recoil,uu
->>>>>>> master
+
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: RE,RH
       REAL(kind=8),DIMENSION(0:3000 + 1,200):: diffC,diffQ,diffD,diffR
       REAL(kind=8),DIMENSION(200) :: totalR,totalC,totalP,totalRC
@@ -244,6 +242,7 @@ c     orbit calculation
            CALL photon_his
          ELSE
            CALL radiation
+c           CALL angdis
          END IF
          DEALLOCATE(phtn)
       END IF
@@ -287,7 +286,7 @@ c----------------------
       USE out_common
       USE omp_lib
       IMPLICIT NONE
-      CHARACTER(LEN=8) :: qed_file = 'vac4.dat'
+      CHARACTER(LEN=9) :: qed_file = 'vac10.dat'
       CHARACTER(LEN=100) :: table_location
 
       VL = 3.d0*1.0d8              ! light speed           [m/s]
@@ -439,7 +438,7 @@ c     diffR ;   quantum differential cross section
       END IF
 
       OPEN(96,file=table_location,form='unformatted')
-      READ(96) totalR,totalC,totalP,totalS,totalT
+      READ(96) totalR,totalC,totalS,totalT
       READ(96) diffC,diffQ,diffD,diffR
       CLOSE(96)
 
@@ -1053,7 +1052,7 @@ c----------------------
       USE omp_lib
       IMPLICIT NONE
       INCLUDE "mpif.h"
-      INTEGER,PARAMETER :: ang = 1024
+      INTEGER,PARAMETER :: ang = 512
       REAL(kind=8) :: thetay,thetaz,ang2
       REAL(kind=8),DIMENSION(:,:),ALLOCATABLE :: emitT2,emitTT2
       REAL(kind=8),DIMENSION(:,:,:),ALLOCATABLE :: emit2
@@ -1083,8 +1082,8 @@ c----------------------
          TmZ = phtn(6,j,L)
          Um = phtn(4,j,L)*Pksout ! energy defference
          IF(XI.GT.0.001) THEN
-           ii = MIN(IDNINT(TmZ/(pi)*ang2 + 0.5d0 + ang2),ang)
-           jj = MIN(IDNINT(TmY/(pi)*ang2 + 0.5d0 + ang2),ang)
+           ii = MIN(IDNINT(TmZ/(0.050)*ang2 + 0.5d0 + ang2),ang)
+           jj = MIN(IDNINT(TmY/(0.100)*ang2 + 0.5d0 + ang2),ang)
            emit2(ii,jj,LP) = emit2(ii,jj,LP) + Um*wight(L)
          END IF
       END DO
@@ -1122,8 +1121,8 @@ c     Output photon spectrum data
         OPEN (21,file=fo_name2,form='formatted',status='unknown')
         DO j = 1,ang
         DO i = 1,ang
-           thetaz=(i - 0.5 - INT(ang2))/INT(ang2)*(pi)
-           thetay=(j - 0.5 - INT(ang2))/INT(ang2)*(pi)
+           thetaz=(i - 0.5 - INT(ang2))/INT(ang2)*(0.050)
+           thetay=(j - 0.5 - INT(ang2))/INT(ang2)*(0.100)
            WRITE(21,666) thetaz, thetay, emitTT2(i,j)
         END DO
         END DO

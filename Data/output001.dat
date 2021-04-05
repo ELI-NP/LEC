@@ -1,0 +1,107 @@
+&PARAM1
+ JOBNO=1          ,
+ KSMAX=1000000    ,
+ DIV=  60.000000000000000     ,
+ DIV2=  40.000000000000000     ,
+ /
+&PARAM2
+ SL=  1.0000000000000000E+021,
+ EV=  100000000.00000000     ,
+ PW=  9.9999999999999995E-007,
+ PP=  2.4899999999999999E-005,
+ SP=  1.9999999999999999E-006,
+ /
+&PARAM3
+ ALPHA=  0.0000000000000000     ,
+ ENUM=  1.0000000000000000     ,
+ BIN=  1000000.0000000000     ,
+ SHOT=1          ,
+ INC_ANG=  0.0000000000000000     ,
+ /
+&PARAM4
+ XINIT=  5.0000000000000000     ,
+ RMASS=  1.0000000000000000     ,
+ SIGMAX= 0.10000000000000001     ,
+ SIGMAY=  1.0000000000000000E-002,
+ SIGMAZ=  1.0000000000000000E-002,
+ /
+&PARAM5
+ ICONR=0          ,
+ QED=0          ,
+ IPL=0          ,
+ SHAPE=0          ,
+ OUTRAD=1          ,
+ OUTPAIRS=0          ,
+ /
+&PARAM6
+ LOADPAR=0          ,
+ LOADSEED=33587      ,
+ QEDSEED=0          ,
+ BACKGROUND=  0.0000000000000000     ,
+ /
+ Check OpenMP
+ total number of threads=          32
+  
+ Parameters for pulse laser
+  
+ Laser polarization: linear
+  
+ 0th order Gaussian beam
+  
+ Laser Intensity           [W/cm2]   1.0000000000000000E+021
+ Peak electric field         [V/m]   86646407888613.594     
+ Peak magnetic field       [Gauss]   2934593668.6362557     
+ Larmor radius for light speed [m]   5.7929655412567298E-009
+ laser wavelength              [m]   9.9999999999999995E-007
+ pulse length                  [m]   2.4899999999999999E-005
+ pulse duration                [s]   8.3000000000000000E-014
+ pulse duration (FWHM)         [s]   9.7724200000000000E-014
+ waist radius (1/e2)           [m]   1.9999999999999999E-006
+  
+ Parameters for electron beam
+ initial kinetic energy [eV]   100000000.00000000     
+ initital momentum    [p/mc]   196.69217421590801     
+ initital 3 - velocity [v/c]  0.99998707628348127     
+ number of shot           1
+  
+ Parameters for computation
+  
+ Larmor radius/grid separation         60.000000000000000     
+ Laser wavelength/grid separation      40.000000000000000     
+ grid separation,Rd1,Rd2         [m]   9.6549425687612163E-011   2.4999999999999999E-008
+ grid separation,Rd=MIN(Rd1,Rd2) [m]   9.6549425687612163E-011
+ physical time step interval     [s]   1.6091570947935361E-019
+ physical unit time              [s]   9.6549425687612174E-018
+ energy bin size of spectrum    [eV]   1000000.0000000000     
+ coefficient for radiation [s]   6.2000000000000001E-024
+ Compton wavelength        [m]   2.4016219199632531E-012
+  
+ Particle pusher: Lorentz
+  
+ Classical
+  
+ max time step     1000000
+  
+ loading seed =       33587
+  
+ single electron
+ electron number per shot = 1  
+ sampling electron number           1           1
+ sampling electron number           2           1
+ sampling electron number           3           1
+ sampling electron number           4           1
+ sampling electron number           5           1
+ sampling electron number           6           1
+ sampling electron number           7           1
+ rank number with head-on collision           1
+ head-on collision case myrank =           0
+ adjust head-on collision case to Ne7(1)
+ energy reduction(EM work) [J]   1.8512531877949235E-046
+ energy reduction (radiation) [J]   4.6388646762838133E-046
+ total reduction energy [J]   0.0000000000000000     
+ all      :  0.68899999999999995     
+ initc    :   2.4000000000000000E-002
+ pmove    :  0.50900000000000001     
+ rad      :   4.1000000000000002E-002
+ reduction(rad):   0.0000000000000000     
+ others   :  0.11500000000000000     
