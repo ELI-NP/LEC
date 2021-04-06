@@ -1,5 +1,5 @@
       MODULE random_common
-      INTEGER,PARAMETER :: icpu = 4, emitgrid = 144
+      INTEGER,PARAMETER :: icpu = 4, emitgrid = 6000
       INTEGER,PARAMETER :: LE0 = 1000, LE1 = 1000
       INTEGER,PARAMETER :: LPx = 200
       REAL(kind=8) :: dp1
@@ -235,7 +235,7 @@ c     orbit calculation
         IF(iconR.EQ.2) CALL Landau_Lifshitz   ! Landau-Lifshitz
 
         IF(iconR.EQ.3) CALL qedemmit	    ! Stochastic
-        CALL push_photons
+        IF(produce_photon) CALL push_photons
         CALL outorbit 				    ! Output extracted electron orbit
 
         CALL system_clock(tmove1)
@@ -314,7 +314,7 @@ c----------------------
       USE out_common
       USE omp_lib
       IMPLICIT NONE
-      CHARACTER(LEN=8) :: qed_file = 'vac4.dat'
+      CHARACTER(LEN=9) :: qed_file = 'vac11.dat'
       CHARACTER(LEN=100) :: table_location
 
       VL = 3.d0*1.0d8              ! light speed           [m/s]
@@ -467,7 +467,7 @@ c     diffR ;   quantum differential cross section
       END IF
 
       OPEN(96,file=table_location,form='unformatted')
-      READ(96) totalR,totalC,totalP,totalS,totalT
+      READ(96) totalR,totalC,totalS,totalT
       READ(96) diffC,diffQ,diffD,diffR
       CLOSE(96)
 
@@ -874,7 +874,7 @@ c     diffR ;   quantum differential cross section
          ENE = phtn(2,j,L)       ! energy
          Um = phtn(4,j,L)*Pksout ! energy defference
          hh = phtn(5,j,L)*Pksout ! energy defference
-         IF(XI.GT.0.001) THEN
+         IF(XI.GT.0.001d0) THEN
            kk = MIN(IDNINT(log(XI*1000.d0)*we0i + 1.5d0),200)
 c          Integration of total cross section
            ff = total(kk)*3000.d0
