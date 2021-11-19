@@ -1,5 +1,5 @@
       MODULE random_common
-      INTEGER,PARAMETER :: icpu = 4, emitgrid = 144
+      INTEGER,PARAMETER :: icpu = 4, emitgrid = 6000
       INTEGER,PARAMETER :: LE0 = 1000, LE1 = 1000
       INTEGER,PARAMETER :: LPx = 200
       REAL(kind=8) :: dp1
@@ -286,7 +286,7 @@ c----------------------
       USE out_common
       USE omp_lib
       IMPLICIT NONE
-      CHARACTER(LEN=9) :: qed_file = 'vac10.dat'
+      CHARACTER(LEN=9) :: qed_file = 'vac13.dat'
       CHARACTER(LEN=100) :: table_location
 
       VL = 3.d0*1.0d8              ! light speed           [m/s]
